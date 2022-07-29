@@ -154,7 +154,7 @@ public class AuthenticationController {
         String token = authorization.substring("Bearer ".length());
 
         if (check(token)) {
-            Optional<Session> session = sessionRepository.findById(authorization);
+            Optional<Session> session = sessionRepository.findById(token);
             if (session.isPresent()) {
                 return new AuthenticationResult(true, "Successfully");
             }
