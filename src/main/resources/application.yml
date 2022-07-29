@@ -1,0 +1,7 @@
+spring:
+  devtools:
+    livereload.enabled: true
+    add-properties: false
+logging:
+  level:
+    web: INFO
