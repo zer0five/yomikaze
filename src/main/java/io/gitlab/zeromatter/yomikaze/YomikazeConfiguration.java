@@ -1,9 +1,12 @@
 package io.gitlab.zeromatter.yomikaze;
 
 import com.auth0.jwt.algorithms.Algorithm;
+import io.gitlab.zeromatter.yomikaze.task.WakeMyDyno;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.java.Log;
 import org.apache.commons.dbcp2.BasicDataSource;
 import org.springframework.boot.jdbc.DataSourceBuilder;
+import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.crypto.argon2.Argon2PasswordEncoder;
@@ -15,6 +18,8 @@ import java.util.Optional;
 
 @Log
 @Configuration
+@EnableCaching
+@RequiredArgsConstructor
 public class YomikazeConfiguration {
     public static final String DEFAULT_JWT_SECRET = "yomikaze-secret-with-a-long-enough-secret-to-be-used-as-a-jwt-secret";
 
@@ -66,6 +71,21 @@ public class YomikazeConfiguration {
     @Bean
     public Algorithm jwtSigningAlgorithm() {
         return Algorithm.HMAC256(Optional.ofNullable(System.getenv("JWT_SECRET")).orElse(DEFAULT_JWT_SECRET));
+    }
+
+    @Bean
+    public WakeMyDyno wakeMyDyno() {
+        String url = System.getenv("DYNO_URL");
+        if (url == null) {
+            String host = "http://127.0.0.1";
+            String port = System.getProperty("server.port");
+            if (port == null) port = System.getenv("PORT");
+            if (port == null) port = "8080";
+            url = host;
+            if (port != null) url += ":" + port;
+        }
+        url += "/wake";
+        return new WakeMyDyno(url);
     }
 
 }

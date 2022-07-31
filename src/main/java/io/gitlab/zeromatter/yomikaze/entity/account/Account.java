@@ -1,5 +1,6 @@
 package io.gitlab.zeromatter.yomikaze.entity.account;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -14,16 +15,15 @@ import java.util.Objects;
 @Getter
 @Setter
 @ToString
-@Entity
+@Entity(name = "account")
 @Table(name = "account")
 @JsonInclude(JsonInclude.Include.NON_EMPTY)
 public class Account {
 
     @Setter(AccessLevel.NONE)
     @Id
-    @SequenceGenerator(name = "account_id_seq", sequenceName = "account_id_seq", allocationSize = 1)
-    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "account_id_seq")
-    @Column(name = "id", columnDefinition = "serial", nullable = false, updatable = false, insertable = false)
+    @GeneratedValue(strategy = GenerationType.IDENTITY, generator = "generate_snowflake()")
+    @Column(name = "id", nullable = false, updatable = false, insertable = false)
     private Long id;
 
     @Column(name = "username", nullable = false, unique = true, updatable = false)
@@ -32,6 +32,7 @@ public class Account {
     @Column(name = "email", nullable = false, unique = true)
     private String email;
 
+    @JsonIgnore
     @Column(name = "password", nullable = false)
     private String password;
 
@@ -45,6 +46,10 @@ public class Account {
     @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name = "created_at", nullable = false, insertable = false)
     private Timestamp createdAt = null;
+
+    public String getId() {
+        return Long.toUnsignedString(this.id);
+    }
 
     @Override
     public boolean equals(Object o) {

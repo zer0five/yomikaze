@@ -1,44 +1,73 @@
 package io.gitlab.zeromatter.yomikaze.entity.session;
 
+import com.vladmihalcea.hibernate.type.basic.Inet;
+import com.vladmihalcea.hibernate.type.basic.PostgreSQLInetType;
 import io.gitlab.zeromatter.yomikaze.entity.account.Account;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
-import org.hibernate.Hibernate;
+import org.hibernate.annotations.TypeDef;
 
 import javax.persistence.*;
 import java.sql.Timestamp;
-import java.util.Objects;
 
 @Getter
 @Setter
 @ToString
 @Entity
 @Table(name = "session")
+@NoArgsConstructor
+@TypeDef(
+        name = "ipv4",
+        typeClass = PostgreSQLInetType.class,
+        defaultForType = Inet.class
+)
 public class Session {
     @Id
-    @Column(name = "token", nullable = false, unique = true, updatable = false)
-    private String token;
+    @GeneratedValue(strategy = GenerationType.IDENTITY, generator = "gen_random_uuid()")
+    @Column(
+            name = "id",
+            nullable = false,
+            unique = true,
+            updatable = false,
+            insertable = false
+    )
+    private String id;
 
-    @JoinColumn(name = "account_id", referencedColumnName = "id")
+    @JoinColumn(
+            name = "account_id",
+            referencedColumnName = "id",
+            nullable = false,
+            updatable = false
+    )
     @ManyToOne(fetch = FetchType.LAZY)
     @ToString.Exclude
     private Account account;
 
+    @Column(name = "user_agent")
+    private String userAgent = null;
+
+    @Column(name = "remote_address", columnDefinition = "inet")
+    private Inet remoteAddress = null;
+
     @GeneratedValue(strategy = GenerationType.AUTO)
-    @Column(name = "created_at", nullable = false, insertable = false)
+    @Column(name = "last_used", nullable = false, insertable = false)
+    private Timestamp lastUsed;
+
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    @Column(name = "created_at", nullable = false, updatable = false, insertable = false)
     private Timestamp createdAt = null;
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || Hibernate.getClass(this) != Hibernate.getClass(o)) return false;
-        Session session = (Session) o;
-        return token != null && Objects.equals(token, session.token);
+    public Session(Account account) {
+        this.account = account;
     }
 
-    @Override
-    public int hashCode() {
-        return getClass().hashCode();
+    public void setRemoteAddress(String address) {
+        setRemoteAddress(new Inet(address));
+    }
+
+    public void setRemoteAddress(Inet remoteAddress) {
+        this.remoteAddress = remoteAddress;
     }
 }
