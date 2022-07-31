@@ -17,13 +17,12 @@ public class WakeMyDyno implements Runnable {
     }
 
     @Override
-    @Scheduled(fixedRate = 30, initialDelay = 0, timeUnit = TimeUnit.MINUTES)
+    @Scheduled(fixedRate = 25, initialDelay = 25, timeUnit = TimeUnit.MINUTES)
     public void run() {
         log.info("Wake the f*** up dyno, we have a website to run!"); // cyber bug 2077
         try {
             RestTemplate restTemplate = new RestTemplate();
             for (String url : urls) {
-                log.info(url);
                 restTemplate.headForHeaders(url);
             }
             log.info("Hey! You're finally awake!"); // skyrim

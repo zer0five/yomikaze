@@ -81,8 +81,7 @@ public class YomikazeConfiguration {
             String port = System.getProperty("server.port");
             if (port == null) port = System.getenv("PORT");
             if (port == null) port = "8080";
-            url = host;
-            if (port != null) url += ":" + port;
+            url = host + ":" + port;
         }
         url += "/wake";
         return new WakeMyDyno(url);

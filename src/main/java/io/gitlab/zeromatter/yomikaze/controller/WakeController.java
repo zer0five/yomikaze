@@ -10,7 +10,6 @@ import org.springframework.web.bind.annotation.ResponseBody;
 public class WakeController {
     @RequestMapping("/wake")
     public @ResponseBody String wake() {
-        log.info("ok");
         return "ok"; // one punch man
     }
 }
