@@ -1,4 +1,6 @@
 spring:
+  jpa:
+    open-in-view: false
   devtools:
     livereload.enabled: true
     add-properties: false
