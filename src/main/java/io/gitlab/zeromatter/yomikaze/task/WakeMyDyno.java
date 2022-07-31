@@ -23,6 +23,7 @@ public class WakeMyDyno implements Runnable {
         try {
             RestTemplate restTemplate = new RestTemplate();
             for (String url : urls) {
+                log.info(url);
                 restTemplate.headForHeaders(url);
             }
             log.info("Hey! You're finally awake!"); // skyrim
