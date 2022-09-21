@@ -1,0 +1,7 @@
+{
+  "name": "yomikaze",
+  "version": "1.0.0",
+  "dependencies": {
+    "daisyui": "^2.28.0"
+  }
+}

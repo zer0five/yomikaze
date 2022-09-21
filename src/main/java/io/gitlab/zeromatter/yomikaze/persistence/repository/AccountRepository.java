@@ -1,5 +1,6 @@
-package io.gitlab.zeromatter.yomikaze.entity.account;
+package io.gitlab.zeromatter.yomikaze.persistence.repository;
 
+import io.gitlab.zeromatter.yomikaze.persistence.entity.Account;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.stereotype.Repository;
 
@@ -17,5 +18,7 @@ public interface AccountRepository extends CrudRepository<Account, Long> {
     boolean existsByEmail(String email);
 
     Optional<Account> findByUsernameOrEmail(String username, String email);
+
+    boolean existsByUsernameOrEmail(String username, String email);
 
 }

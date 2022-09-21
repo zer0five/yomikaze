@@ -1,4 +1,4 @@
-package io.gitlab.zeromatter.yomikaze.controller;
+package io.gitlab.zeromatter.yomikaze.web.controller;
 
 import lombok.extern.java.Log;
 import org.springframework.stereotype.Controller;

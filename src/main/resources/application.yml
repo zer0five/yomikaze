@@ -1,21 +1,13 @@
 spring:
   jpa:
     open-in-view: false
-  devtools:
-    livereload.enabled: true
-    add-properties: false
-  cache:
-    jcache:
-      config: classpath:ehcache.xml
+    properties:
+      hibernate:
+        enable_lazy_load_no_trans: true
+  session:
+    jdbc:
+      initialize-schema: always
+
 logging:
   level:
     web: INFO
-bucket4j:
-  enabled: true
-  filters:
-    - cache-name: buckets
-      rate-limits:
-        - bandwidths:
-            - capacity: 5
-              time: 10
-              unit: seconds
