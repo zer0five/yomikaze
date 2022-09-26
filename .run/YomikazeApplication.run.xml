@@ -6,9 +6,6 @@
         <option name="ALTERNATIVE_JRE_PATH_ENABLED" value="true"/>
         <envs>
             <env name="DATABASE_URL" value="postgres://yomikaze:yomikaze@127.0.0.1:5432/yomikaze"/>
-            <env name="JWT_SECRET"
-                 value="RkdTUlpLV1lIMHVXWjB5aEdSdGtNSHhrRUdFUEZKQUlweUkxb1VTZ0d6a1JGVVNKbzB1R1p6NGxIMVNTWkpBNkUxRGpuejRrcEh5WnExcWJFYWNqWnhFVnBIcVRMSVoybzJTMW55Y1ZIMXlsRnh5TEZJU0dFSGNFRzBTU1pVeDFweVNLbnhxMAZUY2tGSXFGcHpTNVpITVZxUUlXWlRBSUUyMUdIMWM2cEp1VEhheGtGS3VrSXh4bUdJQWxyeDE1"/>
-            <env name="REDIS_URL" value="redis://192.168.1.3:6379"/>
         </envs>
         <module name="yomikaze"/>
         <option name="PASS_PARENT_ENVS" value="false"/>
