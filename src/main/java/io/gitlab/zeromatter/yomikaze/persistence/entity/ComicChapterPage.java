@@ -1,13 +1,20 @@
 package io.gitlab.zeromatter.yomikaze.persistence.entity;
 
+import lombok.*;
+import org.hibernate.Hibernate;
 import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
 
 import javax.persistence.*;
 import java.time.Instant;
 import java.util.LinkedHashSet;
+import java.util.Objects;
 import java.util.Set;
 
+@Getter
+@Setter
+@ToString
+@RequiredArgsConstructor
 @Entity
 @Table(name = "comic_chapter_page")
 public class ComicChapterPage {
@@ -19,6 +26,7 @@ public class ComicChapterPage {
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @OnDelete(action = OnDeleteAction.CASCADE)
     @JoinColumn(name = "chapter_id", nullable = false)
+    @ToString.Exclude
     private ComicChapter chapter;
 
     @Column(name = "picture", nullable = false)
@@ -31,54 +39,20 @@ public class ComicChapterPage {
     private Instant createdAt;
 
     @OneToMany(mappedBy = "chapter")
+    @ToString.Exclude
     private Set<Comment> comments = new LinkedHashSet<>();
 
-    public Integer getId() {
-        return id;
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || Hibernate.getClass(this) != Hibernate.getClass(o)) return false;
+        ComicChapterPage that = (ComicChapterPage) o;
+        return id != null && Objects.equals(id, that.id);
     }
 
-    public void setId(Integer id) {
-        this.id = id;
+    @Override
+    public int hashCode() {
+        return getClass().hashCode();
     }
-
-    public ComicChapter getChapter() {
-        return chapter;
-    }
-
-    public void setChapter(ComicChapter chapter) {
-        this.chapter = chapter;
-    }
-
-    public String getPicture() {
-        return picture;
-    }
-
-    public void setPicture(String picture) {
-        this.picture = picture;
-    }
-
-    public Integer getOrdinal() {
-        return ordinal;
-    }
-
-    public void setOrdinal(Integer ordinal) {
-        this.ordinal = ordinal;
-    }
-
-    public Instant getCreatedAt() {
-        return createdAt;
-    }
-
-    public void setCreatedAt(Instant createdAt) {
-        this.createdAt = createdAt;
-    }
-
-    public Set<Comment> getComments() {
-        return comments;
-    }
-
-    public void setComments(Set<Comment> comments) {
-        this.comments = comments;
-    }
-
 }
