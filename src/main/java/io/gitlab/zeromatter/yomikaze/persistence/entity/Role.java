@@ -49,7 +49,6 @@ public class Role {
                     referencedColumnName = "id"
             )
     )
-
     @ToString.Exclude
     private Set<Account> accounts;
 

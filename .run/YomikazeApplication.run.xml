@@ -1,18 +1,15 @@
 <component name="ProjectRunConfigurationManager">
-    <configuration default="false" name="YomikazeApplication" type="SpringBootApplicationConfigurationType"
-                   factoryName="Spring Boot">
-        <option name="ACTIVE_PROFILES" value="default"/>
-        <option name="ALTERNATIVE_JRE_PATH" value="Java 8 JDK"/>
-        <option name="ALTERNATIVE_JRE_PATH_ENABLED" value="true"/>
-        <envs>
-            <env name="DATABASE_URL" value="postgres://yomikaze:yomikaze@127.0.0.1:5432/yomikaze"/>
-        </envs>
-        <module name="yomikaze"/>
-        <option name="PASS_PARENT_ENVS" value="false"/>
-        <option name="SPRING_BOOT_MAIN_CLASS" value="io.gitlab.zeromatter.yomikaze.YomikazeApplication"/>
-        <option name="UPDATE_ACTION_UPDATE_POLICY" value="UpdateClassesAndTriggerFile"/>
-        <method v="2">
-            <option name="Make" enabled="true"/>
-        </method>
-    </configuration>
+  <configuration default="false" name="YomikazeApplication" type="SpringBootApplicationConfigurationType" factoryName="Spring Boot">
+    <option name="ACTIVE_PROFILES" value="default" />
+    <option name="ALTERNATIVE_JRE_PATH" value="$PROJECT_DIR$/../../../../../../Program Files/Java/jdk1.8.0_301" />
+    <option name="ALTERNATIVE_JRE_PATH_ENABLED" value="true" />
+    <envs>
+      <env name="DATABASE_URL" value="postgres://postgres:5702@127.0.0.1:5432/yomikaze" />
+    </envs>
+    <module name="yomikaze" />
+    <option name="SPRING_BOOT_MAIN_CLASS" value="io.gitlab.zeromatter.yomikaze.YomikazeApplication" />
+    <method v="2">
+      <option name="Make" enabled="true" />
+    </method>
+  </configuration>
 </component>
