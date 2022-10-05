@@ -1,0 +1,17 @@
+spring:
+  jpa:
+    open-in-view: false
+    properties:
+      hibernate:
+        enable_lazy_load_no_trans: true
+    hibernate:
+      ddl-auto: create
+    show-sql: true
+  session:
+    jdbc:
+      initialize-schema: always
+    store-type: jdbc
+
+logging:
+  level:
+    web: DEBUG
