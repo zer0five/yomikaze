@@ -1,5 +1,6 @@
 package io.gitlab.zeromatter.yomikaze.persistence.entity;
 
+import io.gitlab.zeromatter.yomikaze.snowflake.Snowflake;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
@@ -17,7 +18,8 @@ import java.util.Set;
 public class Permission {
     @Id
     @Column(nullable = false, updatable = false, insertable = false)
-    private Long id;
+    @GeneratedValue(generator = "permission-snowflake")
+    private Snowflake id;
 
     @Column(name = "name", nullable = false, unique = true, updatable = false)
     private String name;

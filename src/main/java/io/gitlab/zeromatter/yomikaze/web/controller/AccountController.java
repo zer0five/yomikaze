@@ -11,8 +11,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.servlet.http.HttpServletRequest;
-import java.util.Collections;
-import java.util.Map;
 import java.util.Optional;
 
 @Controller
@@ -24,13 +22,13 @@ public class AccountController {
 
     @RequestMapping("/info/@{id}")
     @ResponseBody
-    public Map<String, Object> getUser(@PathVariable(value = "id") String id, HttpServletRequest request) {
+    public Account getUser(@PathVariable(value = "id") String id, HttpServletRequest request) {
         String username = request.getUserPrincipal().getName();
         Optional<Account> account;
+        long userId;
         if (id.equalsIgnoreCase("me")) {
             account = accountRepository.findByUsername(username);
         } else {
-            long userId;
             if (id.startsWith("-")) {
                 userId = Long.parseLong(id);
             } else {
@@ -38,6 +36,6 @@ public class AccountController {
             }
             account = accountRepository.findById(userId);
         }
-        return account.<Map<String, Object>>map(value -> Collections.singletonMap("user", value)).orElseThrow(() -> new UsernameNotFoundException("User not found"));
+        return account.orElseThrow(() -> new UsernameNotFoundException("User not found"));
     }
 }

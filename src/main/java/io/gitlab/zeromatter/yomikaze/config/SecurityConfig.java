@@ -12,14 +12,12 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
-import org.springframework.session.jdbc.config.annotation.web.http.EnableJdbcHttpSession;
 import org.springframework.session.web.http.CookieSerializer;
 import org.springframework.session.web.http.DefaultCookieSerializer;
 
 @Log
 @EnableCaching
 @Configuration
-@EnableJdbcHttpSession
 @RequiredArgsConstructor
 public class SecurityConfig {
 
@@ -31,12 +29,13 @@ public class SecurityConfig {
                 .userDetailsService(userDetailsService)
                 .anonymous(anonymous -> anonymous
                         .principal("anonymous")
-                        .authorities("ANONYMOUS")
+                        .authorities("anonymous")
                 )
                 .authorizeHttpRequests(authorize -> authorize
-                        .antMatchers("/login", "/sign-in").hasAuthority("ANONYMOUS")
-                        .antMatchers("/register", "/sign-up").hasAuthority("ANONYMOUS")
+                        .antMatchers("/login", "/sign-in").hasAuthority("anonymous")
+                        .antMatchers("/register", "/sign-up").hasAuthority("anonymous")
                         .antMatchers("/api/v1/**").authenticated()
+                        .antMatchers("/image/upload", "/image/upload/**").hasAuthority("file.upload")
                         .anyRequest().permitAll()
                 )
                 .httpBasic(basic -> basic.realmName("yomikaze"))
@@ -66,7 +65,11 @@ public class SecurityConfig {
                         .logoutSuccessUrl("/")
                 )
                 .exceptionHandling(exceptions -> exceptions
-                        .accessDeniedPage("/access-denied.html")
+                                .accessDeniedHandler((request, response, exception) -> {
+                                    System.out.println("Access denied: " + exception.getMessage());
+                                    response.sendRedirect("/access-denied.html");
+                                })
+//                        .accessDeniedPage("/access-denied.html")
                 )
                 .build();
     }

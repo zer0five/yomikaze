@@ -2,17 +2,15 @@ package io.gitlab.zeromatter.yomikaze.persistence.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.databind.annotation.JsonSerialize;
-import io.gitlab.zeromatter.yomikaze.json.datetime.DateToEpochSerializer;
-import io.gitlab.zeromatter.yomikaze.json.snowflake.SnowflakeSerializer;
+import io.gitlab.zeromatter.yomikaze.snowflake.Snowflake;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
 import org.hibernate.Hibernate;
+import org.hibernate.annotations.Type;
 
 import javax.persistence.*;
-import java.sql.Timestamp;
 import java.util.Objects;
 import java.util.Set;
 
@@ -25,16 +23,19 @@ import java.util.Set;
 public class Account {
 
     @Id
-    @GeneratedValue(generator = "generate_snowflake()")
     @Column(
             name = "id",
             nullable = false,
-            updatable = false,
-            insertable = false
+            updatable = false
     )
+    @GeneratedValue(generator = "account-snowflake")
+    @Type(type = "io.gitlab.zeromatter.yomikaze.snowflake.hibernate.SnowflakeType")
     @Setter(AccessLevel.NONE)
-    @JsonSerialize(using = SnowflakeSerializer.class)
-    private Long id;
+    private Snowflake id;
+
+    public void setId(long id) {
+        this.id = Snowflake.of(id);
+    }
 
     @Column(
             name = "username",
@@ -58,28 +59,6 @@ public class Account {
     @JsonIgnore
     @ToString.Exclude
     private String password;
-
-    @Column(
-            name = "two_factor_enabled",
-            nullable = false
-    )
-    private boolean twoFactorEnabled = false;
-
-    @Column(
-            name = "two_factor_secret"
-    )
-    @JsonIgnore
-    @ToString.Exclude
-    private String twoFactorSecret;
-
-    @GeneratedValue(generator = "now()")
-    @Column(
-            name = "created_at",
-            nullable = false,
-            insertable = false
-    )
-    @JsonSerialize(using = DateToEpochSerializer.class)
-    private Timestamp createdAt = null;
 
     @JsonIgnore
     @ToString.Exclude

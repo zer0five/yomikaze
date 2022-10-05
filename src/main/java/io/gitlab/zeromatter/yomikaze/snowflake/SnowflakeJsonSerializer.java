@@ -1,4 +1,4 @@
-package io.gitlab.zeromatter.yomikaze.json.snowflake;
+package io.gitlab.zeromatter.yomikaze.snowflake;
 
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.databind.JsonSerializer;
@@ -6,9 +6,12 @@ import com.fasterxml.jackson.databind.SerializerProvider;
 
 import java.io.IOException;
 
-public class SnowflakeSerializer extends JsonSerializer<Long> {
+public class SnowflakeJsonSerializer extends JsonSerializer<Long> {
     @Override
     public void serialize(Long value, JsonGenerator gen, SerializerProvider serializers) throws IOException {
-        gen.writeString(Long.toUnsignedString(value));
+        gen.writeStartObject();
+        gen.writeStringField("raw", Long.toUnsignedString(value));
+        gen.writeObjectField("snowflake", Snowflake.of(value));
+        gen.writeEndObject();
     }
 }

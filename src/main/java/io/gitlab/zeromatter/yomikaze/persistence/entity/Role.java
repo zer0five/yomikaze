@@ -1,5 +1,6 @@
 package io.gitlab.zeromatter.yomikaze.persistence.entity;
 
+import io.gitlab.zeromatter.yomikaze.snowflake.Snowflake;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
@@ -18,14 +19,13 @@ import java.util.Set;
 @Table(name = "role")
 public class Role {
     @Id
-    @GeneratedValue
+    @GeneratedValue(generator = "role-snowflake")
     @Column(
             name = "id",
             nullable = false,
-            updatable = false,
-            insertable = false
+            updatable = false
     )
-    private Long id;
+    private Snowflake id;
 
     @Column(
             name = "name",
@@ -39,7 +39,7 @@ public class Role {
     private String description;
 
     @ManyToMany(targetEntity = Account.class)
-    @JoinTable(name = "account_role",
+    @JoinTable(name = "account_has_role",
             joinColumns = @JoinColumn(
                     name = "role_id",
                     referencedColumnName = "id"
@@ -47,13 +47,15 @@ public class Role {
             inverseJoinColumns = @JoinColumn(
                     name = "account_id",
                     referencedColumnName = "id"
-            )
+            ), uniqueConstraints = @UniqueConstraint(
+            columnNames = "account_id"
+    )
     )
     @ToString.Exclude
     private Set<Account> accounts;
 
     @ManyToMany(targetEntity = Permission.class)
-    @JoinTable(name = "role_permission",
+    @JoinTable(name = "role_permissions",
             joinColumns = @JoinColumn(
                     name = "role_id",
                     referencedColumnName = "id"
@@ -72,10 +74,5 @@ public class Role {
         if (o == null || Hibernate.getClass(this) != Hibernate.getClass(o)) return false;
         Role role = (Role) o;
         return id != null && Objects.equals(id, role.id);
-    }
-
-    @Override
-    public int hashCode() {
-        return getClass().hashCode();
     }
 }
