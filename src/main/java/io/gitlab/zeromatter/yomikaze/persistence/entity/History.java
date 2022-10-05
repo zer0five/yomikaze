@@ -1,5 +1,6 @@
 package io.gitlab.zeromatter.yomikaze.persistence.entity;
 
+import io.gitlab.zeromatter.yomikaze.snowflake.Snowflake;
 import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
 
@@ -12,7 +13,7 @@ public class History {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id", nullable = false)
-    private Integer id;
+    private Snowflake id;
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @OnDelete(action = OnDeleteAction.CASCADE)
@@ -22,9 +23,6 @@ public class History {
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "chapter_id", nullable = false)
     private ComicChapter chapter;
-
-    @Column(name = "created_at", nullable = false)
-    private Instant createdAt;
 
     public Integer getId() {
         return id;
