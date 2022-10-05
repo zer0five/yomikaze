@@ -44,26 +44,33 @@ public class Comic {
 
     @OneToMany(mappedBy = "comic")
     @ToString.Exclude
-    private Set<ComicChapter> comicChapters = new LinkedHashSet<>();
-
-    @ManyToMany
-    @JoinTable(name = "comic_genre",
-            joinColumns = @JoinColumn(name = "comic_id"),
-            inverseJoinColumns = @JoinColumn(name = "genre_id"))
+    private Set<ComicChapter> comicChapters ;
+    //relation with genre
+    @ManyToMany(targetEntity = Genre.class)
+    @JoinTable(name = "comic_genres",
+            joinColumns = @JoinColumn(
+                    name = "comic_id",
+                    referencedColumnName = "id"
+            ),
+            inverseJoinColumns = @JoinColumn(
+                    name = "genre_id",
+                    referencedColumnName = "id"
+            )
+    )
     @ToString.Exclude
-    private Set<Genre> genres = new LinkedHashSet<>();
+    private Set<Genre> genres ;
 
     @OneToMany(mappedBy = "comic")
     @ToString.Exclude
-    private Set<Comment> comments = new LinkedHashSet<>();
+    private Set<Comment> comments ;
 
     @OneToMany(mappedBy = "comic")
     @ToString.Exclude
-    private Set<ComicRating> comicRatings = new LinkedHashSet<>();
+    private Set<ComicRating> comicRatings;
 
     @OneToMany(mappedBy = "comic")
     @ToString.Exclude
-    private Set<ListItem> listItems = new LinkedHashSet<>();
+    private Set<ListItem> listItems ;
 
 
     @Override

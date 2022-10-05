@@ -3,11 +3,9 @@ package io.gitlab.zeromatter.yomikaze.persistence.entity;
 import lombok.*;
 import org.hibernate.Hibernate;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.Table;
+import javax.persistence.*;
 import java.util.Objects;
+import java.util.Set;
 
 @Getter
 @Setter
@@ -25,6 +23,10 @@ public class Genre {
 
     @Column(name = "description", length = 1023)
     private String description;
+    //relation with comic
+    @ManyToMany(mappedBy = "genres")
+    @ToString.Exclude
+    private Set<Comic> comics;
 
 
     @Override
