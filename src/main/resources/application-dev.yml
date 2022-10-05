@@ -1,3 +1,4 @@
+
 spring:
   jpa:
     open-in-view: false
@@ -15,3 +16,5 @@ spring:
 logging:
   level:
     web: DEBUG
+
+debug: true
