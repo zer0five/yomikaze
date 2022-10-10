@@ -2,17 +2,21 @@ package io.gitlab.zeromatter.yomikaze.persistence.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
+import io.gitlab.zeromatter.yomikaze.persistence.listener.AccountListener;
 import io.gitlab.zeromatter.yomikaze.snowflake.Snowflake;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
 import org.hibernate.Hibernate;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
 import org.hibernate.annotations.Type;
 
 import javax.persistence.*;
+import java.util.Collection;
+import java.util.HashSet;
 import java.util.Objects;
-import java.util.Set;
 
 @Getter
 @Setter
@@ -20,6 +24,7 @@ import java.util.Set;
 @Entity(name = "account")
 @Table(name = "account")
 @JsonInclude(JsonInclude.Include.NON_EMPTY)
+@EntityListeners(AccountListener.class)
 public class Account {
 
     @Id
@@ -60,10 +65,20 @@ public class Account {
     @ToString.Exclude
     private String password;
 
-    @JsonIgnore
     @ToString.Exclude
-    @ManyToMany(mappedBy = "accounts")
-    private Set<Role> roles;
+    @ManyToMany(fetch = FetchType.LAZY)
+    @JoinTable(name = "account_has_role",
+            joinColumns = @JoinColumn(
+                    name = "role_id",
+                    referencedColumnName = "id"
+            ),
+            inverseJoinColumns = @JoinColumn(
+                    name = "account_id",
+                    referencedColumnName = "id"
+            )
+    )
+    @OnDelete(action = OnDeleteAction.CASCADE)
+    private Collection<Role> roles = new HashSet<>();
 
     @Override
     public boolean equals(Object o) {

@@ -20,9 +20,8 @@
         </div>
         <div class="card flex-shrink-0 w-full max-w-sm shadow-2xl bg-base-100">
             <!--/*@thymesVar id="error" type="java.lang.String"*/-->
-            <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative" role="alert"
-                 th:if="${error != null}">
-                <span th:utext="#{${error}}">Invalid username or password</span>
+            <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 card-title relative" role="alert"
+                 th:if="${param.failed != null}" th:utext="#{authentication.login.unknown}">
             </div>
             <form @submit="submit = true" class="card-body" method="POST" th:action="@{/login}"
                   x-data="{submit: false}">

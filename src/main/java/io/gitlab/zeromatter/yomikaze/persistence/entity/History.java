@@ -5,13 +5,13 @@ import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
 
 import javax.persistence.*;
-import java.time.Instant;
 
 @Entity
 @Table(name = "history")
 public class History {
+
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(generator = "history-snowflake")
     @Column(name = "id", nullable = false)
     private Snowflake id;
 
@@ -21,39 +21,8 @@ public class History {
     private Account account;
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    @JoinColumn(name = "chapter_id", nullable = false)
-    private ComicChapter chapter;
-
-    public Integer getId() {
-        return id;
-    }
-
-    public void setId(Integer id) {
-        this.id = id;
-    }
-
-    public Account getAccount() {
-        return account;
-    }
-
-    public void setAccount(Account account) {
-        this.account = account;
-    }
-
-    public ComicChapter getChapter() {
-        return chapter;
-    }
-
-    public void setChapter(ComicChapter chapter) {
-        this.chapter = chapter;
-    }
-
-    public Instant getCreatedAt() {
-        return createdAt;
-    }
-
-    public void setCreatedAt(Instant createdAt) {
-        this.createdAt = createdAt;
-    }
+    @OnDelete(action = OnDeleteAction.CASCADE)
+    @JoinColumn(name = "comic_id", nullable = false)
+    private Comic comic;
 
 }

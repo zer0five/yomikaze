@@ -1,21 +1,29 @@
 package io.gitlab.zeromatter.yomikaze.web.controller;
 
-import io.gitlab.zeromatter.yomikaze.persistence.entity.Account;
 import io.gitlab.zeromatter.yomikaze.service.AuthenticationService;
+import io.gitlab.zeromatter.yomikaze.web.dto.GenericResponse;
+import io.gitlab.zeromatter.yomikaze.web.dto.RegistrationData;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.java.Log;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.*;
 
-import java.util.HashMap;
-import java.util.Map;
+import javax.persistence.EntityExistsException;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
+import javax.validation.Valid;
+import java.net.URI;
+import java.util.Optional;
 
 @Log
 @Controller
 @RequiredArgsConstructor
+@PreAuthorize("authentication == null || isAnonymous()")
+@Validated
 public class AuthenticationController {
     private final AuthenticationService authenticationService;
 
@@ -25,26 +33,35 @@ public class AuthenticationController {
     }
 
     @GetMapping({"/register", "/sign-up"})
-    public String register() {
+    public String register(@RequestHeader("referer") Optional<URI> referer, HttpSession session) {
+        referer.ifPresent(uri -> session.setAttribute("redirect", uri));
         return "sign-up";
     }
 
     @PostMapping({"/register", "/sign-up"})
-    @ResponseBody
-    public Map<String, Object> register(String username, String password, String email) {
-        Account account;
-        Map<String, Object> map = new HashMap<>();
-        try {
-            account = authenticationService.createAccount(username, password, email);
-        } catch (Exception e) {
-            map.put("success", false);
-            map.put("message", e.getMessage());
-            return map;
-        }
-        map.put("success", true);
-        map.put("message", "Account created");
-        map.put("account", account);
-        return map;
+    public ResponseEntity<Object> register(@Valid RegistrationData registration, @SessionAttribute("redirect") Optional<URI> redirect, HttpSession session, HttpServletRequest request) throws EntityExistsException {
+        authenticationService.register(registration);
+        URI uri = redirect.orElseGet(() -> {
+            if (request.getContextPath().isEmpty()) {
+                return URI.create("/");
+            } else {
+                return URI.create(request.getContextPath());
+            }
+        });
+        redirect.ifPresent(u -> session.removeAttribute("redirect"));
+        return ResponseEntity.status(HttpStatus.FOUND).location(uri).build();
+    }
+
+    @ExceptionHandler({EntityExistsException.class})
+    protected ResponseEntity<Object> handleEntityExistsException(EntityExistsException e, HttpServletRequest request) {
+        return ResponseEntity
+                .status(HttpStatus.CONFLICT)
+                .body(GenericResponse
+                        .builder()
+                        .status(false)
+                        .message("Username or email already exists")
+                        .build()
+                );
     }
 
 }

@@ -8,8 +8,8 @@ import lombok.ToString;
 import org.hibernate.Hibernate;
 
 import javax.persistence.*;
+import java.util.Collection;
 import java.util.Objects;
-import java.util.Set;
 
 @Getter
 @Setter
@@ -36,25 +36,12 @@ public class Role {
     private String name;
 
     @Column(name = "description")
-    private String description;
+    private String description = "";
 
-    @ManyToMany(targetEntity = Account.class)
-    @JoinTable(name = "account_has_role",
-            joinColumns = @JoinColumn(
-                    name = "role_id",
-                    referencedColumnName = "id"
-            ),
-            inverseJoinColumns = @JoinColumn(
-                    name = "account_id",
-                    referencedColumnName = "id"
-            ), uniqueConstraints = @UniqueConstraint(
-            columnNames = "account_id"
-    )
-    )
-    @ToString.Exclude
-    private Set<Account> accounts;
+    @Column(name = "default_role", nullable = false)
+    private boolean defaultRole = false;
 
-    @ManyToMany(targetEntity = Permission.class)
+    @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(name = "role_permissions",
             joinColumns = @JoinColumn(
                     name = "role_id",
@@ -66,7 +53,7 @@ public class Role {
             )
     )
     @ToString.Exclude
-    private Set<Permission> permissions;
+    private Collection<Permission> permissions;
 
     @Override
     public boolean equals(Object o) {

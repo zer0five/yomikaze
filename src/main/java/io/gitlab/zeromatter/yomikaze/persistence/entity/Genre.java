@@ -1,6 +1,10 @@
 package io.gitlab.zeromatter.yomikaze.persistence.entity;
 
-import lombok.*;
+import io.gitlab.zeromatter.yomikaze.snowflake.Snowflake;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import lombok.Setter;
+import lombok.ToString;
 import org.hibernate.Hibernate;
 
 import javax.persistence.*;
@@ -15,18 +19,24 @@ import java.util.Set;
 @Table(name = "genre")
 public class Genre {
     @Id
-    @Column(name = "id", nullable = false)
-    private Integer id;
+    @GeneratedValue(generator = "genre-snowflake")
+    @Column(name = "id", nullable = false, updatable = false)
+    private Snowflake id;
 
-    @Column(name = "name", nullable = false)
+    @Column(name = "name", nullable = false, unique = true, updatable = false)
     private String name;
 
     @Column(name = "description", length = 1023)
-    private String description;
-    //relation with comic
-    @ManyToMany(mappedBy = "genres")
+    private String description = "";
+
+    @ManyToMany(mappedBy = "genres", fetch = FetchType.LAZY)
     @ToString.Exclude
     private Set<Comic> comics;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "creator_id")
+    @ToString.Exclude
+    private Account creator;
 
 
     @Override

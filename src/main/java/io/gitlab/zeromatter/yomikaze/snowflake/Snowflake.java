@@ -21,16 +21,22 @@ public class Snowflake implements Serializable {
 
     public static Snowflake of(Long id) {
         if (id == null) {
-            throw new IllegalArgumentException("id cannot be null");
+            id = 0L;
         }
         return new Snowflake(id);
     }
 
     public static Snowflake of(String id) {
-        if (id == null) {
-            throw new IllegalArgumentException("id cannot be null");
+        if (id == null || id.isEmpty()) {
+            return new Snowflake(0L);
         }
-        return new Snowflake(Long.parseLong(id));
+        long idLong;
+        if (id.startsWith("-")) {
+            idLong = Long.parseLong(id);
+        } else {
+            idLong = Long.parseUnsignedLong(id);
+        }
+        return new Snowflake(idLong);
     }
 
     @JsonIgnore

@@ -1,15 +1,14 @@
 package io.gitlab.zeromatter.yomikaze.persistence.entity;
 
+import io.gitlab.zeromatter.yomikaze.snowflake.Snowflake;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 import org.hibernate.Hibernate;
-import org.hibernate.annotations.GenericGenerator;
 
 import javax.persistence.*;
 import java.util.Objects;
-import java.util.UUID;
 
 @Entity(name = "files")
 @Table(name = "files")
@@ -20,10 +19,9 @@ import java.util.UUID;
 public class DBFile {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
-    @GenericGenerator(name = "UUID", strategy = "org.hibernate.id.UUIDGenerator")
+    @GeneratedValue(generator = "file-snowflake")
     @Column(name = "id", nullable = false, updatable = false)
-    private UUID id;
+    private Snowflake id;
 
     @Column(name = "name", nullable = false)
     private String name;
@@ -37,6 +35,10 @@ public class DBFile {
     @ToString.Exclude
     private byte[] data;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "owner_id", referencedColumnName = "id", nullable = false)
+    @ToString.Exclude
+    private Account owner;
 
     @Override
     public boolean equals(Object o) {

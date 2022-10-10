@@ -5,17 +5,17 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
 import org.hibernate.Hibernate;
+import org.springframework.security.core.GrantedAuthority;
 
 import javax.persistence.*;
 import java.util.Objects;
-import java.util.Set;
 
 @Getter
 @Setter
 @ToString
 @Entity(name = "permission")
 @Table(name = "permission")
-public class Permission {
+public class Permission implements GrantedAuthority {
     @Id
     @Column(nullable = false, updatable = false, insertable = false)
     @GeneratedValue(generator = "permission-snowflake")
@@ -26,10 +26,6 @@ public class Permission {
 
     @Column(name = "description", unique = true)
     private String description;
-
-    @ManyToMany(mappedBy = "permissions")
-    @ToString.Exclude
-    private Set<Role> roles;
 
     @Override
     public boolean equals(Object o) {
@@ -42,5 +38,10 @@ public class Permission {
     @Override
     public int hashCode() {
         return getClass().hashCode();
+    }
+
+    @Override
+    public String getAuthority() {
+        return getName();
     }
 }

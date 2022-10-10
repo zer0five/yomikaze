@@ -1,0 +1,18 @@
+debug: true
+spring:
+  redis:
+    url: ${REDIS_URL}
+  datasource:
+    type: com.zaxxer.hikari.HikariDataSource
+    url: ${JDBC_DATABASE_URL}
+    username: ${JDBC_DATABASE_USERNAME}
+    password: ${JDBC_DATABASE_PASSWORD}
+  session:
+    store-type: redis
+  cache:
+    type: redis
+logging:
+  level:
+    web: debug
+    sql: info
+    root: info

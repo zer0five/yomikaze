@@ -1,16 +1,15 @@
 package io.gitlab.zeromatter.yomikaze.persistence.repository;
 
 import io.gitlab.zeromatter.yomikaze.persistence.entity.Permission;
-import lombok.NonNull;
+import io.gitlab.zeromatter.yomikaze.snowflake.Snowflake;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
+import java.util.Optional;
+
 @Repository
-public interface PermissionRepository extends JpaRepository<Permission, Long> {
+public interface PermissionRepository extends JpaRepository<Permission, Snowflake> {
 
-    Permission findByName(String name);
-
-    @Override
-    void delete(@NonNull Permission permission);
+    Optional<Permission> findByName(String name);
 
 }

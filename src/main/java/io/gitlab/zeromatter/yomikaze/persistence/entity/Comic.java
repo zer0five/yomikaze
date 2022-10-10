@@ -1,11 +1,16 @@
 package io.gitlab.zeromatter.yomikaze.persistence.entity;
 
-import lombok.*;
+import io.gitlab.zeromatter.yomikaze.snowflake.Snowflake;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import lombok.Setter;
+import lombok.ToString;
 import org.hibernate.Hibernate;
+import org.hibernate.annotations.UpdateTimestamp;
 
 import javax.persistence.*;
 import java.time.Instant;
-import java.util.LinkedHashSet;
+import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
 
@@ -17,15 +22,15 @@ import java.util.Set;
 @Table(name = "comic")
 public class Comic {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(generator = "comic-snowflake")
     @Column(name = "id", nullable = false)
-    private Integer id;
+    private Snowflake id;
 
     @Column(name = "title", nullable = false)
     private String title;
 
     @Column(name = "description", length = 1023)
-    private String description;
+    private String description = "";
 
     @Column(name = "cover_picture")
     private String coverPicture;
@@ -36,41 +41,20 @@ public class Comic {
     @Column(name = "finished")
     private Instant finished;
 
-    @Column(name = "created_at", nullable = false)
-    private Instant createdAt;
-
+    @UpdateTimestamp
     @Column(name = "updated_at", nullable = false)
     private Instant updatedAt;
 
-    @OneToMany(mappedBy = "comic")
-    @ToString.Exclude
-    private Set<ComicChapter> comicChapters ;
-    //relation with genre
-    @ManyToMany(targetEntity = Genre.class)
+    @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(name = "comic_genres",
-            joinColumns = @JoinColumn(
-                    name = "comic_id",
-                    referencedColumnName = "id"
-            ),
-            inverseJoinColumns = @JoinColumn(
-                    name = "genre_id",
-                    referencedColumnName = "id"
-            )
+            joinColumns = @JoinColumn(name = "comic_id"),
+            inverseJoinColumns = @JoinColumn(name = "genre_id")
     )
     @ToString.Exclude
-    private Set<Genre> genres ;
+    private Set<Genre> genres = new HashSet<>();
 
-    @OneToMany(mappedBy = "comic")
-    @ToString.Exclude
-    private Set<Comment> comments ;
-
-    @OneToMany(mappedBy = "comic")
-    @ToString.Exclude
-    private Set<ComicRating> comicRatings;
-
-    @OneToMany(mappedBy = "comic")
-    @ToString.Exclude
-    private Set<ListItem> listItems ;
+    @ManyToOne
+    @JoinColumn(name = "uploader", nullable = false)
 
 
     @Override
@@ -78,11 +62,11 @@ public class Comic {
         if (this == o) return true;
         if (o == null || Hibernate.getClass(this) != Hibernate.getClass(o)) return false;
         Comic comic = (Comic) o;
-        return id != null && Objects.equals(id, comic.id);
+        return Objects.equals(id, comic.id);
     }
 
     @Override
     public int hashCode() {
-        return getClass().hashCode();
+        return Objects.hashCode(id);
     }
 }

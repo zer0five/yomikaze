@@ -2,9 +2,10 @@ package io.gitlab.zeromatter.yomikaze.web.controller;
 
 import io.gitlab.zeromatter.yomikaze.persistence.entity.Account;
 import io.gitlab.zeromatter.yomikaze.persistence.repository.AccountRepository;
+import io.gitlab.zeromatter.yomikaze.snowflake.Snowflake;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.java.Log;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -22,20 +23,16 @@ public class AccountController {
 
     @RequestMapping("/info/@{id}")
     @ResponseBody
-    public Account getUser(@PathVariable(value = "id") String id, HttpServletRequest request) {
-        String username = request.getUserPrincipal().getName();
+    public ResponseEntity<Account> getUser(@PathVariable(value = "id") Optional<String> oid, HttpServletRequest request) {
         Optional<Account> account;
-        long userId;
+        String id = oid.orElse("me");
         if (id.equalsIgnoreCase("me")) {
+            String username = request.getUserPrincipal().getName();
             account = accountRepository.findByUsername(username);
         } else {
-            if (id.startsWith("-")) {
-                userId = Long.parseLong(id);
-            } else {
-                userId = Long.parseUnsignedLong(id);
-            }
-            account = accountRepository.findById(userId);
+            Snowflake uid = Snowflake.of(id);
+            account = accountRepository.findById(uid);
         }
-        return account.orElseThrow(() -> new UsernameNotFoundException("User not found"));
+        return account.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
     }
 }

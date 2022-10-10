@@ -1,20 +1,24 @@
 package io.gitlab.zeromatter.yomikaze.config;
 
+import io.gitlab.zeromatter.yomikaze.config.properties.YomikazeProperties;
+import io.gitlab.zeromatter.yomikaze.config.properties.YomikazeProperties.Security.Password.Encoder;
+import io.gitlab.zeromatter.yomikaze.config.properties.YomikazeProperties.Security.Password.Encoder.PasswordEncoderType;
 import io.gitlab.zeromatter.yomikaze.task.WakeMyDyno;
-import lombok.extern.java.Log;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.context.MessageSource;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.DependsOn;
+import org.springframework.context.annotation.Profile;
 import org.springframework.context.support.ReloadableResourceBundleMessageSource;
 import org.springframework.scheduling.annotation.EnableScheduling;
-import org.springframework.security.crypto.argon2.Argon2PasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
-import java.util.Optional;
+import static io.gitlab.zeromatter.yomikaze.config.properties.YomikazeProperties.Security.Password.Encoder.Argon2;
+import static io.gitlab.zeromatter.yomikaze.config.properties.YomikazeProperties.Security.Password.Encoder.BCrypt;
 
-@Log
+@Slf4j
 @Configuration
 @EnableCaching
 @EnableScheduling
@@ -27,17 +31,24 @@ public class YomikazeConfig {
     }
 
     @Bean
-    public PasswordEncoder passwordEncoder() {
-        int saltLength = Optional.ofNullable(System.getenv("ARGON2_SALT_LENGTH")).map(Integer::parseInt).orElse(1 << 4);
-        int hashLength = Optional.ofNullable(System.getenv("ARGON2_HASH_LENGTH")).map(Integer::parseInt).orElse(1 << 5);
-        int parallelism = Optional.ofNullable(System.getenv("ARGON2_PARALLELISM")).map(Integer::parseInt).orElse(1);
-        int memory = Optional.ofNullable(System.getenv("ARGON2_MEMORY")).map(Integer::parseInt).orElse(1 << 16);
-        int iterations = Optional.ofNullable(System.getenv("ARGON2_ITERATIONS")).map(Integer::parseInt).orElse(1 << 1 | 1);
-        return new Argon2PasswordEncoder(saltLength, hashLength, parallelism, memory, iterations);
+    public PasswordEncoder passwordEncoder(YomikazeProperties properties) {
+        Encoder encoder = properties.getSecurity().getPassword().getEncoder();
+        PasswordEncoderType encoderType = encoder.getType();
+        switch (encoderType) {
+            case ARGON2:
+                Argon2 argon2 = encoder.getArgon2();
+                return argon2.get();
+            case BCRYPT:
+                BCrypt bcrypt = encoder.getBcrypt();
+                return bcrypt.get();
+            default:
+                throw new IllegalArgumentException("Unknown password encoder type: " + encoderType);
+        }
     }
 
     @Bean
     @DependsOn("debug")
+    @Profile("heroku")
     public WakeMyDyno wakeMyDyno(boolean debug) {
         String url = System.getenv("DYNO_URL");
         if (url == null) {
@@ -59,9 +70,8 @@ public class YomikazeConfig {
 
     @Bean
     public MessageSource messageSource() {
-        ReloadableResourceBundleMessageSource messageSource
-                = new ReloadableResourceBundleMessageSource();
-        messageSource.setBasenames("classpath:/messages");
+        ReloadableResourceBundleMessageSource messageSource = new ReloadableResourceBundleMessageSource();
+        messageSource.setBasenames("classpath:/languages/messages", "./languages/messages");
         messageSource.setDefaultEncoding("UTF-8");
         return messageSource;
     }

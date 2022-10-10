@@ -1,5 +1,13 @@
+debug: false
 
 spring:
+  main:
+    allow-circular-references: true
+  datasource:
+    type: com.zaxxer.hikari.HikariDataSource
+    url: jdbc:postgresql://127.0.0.1/yomikaze
+    username: yomikaze
+    password: yomikaze
   jpa:
     open-in-view: false
     properties:
@@ -7,14 +15,28 @@ spring:
         enable_lazy_load_no_trans: true
     hibernate:
       ddl-auto: create
-    show-sql: true
+    show-sql: false
   session:
-    jdbc:
-      initialize-schema: always
-    store-type: jdbc
+    store-type: none
+  servlet:
+    multipart:
+      max-file-size: 8MB
+      max-request-size: 128MB
 
 logging:
   level:
-    web: DEBUG
+    web: debug
+    sql: debug
+    root: info
 
-debug: true
+yomikaze:
+  security:
+    password:
+      encoder:
+        type: ArGON2
+        argon2:
+          parallelism: 1
+          memory: 65536
+          iterations: 3
+          saltLength: 16
+          hashLength: 32
