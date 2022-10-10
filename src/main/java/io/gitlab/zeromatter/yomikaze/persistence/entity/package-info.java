@@ -63,6 +63,14 @@
                 @Parameter(name = SnowflakeGenerator.SNOWFLAKE_WORKER_ID, value = "7")
         }
 )
+@GenericGenerator(
+        name = "library-snowflake",
+        strategy = "io.gitlab.zeromatter.yomikaze.snowflake.hibernate.SnowflakeGenerator",
+        parameters = {
+                @Parameter(name = SnowflakeGenerator.SNOWFLAKE_DATA_CENTER_ID, value = "1"),
+                @Parameter(name = SnowflakeGenerator.SNOWFLAKE_WORKER_ID, value = "8")
+        }
+)
 package io.gitlab.zeromatter.yomikaze.persistence.entity;
 
 import io.gitlab.zeromatter.yomikaze.snowflake.Snowflake;
