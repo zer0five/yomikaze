@@ -11,7 +11,6 @@ import lombok.ToString;
 import org.hibernate.Hibernate;
 import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
-import org.hibernate.annotations.Type;
 
 import javax.persistence.*;
 import java.util.Collection;
@@ -34,7 +33,6 @@ public class Account {
             updatable = false
     )
     @GeneratedValue(generator = "account-snowflake")
-    @Type(type = "io.gitlab.zeromatter.yomikaze.snowflake.hibernate.SnowflakeType")
     @Setter(AccessLevel.NONE)
     private Snowflake id;
 
