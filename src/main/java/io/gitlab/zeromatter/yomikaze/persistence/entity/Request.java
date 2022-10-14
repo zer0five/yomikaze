@@ -1,7 +1,10 @@
 package io.gitlab.zeromatter.yomikaze.persistence.entity;
 
 import io.gitlab.zeromatter.yomikaze.snowflake.Snowflake;
-import lombok.*;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import lombok.Setter;
+import lombok.ToString;
 import org.hibernate.Hibernate;
 
 import javax.persistence.*;
@@ -52,6 +55,6 @@ public class Request {
 
     @Override
     public int hashCode() {
-        return getClass().hashCode();
+        return Long.hashCode(id.getId());
     }
 }

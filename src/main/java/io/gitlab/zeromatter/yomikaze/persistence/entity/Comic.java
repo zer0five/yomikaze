@@ -72,6 +72,6 @@ public class Comic {
 
     @Override
     public int hashCode() {
-        return Objects.hashCode(id);
+        return Long.hashCode(id.getId());
     }
 }

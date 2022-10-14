@@ -52,6 +52,6 @@ public class Genre {
 
     @Override
     public int hashCode() {
-        return getClass().hashCode();
+        return Long.hashCode(id.getId());
     }
 }

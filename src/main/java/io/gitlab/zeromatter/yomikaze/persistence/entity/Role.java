@@ -69,4 +69,9 @@ public class Role {
         Role role = (Role) o;
         return id != null && Objects.equals(id, role.id);
     }
+
+    @Override
+    public int hashCode() {
+        return Long.hashCode(id.getId());
+    }
 }

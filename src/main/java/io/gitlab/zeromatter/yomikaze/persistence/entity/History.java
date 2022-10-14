@@ -25,4 +25,9 @@ public class History {
     @JoinColumn(name = "comic_id", nullable = false)
     private Comic comic;
 
+
+    @Override
+    public int hashCode() {
+        return Long.hashCode(id.getId());
+    }
 }
