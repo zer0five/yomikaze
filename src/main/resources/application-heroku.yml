@@ -1,10 +1,10 @@
 spring:
   redis:
     url: ${REDIS_URL}
-    client-type: jedis
+    client-type: lettuce
     jedis:
       pool:
-        max-active: 8
+        max-active: 10
         max-wait: -1ms
         max-idle: 8
         min-idle: 0
