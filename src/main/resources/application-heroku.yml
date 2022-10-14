@@ -15,8 +15,14 @@ spring:
     password: ${JDBC_DATABASE_PASSWORD}
   session:
     store-type: redis
+    redis:
+      flush-mode: immediate
+      namespace: yomikaze::session
   cache:
     type: redis
+    redis:
+      time-to-live: 1h
+      key-prefix: yomikaze::cache
 logging:
   level:
     web: debug
