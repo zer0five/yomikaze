@@ -3,37 +3,73 @@ package io.gitlab.zeromatter.yomikaze.persistence.repository;
 import io.gitlab.zeromatter.yomikaze.persistence.entity.Comic;
 import io.gitlab.zeromatter.yomikaze.persistence.entity.Genre;
 import io.gitlab.zeromatter.yomikaze.snowflake.Snowflake;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
-import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
-import java.util.Set;
+import java.util.Collection;
 
 @Repository
 public interface ComicRepository extends CrudRepository<Comic, Snowflake> {
+    Page<Comic> findAll(Pageable pageable);
 
     @Query(
-            "select c from #{#entityName} c " +
-                    "join c.genres g " +
-                    "where g in (:#{#genres}) " +
-                    "group by c.id " +
-                    "having count(c.id) = :#{#genres.size().longValue()}"
+            // @formatter:off
+            "select c " +
+            "from #{#entityName} c " +
+                "join c.genres g " +
+            "where g in (:#{#genres}) " +
+            "group by c " +
+            "having count(c) = :#{#genres.size.longValue}"
+            // @formatter:on
     )
-    Set<Comic> findByGenresContainsAll(@Param("genres") Set<Genre> genres);
+    Page<Comic> findByGenresContainingAll(Collection<Genre> genres, Pageable pageable);
 
     @Query(
-            "select c from #{#entityName} c " +
-                    "join c.genres g " +
-                    "where g not in (:#{#genres})"
+            // @formatter:off
+            "select c " +
+            "from #{#entityName} c " +
+            "where c not in (" +
+                "select c " +
+                "from #{#entityName} c " +
+                "join c.genres g " +
+                "where g in (:#{#genres}) " +
+                "group by c " +
+                "having count(c) = :#{#genres.size.longValue} " +
+            ")"
+            // @formatter:on
     )
-    Set<Comic> findByGenresContainsNone(@Param("genres") Set<Genre> genres);
+    Page<Comic> findByGenresContainingNone(Collection<Genre> genres, Pageable pageable);
 
-    default Set<Comic> findByGenresContainsAllAndNone(Set<Genre> whitelist, Set<Genre> blacklist) {
-        Set<Comic> all = findByGenresContainsAll(whitelist);
-        Set<Comic> none = findByGenresContainsAll(blacklist);
-        all.removeAll(none);
-        return all;
-    }
+    @Query(
+            // @formatter:off
+            "select c " +
+            "from #{#entityName} c " +
+            "where c not in (" +
+                "select c " +
+                "from #{#entityName} c " +
+                    "join c.genres g " +
+                "where g in (:#{#blacklist}) " +
+                "group by c " +
+                "having count(c) = :#{#blacklist.size.longValue} " +
+            ") " +
+            "and c in (" +
+                "select c " +
+                "from #{#entityName} c " +
+                    "join c.genres g " +
+                "where g in (:#{#whitelist}) " +
+                "group by c " +
+                "having count(c) = :#{#whitelist.size.longValue} " +
+            ") " +
+            "group by c "
+            // @formatter:on
+    )
+    Page<Comic> findByGenresContainingAllAndGenresContainingNone(Collection<Genre> whitelist, Collection<Genre> blacklist, Pageable pageable);
+
+    Page<Comic> findComicsByTitleIsContainingIgnoreCase(String title, Pageable pageable);
+
+    Page<Comic> findComicsByTitleIsStartingWithIgnoreCase(String title, Pageable pageable);
 
 }

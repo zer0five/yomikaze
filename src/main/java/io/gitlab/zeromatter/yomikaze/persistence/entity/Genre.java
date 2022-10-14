@@ -38,6 +38,9 @@ public class Genre {
     @ToString.Exclude
     private Account creator;
 
+    public Genre(String name) {
+        this.name = name;
+    }
 
     @Override
     public boolean equals(Object o) {

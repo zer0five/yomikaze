@@ -1,6 +1,8 @@
 package io.gitlab.zeromatter.yomikaze.persistence.entity;
 
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import io.gitlab.zeromatter.yomikaze.snowflake.Snowflake;
+import io.gitlab.zeromatter.yomikaze.snowflake.json.SnowflakeJsonSerializer;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
@@ -10,9 +12,9 @@ import org.hibernate.annotations.UpdateTimestamp;
 
 import javax.persistence.*;
 import java.time.Instant;
-import java.util.HashSet;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Objects;
-import java.util.Set;
 
 @Getter
 @Setter
@@ -24,6 +26,7 @@ public class Comic {
     @Id
     @GeneratedValue(generator = "comic-snowflake")
     @Column(name = "id", nullable = false)
+    @JsonSerialize(using = SnowflakeJsonSerializer.class)
     private Snowflake id;
 
     @Column(name = "title", nullable = false)
@@ -51,10 +54,12 @@ public class Comic {
             inverseJoinColumns = @JoinColumn(name = "genre_id")
     )
     @ToString.Exclude
-    private Set<Genre> genres = new HashSet<>();
+    private Collection<Genre> genres = new ArrayList<>();
 
-    @ManyToOne
-    @JoinColumn(name = "uploader", nullable = false)
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "uploader")
+    @ToString.Exclude
+    private Account uploader = null;
 
 
     @Override
