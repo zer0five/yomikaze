@@ -9,6 +9,8 @@ import org.springframework.context.annotation.Profile;
 import org.springframework.data.redis.cache.RedisCacheConfiguration;
 import org.springframework.data.redis.cache.RedisCacheManager;
 import org.springframework.data.redis.connection.RedisConnectionFactory;
+import org.springframework.data.redis.connection.RedisStandaloneConfiguration;
+import org.springframework.data.redis.connection.jedis.JedisConnectionFactory;
 import org.springframework.data.redis.repository.configuration.EnableRedisRepositories;
 
 import java.time.Duration;
@@ -34,5 +36,17 @@ public class RedisConfig {
                 .withInitialCacheConfigurations(cacheNamesConfigurationMap)
                 .build();
 
+    }
+
+    @Profile("heroku")
+    @Bean
+    public RedisConnectionFactory redisConnectionFactory() {
+        String redisUrl = System.getenv("REDIS_URL");
+        if (redisUrl == null) {
+            log.info("REDIS_URL is not set, not using redis");
+            return null;
+        }
+        log.info("REDIS_URL is set to " + redisUrl);
+        return new JedisConnectionFactory(new RedisStandaloneConfiguration(redisUrl));
     }
 }
