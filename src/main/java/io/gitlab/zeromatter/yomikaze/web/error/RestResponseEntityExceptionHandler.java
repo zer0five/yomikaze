@@ -25,18 +25,6 @@ public class RestResponseEntityExceptionHandler {
     private final MessageSource messages;
 
     @NotNull
-    @ExceptionHandler({Exception.class})
-    protected ResponseEntity<Object> handleExceptionInternal(Exception ex, HttpServletRequest request) {
-        log.error("500 Status Code", ex);
-        final GenericResponse bodyOfResponse = GenericResponse.builder()
-                .status(false)
-                .message(messages.getMessage("message.error", null, request.getLocale()))
-                .error(ex.getMessage())
-                .build();
-        return ResponseEntity.internalServerError().body(bodyOfResponse);
-    }
-
-    @NotNull
     @ExceptionHandler({BindException.class, MethodArgumentNotValidException.class})
     protected ResponseEntity<Object> handleValidationException(BindException ex, HttpServletRequest request) {
         Map<String, String> fieldError = new HashMap<>();

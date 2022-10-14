@@ -10,11 +10,8 @@ import org.springframework.security.config.annotation.authentication.configurati
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
-import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
-import org.springframework.security.core.userdetails.UserDetailsPasswordService;
 import org.springframework.security.core.userdetails.UserDetailsService;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 import org.springframework.session.web.http.CookieSerializer;
@@ -29,22 +26,12 @@ import org.springframework.session.web.http.DefaultCookieSerializer;
 public class SecurityConfig {
 
     private final UserDetailsService userDetailsService;
-    private final UserDetailsPasswordService userDetailsPasswordService;
-    private final PasswordEncoder passwordEncoder;
 
     @Bean
     public SecurityFilterChain configure(HttpSecurity http) throws Exception {
         return http
                 .userDetailsService(userDetailsService)
-                .anonymous(anonymous -> anonymous
-                        .principal("anonymous")
-                        .authorities("anonymous")
-                )
                 .authorizeHttpRequests(authorize -> authorize
-                        .antMatchers("/login", "/sign-in").hasAuthority("anonymous")
-                        .antMatchers("/register", "/sign-up").hasAuthority("anonymous")
-                        .antMatchers("/api/v1/**").authenticated()
-                        .antMatchers("/image/upload", "/image/upload/**").authenticated()
                         .anyRequest().permitAll()
                 )
                 .httpBasic(basic -> basic.realmName("yomikaze"))
@@ -57,6 +44,11 @@ public class SecurityConfig {
                         .sessionFixation().migrateSession()
                         .maximumSessions(1)
                 )
+                .formLogin(form -> form
+                        .loginPage("/login")
+                        .failureUrl("/login?failure")
+                        .defaultSuccessUrl("/")
+                )
                 .rememberMe(rememberMe -> rememberMe
                         .tokenValiditySeconds(60 * 3600 * 24 * 7)
                         .userDetailsService(userDetailsService)
@@ -67,7 +59,7 @@ public class SecurityConfig {
                         .deleteCookies("YOMIKAZE_SESSION", "token", "JSESSIONID")
                         .clearAuthentication(true)
                         .invalidateHttpSession(true)
-                        .logoutSuccessUrl("/")
+                        .logoutSuccessUrl("/login")
                 )
                 .exceptionHandling(exceptions -> exceptions
                                 .accessDeniedHandler((request, response, exception) -> {
@@ -76,8 +68,6 @@ public class SecurityConfig {
                                 })
 //                        .accessDeniedPage("/access-denied.html")
                 )
-                .csrf(AbstractHttpConfigurer::disable)
-                .cors(AbstractHttpConfigurer::disable)
                 .build();
     }
 

@@ -1,6 +1,10 @@
 package io.gitlab.zeromatter.yomikaze.persistence.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import io.gitlab.zeromatter.yomikaze.snowflake.Snowflake;
+import io.gitlab.zeromatter.yomikaze.snowflake.json.SnowflakeJsonSerializer;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
@@ -17,6 +21,7 @@ import java.util.Objects;
 @RequiredArgsConstructor
 @Entity(name = "role")
 @Table(name = "role")
+@JsonInclude(JsonInclude.Include.NON_EMPTY)
 public class Role {
     @Id
     @GeneratedValue(generator = "role-snowflake")
@@ -25,6 +30,7 @@ public class Role {
             nullable = false,
             updatable = false
     )
+    @JsonSerialize(using = SnowflakeJsonSerializer.class)
     private Snowflake id;
 
     @Column(
@@ -39,6 +45,7 @@ public class Role {
     private String description = "";
 
     @Column(name = "default_role", nullable = false)
+    @JsonIgnore
     private boolean defaultRole = false;
 
     @ManyToMany(fetch = FetchType.LAZY)

@@ -21,7 +21,7 @@ import java.util.Optional;
 public class AccountController {
     private final AccountRepository accountRepository;
 
-    @RequestMapping("/info/@{id}")
+    @RequestMapping({"/info/@{id}", "/info/{id}", "/info"})
     @ResponseBody
     public ResponseEntity<Account> getUser(@PathVariable(value = "id") Optional<String> oid, HttpServletRequest request) {
         Optional<Account> account;

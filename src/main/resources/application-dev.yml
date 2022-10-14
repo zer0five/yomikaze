@@ -1,8 +1,6 @@
 debug: false
 
 spring:
-  main:
-    allow-circular-references: true
   datasource:
     type: com.zaxxer.hikari.HikariDataSource
     url: jdbc:postgresql://127.0.0.1/yomikaze
@@ -33,7 +31,7 @@ yomikaze:
   security:
     password:
       encoder:
-        type: ArGON2
+        type: argon2
         argon2:
           parallelism: 1
           memory: 65536

@@ -2,8 +2,10 @@ package io.gitlab.zeromatter.yomikaze.persistence.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import io.gitlab.zeromatter.yomikaze.persistence.listener.AccountListener;
 import io.gitlab.zeromatter.yomikaze.snowflake.Snowflake;
+import io.gitlab.zeromatter.yomikaze.snowflake.json.SnowflakeJsonSerializer;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.Setter;
@@ -16,6 +18,7 @@ import javax.persistence.*;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Objects;
+import java.util.Set;
 
 @Getter
 @Setter
@@ -34,6 +37,7 @@ public class Account {
     )
     @GeneratedValue(generator = "account-snowflake")
     @Setter(AccessLevel.NONE)
+    @JsonSerialize(using = SnowflakeJsonSerializer.class)
     private Snowflake id;
 
     public void setId(long id) {
@@ -76,7 +80,11 @@ public class Account {
             )
     )
     @OnDelete(action = OnDeleteAction.CASCADE)
-    private Collection<Role> roles = new HashSet<>();
+    private Set<Role> roles = new HashSet<>();
+
+    public void setRoles(Collection<Role> roles) {
+        this.roles = new HashSet<>(roles);
+    }
 
     @Override
     public boolean equals(Object o) {

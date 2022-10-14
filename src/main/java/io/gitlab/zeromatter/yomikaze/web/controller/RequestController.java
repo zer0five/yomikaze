@@ -22,7 +22,7 @@ public class RequestController {
 
     @GetMapping("/request")
     public String request() {
-        return "request";
+        return "request-form";
 
     }
 
@@ -33,8 +33,7 @@ public class RequestController {
             request.setRequester(account);
             request.setMessage(message);
             requestRepository.save(request);
-
-            return ResponseEntity.ok(GenericResponse.builder().status(true).message("Thanh cong"));
+        return ResponseEntity.ok(GenericResponse.builder().message("Request sent!").build());
     }
 
 

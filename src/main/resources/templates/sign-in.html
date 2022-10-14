@@ -19,9 +19,10 @@
             </p>
         </div>
         <div class="card flex-shrink-0 w-full max-w-sm shadow-2xl bg-base-100">
-            <!--/*@thymesVar id="error" type="java.lang.String"*/-->
-            <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 card-title relative" role="alert"
-                 th:if="${param.failed != null}" th:utext="#{authentication.login.unknown}">
+            <div class="bg-red-100 rounded-box border border-red-500 text-red-700 px-4 py-3 card-title relative"
+                 role="alert"
+                 th:if="${param.failure != null}">
+                <span class="block sm:inline" th:utext="#{authentication.login.unknown}"></span>
             </div>
             <form @submit="submit = true" class="card-body" method="POST" th:action="@{/login}"
                   x-data="{submit: false}">
@@ -47,8 +48,12 @@
                     </label>
                 </div>
                 <div class="form-control">
-                    <button :disabled="submit" class="btn btn-accent" x-text="submit ? 'Signing in...' : 'Sign in'">
-                        Sign In
+                    <button :disabled="submit" class="btn btn-accent">
+                        <span x-show="!submit">Sign In</span>
+                        <span x-init="feather.replace()" x-show="submit">
+                            <i class="animate-spin inline-block mr-2" data-feather="loader"></i>
+                            Signing In...
+                        </span>
                     </button>
                 </div>
             </form>

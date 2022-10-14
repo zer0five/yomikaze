@@ -10,6 +10,6 @@ import java.util.Optional;
 @Repository
 public interface PermissionRepository extends JpaRepository<Permission, Snowflake> {
 
-    Optional<Permission> findByName(String name);
+    Optional<Permission> findByAuthority(String authority);
 
 }

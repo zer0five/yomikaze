@@ -1,38 +1,49 @@
 package io.gitlab.zeromatter.yomikaze.config;
 
+import io.gitlab.zeromatter.yomikaze.persistence.entity.Account;
 import io.gitlab.zeromatter.yomikaze.persistence.entity.Permission;
 import io.gitlab.zeromatter.yomikaze.persistence.entity.Role;
+import io.gitlab.zeromatter.yomikaze.persistence.repository.AccountRepository;
 import io.gitlab.zeromatter.yomikaze.persistence.repository.PermissionRepository;
 import io.gitlab.zeromatter.yomikaze.persistence.repository.RoleRepository;
 import lombok.AccessLevel;
-import lombok.Data;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.context.ApplicationListener;
 import org.springframework.context.event.ContextRefreshedEvent;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
+import java.util.Set;
 
-@Data
+@RequiredArgsConstructor
 @Component
 public class RolePermissionConfig implements ApplicationListener<ContextRefreshedEvent> {
 
     private final PermissionRepository permissionRepository;
     private final RoleRepository roleRepository;
+
+    private final AccountRepository accountRepository;
+
+    private final PasswordEncoder passwordEncoder;
+
+    @Getter
     @Setter(AccessLevel.PRIVATE)
     private boolean initialized = false;
 
     @Transactional
-    public Permission createPermissionIfNotFound(String name) {
+    public Permission createPermissionIfNotFound(String authority) {
         return permissionRepository
-                .findByName(name)
+                .findByAuthority(authority)
                 .orElseGet(() -> {
                     Permission permission = new Permission();
-                    permission.setName(name);
+                    permission.setAuthority(authority);
                     return permissionRepository.save(permission);
                 });
     }
@@ -59,11 +70,10 @@ public class RolePermissionConfig implements ApplicationListener<ContextRefreshe
     @Override
     @Transactional
     public void onApplicationEvent(@NotNull ContextRefreshedEvent event) {
-        if (isInitialized()) {
-            return;
-        }
-        String user = "User";
-        List<Permission> userPermissions = Arrays.asList(
+        if (isInitialized()) return;
+
+        String member = "Member";
+        List<Permission> memberPermissions = Arrays.asList(
                 createPermissionIfNotFound("comic.search.advanced"),
                 createPermissionIfNotFound("history.record.comic"),
                 createPermissionIfNotFound("history.record.chapter"),
@@ -79,7 +89,7 @@ public class RolePermissionConfig implements ApplicationListener<ContextRefreshe
                 createPermissionIfNotFound("request.cancel.all"),
                 createPermissionIfNotFound("report.create")
         );
-        createRoleIfNotFound(user, userPermissions, true);
+        Role memberRole = createRoleIfNotFound(member, memberPermissions, true);
 
         String uploader = "Uploader";
         List<Permission> uploaderPermissions = Arrays.asList(
@@ -92,7 +102,8 @@ public class RolePermissionConfig implements ApplicationListener<ContextRefreshe
                 createPermissionIfNotFound("page.create"),
                 createPermissionIfNotFound("page.delete")
         );
-        createRoleIfNotFound(uploader, uploaderPermissions);
+        Role uploaderRole = createRoleIfNotFound(uploader, uploaderPermissions);
+
         String admin = "Admin";
         List<Permission> adminPermissions = Arrays.asList(
                 createPermissionIfNotFound("request.approve"),
@@ -111,7 +122,19 @@ public class RolePermissionConfig implements ApplicationListener<ContextRefreshe
                 createPermissionIfNotFound("user.delete.all"),
                 createPermissionIfNotFound("user.update")
         );
-        createRoleIfNotFound(admin, adminPermissions);
+        Role adminRole = createRoleIfNotFound(admin, adminPermissions);
+        if (!accountRepository.findByUsername("admin").isPresent()) {
+            Account adminAccount = new Account();
+            adminAccount.setUsername("admin");
+            adminAccount.setEmail("admin@yomikaze.org");
+            adminAccount.setPassword(passwordEncoder.encode("admin"));
+            Set<Role> roles = adminAccount.getRoles();
+            roles.add(memberRole);
+            roles.add(uploaderRole);
+            roles.add(adminRole);
+            accountRepository.save(adminAccount);
+        }
+
         setInitialized(true);
     }
 }

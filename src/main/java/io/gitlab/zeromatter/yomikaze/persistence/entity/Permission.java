@@ -1,6 +1,9 @@
 package io.gitlab.zeromatter.yomikaze.persistence.entity;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import io.gitlab.zeromatter.yomikaze.snowflake.Snowflake;
+import io.gitlab.zeromatter.yomikaze.snowflake.json.SnowflakeJsonSerializer;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
@@ -15,17 +18,19 @@ import java.util.Objects;
 @ToString
 @Entity(name = "permission")
 @Table(name = "permission")
+@JsonInclude(JsonInclude.Include.NON_EMPTY)
 public class Permission implements GrantedAuthority {
     @Id
-    @Column(nullable = false, updatable = false, insertable = false)
+    @Column(nullable = false, updatable = false)
     @GeneratedValue(generator = "permission-snowflake")
+    @JsonSerialize(using = SnowflakeJsonSerializer.class)
     private Snowflake id;
 
-    @Column(name = "name", nullable = false, unique = true, updatable = false)
-    private String name;
+    @Column(name = "authority", nullable = false, unique = true, updatable = false)
+    private String authority;
 
-    @Column(name = "description", unique = true)
-    private String description;
+    @Column(name = "description", length = 1023)
+    private String description = "";
 
     @Override
     public boolean equals(Object o) {
@@ -38,10 +43,5 @@ public class Permission implements GrantedAuthority {
     @Override
     public int hashCode() {
         return getClass().hashCode();
-    }
-
-    @Override
-    public String getAuthority() {
-        return getName();
     }
 }
