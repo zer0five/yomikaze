@@ -20,7 +20,7 @@ import java.util.stream.StreamSupport;
 import static java.util.Collections.singletonList;
 import static org.junit.jupiter.api.Assertions.*;
 
-@SpringBootTest(properties = "spring.profiles.active=dev")
+@SpringBootTest
 class ComicRepositoryTest {
 
     static Map<String, Genre> genresMap;

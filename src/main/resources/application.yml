@@ -1,10 +1,21 @@
 spring:
+  profiles:
+    active: default,${SPRING_PROFILE:dev}
   jpa:
     open-in-view: false
     properties:
       hibernate:
         enable_lazy_load_no_trans: true
-  session:
-    jdbc:
-      initialize-schema: always
-    store-type: jdbc
+    hibernate:
+      ddl-auto: update
+    show-sql: false
+  servlet:
+    multipart:
+      max-file-size: ${MAX_UPLOAD_SIZE:8MB}
+      max-request-size: ${MAX_REQUEST_SIZE:128MB}
+
+logging:
+  level:
+    web: info
+    sql: info
+    root: info

@@ -7,34 +7,12 @@ spring:
     username: yomikaze
     password: yomikaze
   jpa:
-    open-in-view: false
-    properties:
-      hibernate:
-        enable_lazy_load_no_trans: true
     hibernate:
       ddl-auto: create
-    show-sql: false
   session:
     store-type: none
-  servlet:
-    multipart:
-      max-file-size: 8MB
-      max-request-size: 128MB
 
 logging:
   level:
     web: debug
     sql: debug
-    root: info
-
-yomikaze:
-  security:
-    password:
-      encoder:
-        type: argon2
-        argon2:
-          parallelism: 1
-          memory: 65536
-          iterations: 3
-          saltLength: 16
-          hashLength: 32
