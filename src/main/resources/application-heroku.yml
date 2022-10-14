@@ -23,6 +23,10 @@ spring:
     redis:
       time-to-live: 1h
       key-prefix: yomikaze::cache
+  data:
+    redis:
+      repositories:
+        enabled: false
 logging:
   level:
     web: debug
