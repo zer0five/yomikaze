@@ -7,8 +7,11 @@ import io.gitlab.zeromatter.yomikaze.persistence.repository.DBFileRepository;
 import io.gitlab.zeromatter.yomikaze.service.DatabaseFileStorageService;
 import io.gitlab.zeromatter.yomikaze.snowflake.Snowflake;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PostAuthorize;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Controller;
@@ -21,8 +24,11 @@ import java.text.MessageFormat;
 import java.util.List;
 import java.util.Optional;
 
+@Slf4j
 @Controller
 @RequiredArgsConstructor
+@PostAuthorize("hasAuthority('page.create')")
+@PreAuthorize("authentication != null && isAuthenticated()")
 public class ImageController {
 
     private final DatabaseFileStorageService fileStorageService;
@@ -30,11 +36,7 @@ public class ImageController {
     private final AccountRepository accountRepository;
 
     @GetMapping("/image/upload")
-    public String upload(Authentication auth) {
-        System.out.println(auth.getPrincipal());
-        System.out.println(auth.getAuthorities());
-        System.out.println(auth.getCredentials());
-        System.out.println(auth.getDetails());
+    public String upload() {
         return "upload";
     }
 
@@ -46,7 +48,6 @@ public class ImageController {
             return model;
         }
         Account account = accountRepository.findByUsername(auth.getName()).orElseThrow(() -> new UsernameNotFoundException("User not found"));
-        int i = 0;
         for (MultipartFile file : files) {
             if (file.isEmpty()) {
                 model.addObject("failure", true);
@@ -54,7 +55,7 @@ public class ImageController {
             }
             Snowflake id = fileStorageService.storeFile(file, account);
             DBFile dbFile = dbFileRepository.findById(id).orElseThrow(() -> new UsernameNotFoundException("File not found"));
-            System.out.println(dbFile);
+            log.info(MessageFormat.format("Uploaded file {0} with id {1}", dbFile.getName(), dbFile.getId()));
         }
         model.addObject("success", true);
         return model;
@@ -62,20 +63,25 @@ public class ImageController {
 
     @GetMapping("/image/{id}")
     public String getImage(@PathVariable("id") String id) {
-        return "redirect:/image/" + id + "/" + dbFileRepository.findById(Snowflake.of(id)).map(DBFile::getName).orElse(null);
+        Snowflake snowflake = Snowflake.of(id);
+        Optional<DBFile> dbFile = dbFileRepository.findById(snowflake);
+        if (!dbFile.isPresent()) {
+            throw new EntityNotFoundException("File not found");
+        }
+        return MessageFormat.format("redirect:/image/{0}/{1}", id, dbFile.get().getName());
     }
 
     @GetMapping("/image/{id}/{name}")
     @ResponseBody
-    public ResponseEntity<?> getImage(@PathVariable("id") String id, @PathVariable("name") String name) {
+    public ResponseEntity<Object> getImage(@PathVariable("id") String id, @PathVariable("name") String name) {
         return getFile(id, name);
     }
 
-    private ResponseEntity<?> getFile(String id, String name) {
+    private ResponseEntity<Object> getFile(String id, String name) {
         return getFile(null, id, name);
     }
 
-    private ResponseEntity<?> getFile(String owner, String id, String name) {
+    private ResponseEntity<Object> getFile(String owner, String id, String name) {
         Snowflake snowflake = Snowflake.of(id);
         Optional<DBFile> file = dbFileRepository.findById(snowflake);
         if (!file.isPresent()) {
@@ -101,13 +107,14 @@ public class ImageController {
 
     @GetMapping("/attachment/{owner}/{id}/{name}")
     @ResponseBody
-    public ResponseEntity<?> getAttachment(@PathVariable("owner") String owner, @PathVariable("id") String id, @PathVariable("name") String name) {
+    public ResponseEntity<Object> getAttachment(@PathVariable("owner") String owner, @PathVariable("id") String id, @PathVariable("name") String name) {
         return getFile(owner, id, name);
     }
 
     @GetMapping("/attachment/{id}")
     public String getAttachment(@PathVariable("id") String id) {
-        DBFile file = dbFileRepository.findById(Snowflake.of(id)).orElseThrow(() -> new EntityNotFoundException("File not found"));
+        Snowflake snowflake = Snowflake.of(id);
+        DBFile file = dbFileRepository.findById(snowflake).orElseThrow(() -> new EntityNotFoundException("File not found"));
         Snowflake owner = file.getOwner().getId();
         return MessageFormat.format("redirect:/attachment/{0}/{1}/{2}", owner, id, file.getName());
     }
