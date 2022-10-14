@@ -13,6 +13,10 @@ spring:
     multipart:
       max-file-size: ${MAX_UPLOAD_SIZE:8MB}
       max-request-size: ${MAX_REQUEST_SIZE:128MB}
+  data:
+    redis:
+      repositories:
+        enabled: false
 
 logging:
   level:
