@@ -26,8 +26,9 @@ public class AccountListener {
     @PrePersist
     @Transactional
     public void onCreate(Account account) {
-        Collection<Role> roles = roleRepository.findAllByDefaultRoleIsTrue();
-        account.setRoles(roles);
-        log.info("account to create with default roles: {} {}", account, roles);
+        if (account.getRoles() == null || account.getRoles().isEmpty()) {
+            Collection<Role> defaultRoles = roleRepository.findAllByDefaultRoleIsTrue();
+            account.setRoles(defaultRoles);
+        }
     }
 }
