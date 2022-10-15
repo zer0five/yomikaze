@@ -4,8 +4,8 @@ spring:
   datasource:
     type: com.zaxxer.hikari.HikariDataSource
     url: jdbc:postgresql://127.0.0.1/yomikaze
-    username: yomikaze
-    password: yomikaze
+    username: postgres
+    password: 5702
   jpa:
     hibernate:
       ddl-auto: create

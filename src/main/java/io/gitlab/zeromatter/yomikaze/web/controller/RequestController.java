@@ -4,36 +4,67 @@ import io.gitlab.zeromatter.yomikaze.persistence.entity.Account;
 import io.gitlab.zeromatter.yomikaze.persistence.entity.Request;
 import io.gitlab.zeromatter.yomikaze.persistence.repository.AccountRepository;
 import io.gitlab.zeromatter.yomikaze.persistence.repository.RequestRepository;
-import io.gitlab.zeromatter.yomikaze.web.dto.GenericResponse;
+import io.gitlab.zeromatter.yomikaze.snowflake.Snowflake;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.ResponseEntity;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.security.access.prepost.PostAuthorize;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.servlet.ModelAndView;
+
+import javax.persistence.EntityNotFoundException;
+import java.util.Optional;
 
 @Controller
 @RequiredArgsConstructor
+@RequestMapping("/request")
 public class RequestController {
     private final AccountRepository accountRepository;
     private final RequestRepository requestRepository;
 
-
-    @GetMapping("/request")
-    public String request() {
-        return "request-form";
+    @PreAuthorize("authentication != null && isAuthenticated()")
+    @PostAuthorize("hasAuthority('request.create.uploader')")
+    @GetMapping({"","/"})
+    public ModelAndView request(ModelAndView modelAndView, Authentication authentication, Optional<Integer> page, Optional<Integer> size) {
+        Account account = accountRepository.findByUsername(authentication.getName()).orElseThrow(() -> new UsernameNotFoundException("User not found!"));
+        modelAndView.setViewName("request-page");
+        Pageable pageable = PageRequest.of(page.orElse(1) - 1, 5);
+        Page<Request> requests = requestRepository.findAllByRequester(account, pageable);
+        modelAndView.addObject("requests", requests);
+        return modelAndView;
 
     }
+    @PreAuthorize("authentication != null && isAuthenticated()")
+    @PostAuthorize("hasAuthority('request.create.uploader')")
+    @PostMapping({"","/"})
+    public String request(String message, Authentication authentication) {
+        Account account = accountRepository.findByUsername(authentication.getName()).orElseThrow(() -> new UsernameNotFoundException("User not found!"));
+        Request request = new Request();
+        request.setRequester(account);
+        request.setMessage(message);
+        requestRepository.save(request);
 
-    @PostMapping("/request")
-    public ResponseEntity<Object> request(String message, Authentication authentication) {
-            Account account = accountRepository.findByUsername(authentication.getName()).orElseThrow(()-> new UsernameNotFoundException("User not found!")) ;
-            Request request = new Request();
-            request.setRequester(account);
-            request.setMessage(message);
-            requestRepository.save(request);
-        return ResponseEntity.ok(GenericResponse.builder().message("Request sent!").build());
+        return "redirect:/request";
+    }
+    @PreAuthorize("authentication != null && isAuthenticated()")
+    @PostAuthorize("hasAuthority('request.cancel')")
+    @GetMapping("/delete/{id}")
+    public String delete(@PathVariable("id") String id, Authentication authentication) {
+        Account account = accountRepository.findByUsername(authentication.getName()).orElseThrow(() -> new UsernameNotFoundException("User not found!"));
+        Request request = requestRepository.findById(Snowflake.of(id)).orElseThrow(() -> new EntityNotFoundException("Request not found!"));
+
+        if (request.getRequester().equals(account)) {
+            requestRepository.delete(request);
+        }
+        return "redirect:/request";
     }
 
 
