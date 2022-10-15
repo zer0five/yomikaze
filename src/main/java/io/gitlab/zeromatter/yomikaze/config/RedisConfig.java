@@ -17,17 +17,19 @@ import org.springframework.session.data.redis.config.annotation.web.http.EnableR
 public class RedisConfig {
 
     @Bean
+    @Profile("heroku")
+    public static ConfigureRedisAction configureRedisAction() {
+        return ConfigureRedisAction.NO_OP;
+    }
+
+    @Bean
+    @Profile("heroku")
     public LettuceClientConfigurationBuilderCustomizer lettuceClientConfigurationBuilderCustomizer() {
         return clientConfigurationBuilder -> {
             if (clientConfigurationBuilder.build().isUseSsl()) {
                 clientConfigurationBuilder.useSsl().disablePeerVerification();
             }
         };
-    }
-
-    @Bean
-    public static ConfigureRedisAction configureRedisAction() {
-        return ConfigureRedisAction.NO_OP;
     }
 
 }
