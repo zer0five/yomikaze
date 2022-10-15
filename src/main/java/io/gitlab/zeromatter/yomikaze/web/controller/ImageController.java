@@ -33,8 +33,8 @@ public class ImageController {
     private final DBFileRepository dbFileRepository;
     private final AccountRepository accountRepository;
 
-    @PostAuthorize("hasAuthority('page.create')")
     @PreAuthorize("authentication != null && isAuthenticated()")
+    @PostAuthorize("hasAuthority('page.create')")
     @GetMapping("/image/upload")
     public String upload() {
         return "upload";
