@@ -22,8 +22,8 @@ import java.util.Optional;
 public class JpaPersistenceConfig {
     @Bean
     @Primary
-    @Profile("heroku")
-    public DataSource primaryDataSource() throws URISyntaxException {
+    @Profile("heroku-manual-config")
+    public DataSource herokuDataSource() throws URISyntaxException {
         log.info("Using heroku datasource");
         String jdbcUrl = System.getenv("JDBC_DATABASE_URL");
         if (jdbcUrl != null) {
