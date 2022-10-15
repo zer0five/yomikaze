@@ -86,7 +86,7 @@ public class ImageController {
     private ResponseEntity<Object> getFile(String owner, String id, String name) {
         Snowflake snowflake = Snowflake.of(id);
         Snowflake ownerSnowflake = Snowflake.of(owner);
-        Optional<DBFile> file = dbFileRepository.findByIdAndAccountIdAndName(snowflake, ownerSnowflake, name);
+        Optional<DBFile> file = dbFileRepository.findByIdAndOwner_IdAndNameLikeIgnoreCase(snowflake, ownerSnowflake, name);
         if (!file.isPresent()) {
             return ResponseEntity.notFound().build();
         }

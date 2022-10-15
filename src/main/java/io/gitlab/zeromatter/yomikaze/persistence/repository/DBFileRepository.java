@@ -10,6 +10,6 @@ import java.util.Optional;
 @Repository
 public interface DBFileRepository extends CrudRepository<DBFile, Snowflake> {
 
-    Optional<DBFile> findByIdAndAccountIdAndName(Snowflake id, Snowflake accountId, String name);
+    Optional<DBFile> findByIdAndOwner_IdAndNameLikeIgnoreCase(Snowflake id, Snowflake owner, String name);
 
 }
