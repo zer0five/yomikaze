@@ -1,4 +1,4 @@
-package io.gitlab.zeromatter.yomikaze;
+package io.gitlab.zeromatter.yomikaze.config;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.autoconfigure.data.redis.LettuceClientConfigurationBuilderCustomizer;
