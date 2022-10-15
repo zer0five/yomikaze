@@ -27,19 +27,21 @@ import java.util.Optional;
 @Slf4j
 @Controller
 @RequiredArgsConstructor
-@PostAuthorize("hasAuthority('page.create')")
-@PreAuthorize("authentication != null && isAuthenticated()")
 public class ImageController {
 
     private final DatabaseFileStorageService fileStorageService;
     private final DBFileRepository dbFileRepository;
     private final AccountRepository accountRepository;
 
+    @PostAuthorize("hasAuthority('page.create')")
+    @PreAuthorize("authentication != null && isAuthenticated()")
     @GetMapping("/image/upload")
     public String upload() {
         return "upload";
     }
 
+    @PostAuthorize("hasAuthority('page.create')")
+    @PreAuthorize("authentication != null && isAuthenticated()")
     @PostMapping("/image/upload")
     public ModelAndView upload(@RequestParam("files") List<MultipartFile> files, Authentication auth, ModelAndView model) {
         model.setViewName("upload");
@@ -83,25 +85,18 @@ public class ImageController {
 
     private ResponseEntity<Object> getFile(String owner, String id, String name) {
         Snowflake snowflake = Snowflake.of(id);
-        Optional<DBFile> file = dbFileRepository.findById(snowflake);
+        Snowflake ownerSnowflake = Snowflake.of(owner);
+        Optional<DBFile> file = dbFileRepository.findByIdAndAccountIdAndName(snowflake, ownerSnowflake, name);
         if (!file.isPresent()) {
             return ResponseEntity.notFound().build();
         }
         DBFile actualFile = file.get();
-        if (name != null && !name.equals(actualFile.getName())) {
-            return ResponseEntity.notFound().build();
-        }
-        if (owner != null) {
-            Snowflake ownerSnowflake = Snowflake.of(owner);
-            if (!actualFile.getOwner().getId().equals(ownerSnowflake)) {
-                return ResponseEntity.notFound().build();
-            }
-        }
         if (actualFile.getData() == null || actualFile.getData().length == 0) {
             return ResponseEntity.noContent().build();
         }
+        MediaType mediaType = MediaType.parseMediaType(actualFile.getType());
         return ResponseEntity.ok()
-                .contentType(MediaType.parseMediaType(file.get().getType()))
+                .contentType(mediaType)
                 .body(actualFile.getData());
     }
 

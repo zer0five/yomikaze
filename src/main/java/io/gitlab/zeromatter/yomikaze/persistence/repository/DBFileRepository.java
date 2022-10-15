@@ -5,7 +5,11 @@ import io.gitlab.zeromatter.yomikaze.snowflake.Snowflake;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.stereotype.Repository;
 
+import java.util.Optional;
+
 @Repository
 public interface DBFileRepository extends CrudRepository<DBFile, Snowflake> {
+
+    Optional<DBFile> findByIdAndAccountIdAndName(Snowflake id, Snowflake accountId, String name);
 
 }
