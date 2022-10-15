@@ -17,7 +17,9 @@ spring:
     redis:
       repositories:
         enabled: false
-
+  datasource:
+    hikari:
+      auto-commit: false
 logging:
   level:
     web: info
