@@ -25,8 +25,8 @@ public class Request {
     private Snowflake id;
     @Column(name = "message", nullable = false)
     private String message;
-    @Column(name = "is_approved", nullable = false)
-    private boolean isApproved = false;
+    @Column(name = "is_approved")
+    private Boolean approved;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(

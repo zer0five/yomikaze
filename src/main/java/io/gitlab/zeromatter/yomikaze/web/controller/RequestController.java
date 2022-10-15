@@ -19,7 +19,6 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.ModelAndView;
-
 import javax.persistence.EntityNotFoundException;
 import java.util.Optional;
 
@@ -29,7 +28,7 @@ import java.util.Optional;
 public class RequestController {
     private final AccountRepository accountRepository;
     private final RequestRepository requestRepository;
-
+    //for user
     @PreAuthorize("authentication != null && isAuthenticated()")
     @PostAuthorize("hasAuthority('request.create.uploader')")
     @GetMapping({"","/"})
@@ -66,6 +65,22 @@ public class RequestController {
         }
         return "redirect:/request";
     }
+
+    //for admin
+    @PreAuthorize("authentication != null && isAuthenticated()")
+    @PostAuthorize("hasAuthority('request.create.uploader')")
+    @GetMapping({"/admin"})
+    public ModelAndView requestAdmin(ModelAndView modelAndView, Authentication authentication, Optional<Integer> page, Optional<Integer> size) {
+
+        modelAndView.setViewName("request-page-admin");
+        Pageable pageable = PageRequest.of(page.orElse(1) - 1, 5);
+        Page<Request> requests = requestRepository.findAllByApprovedIsNull(pageable);
+        modelAndView.addObject("requests", requests);
+        return modelAndView;
+
+    }
+
+
 
 
 }
