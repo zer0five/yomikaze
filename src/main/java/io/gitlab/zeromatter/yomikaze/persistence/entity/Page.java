@@ -34,11 +34,11 @@ public class Page {
         if (this == o) return true;
         if (o == null || Hibernate.getClass(this) != Hibernate.getClass(o)) return false;
         Page page = (Page) o;
-        return id != null && Objects.equals(id, page.id);
+        return Objects.equals(id, page.id);
     }
 
     @Override
     public int hashCode() {
-        return id.hashCode();
+        return Objects.hashCode(id);
     }
 }

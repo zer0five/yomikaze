@@ -50,11 +50,11 @@ public class Request {
         if (this == o) return true;
         if (o == null || Hibernate.getClass(this) != Hibernate.getClass(o)) return false;
         Request request = (Request) o;
-        return id != null && Objects.equals(id, request.id);
+        return Objects.equals(id, request.id);
     }
 
     @Override
     public int hashCode() {
-        return Long.hashCode(id.getId());
+        return Objects.hashCode(id);
     }
 }

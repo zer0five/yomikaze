@@ -42,11 +42,11 @@ public class Chapter {
         if (this == o) return true;
         if (o == null || Hibernate.getClass(this) != Hibernate.getClass(o)) return false;
         Chapter chapter = (Chapter) o;
-        return id != null && Objects.equals(id, chapter.id);
+        return Objects.equals(id, chapter.id);
     }
 
     @Override
     public int hashCode() {
-        return id.hashCode();
+        return Objects.hashCode(id);
     }
 }

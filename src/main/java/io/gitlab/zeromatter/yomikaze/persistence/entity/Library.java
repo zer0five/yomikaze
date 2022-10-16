@@ -55,11 +55,11 @@ public class Library {
         if (this == o) return true;
         if (o == null || Hibernate.getClass(this) != Hibernate.getClass(o)) return false;
         Library library = (Library) o;
-        return id != null && Objects.equals(id, library.id);
+        return Objects.equals(id, library.id);
     }
 
     @Override
     public int hashCode() {
-        return Long.hashCode(id.getId());
+        return Objects.hashCode(id);
     }
 }

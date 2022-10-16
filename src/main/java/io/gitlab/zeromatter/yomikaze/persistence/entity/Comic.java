@@ -21,7 +21,7 @@ import java.util.Objects;
 @Setter
 @ToString
 @RequiredArgsConstructor
-@Entity
+@Entity(name = "comic")
 @Table(name = "comic")
 public class Comic {
     @Id
@@ -80,6 +80,6 @@ public class Comic {
 
     @Override
     public int hashCode() {
-        return Long.hashCode(id.getId());
+        return Objects.hashCode(id);
     }
 }
