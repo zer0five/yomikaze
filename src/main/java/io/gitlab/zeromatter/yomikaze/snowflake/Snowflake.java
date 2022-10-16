@@ -83,11 +83,30 @@ public class Snowflake implements Serializable {
         return Long.hashCode(id);
     }
 
+    public static Builder builder() {
+        return new Builder();
+    }
+
     public static class Builder {
         private long timestamp;
         private long dataCenterId;
         private long workerId;
         private long sequence;
+
+        private Builder() {
+            timestamp = 0L;
+            dataCenterId = 0L;
+            workerId = 0L;
+            sequence = 0L;
+        }
+
+        public Builder fromSnowflake(Snowflake snowflake) {
+            this.timestamp = snowflake.getTimestamp().getTime();
+            this.dataCenterId = snowflake.getDataCenterId();
+            this.workerId = snowflake.getWorkerId();
+            this.sequence = snowflake.getSequence();
+            return this;
+        }
 
         public Builder timestamp(long timestamp) {
             this.timestamp = timestamp;

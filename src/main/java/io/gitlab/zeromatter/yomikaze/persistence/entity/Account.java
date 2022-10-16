@@ -15,10 +15,7 @@ import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
 
 import javax.persistence.*;
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.Objects;
-import java.util.Set;
+import java.util.*;
 
 @Getter
 @Setter
@@ -30,7 +27,7 @@ import java.util.Set;
 public class Account {
 
     @Id
-    @Column(
+    @JoinColumn(
             name = "id",
             nullable = false,
             updatable = false
@@ -82,8 +79,40 @@ public class Account {
     @OnDelete(action = OnDeleteAction.CASCADE)
     private Set<Role> roles = new HashSet<>();
 
+    @PrimaryKeyJoinColumn
+    @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
+    private Profile profile = new Profile(this);
+
     public void setRoles(Collection<Role> roles) {
         this.roles = new HashSet<>(roles);
+    }
+
+    public void addRole(Role role) {
+        this.roles.add(role);
+    }
+
+    public void addRoles(Role... roles) {
+        this.roles.addAll(Arrays.asList(roles));
+    }
+
+    public void addRoles(Collection<Role> roles) {
+        this.roles.addAll(roles);
+    }
+
+    public void removeRole(Role role) {
+        this.roles.remove(role);
+    }
+
+    public void removeRoles(Role... roles) {
+        Arrays.asList(roles).forEach(this.roles::remove);
+    }
+
+    public void removeRoles(Collection<Role> roles) {
+        this.roles.removeAll(roles);
+    }
+
+    public Collection<Role> getRoles() {
+        return Collections.unmodifiableSet(roles);
     }
 
     @Override
