@@ -1,6 +1,7 @@
 package io.gitlab.zeromatter.yomikaze.persistence.listener;
 
 import io.gitlab.zeromatter.yomikaze.persistence.entity.Account;
+import io.gitlab.zeromatter.yomikaze.persistence.entity.Profile;
 import io.gitlab.zeromatter.yomikaze.persistence.entity.Role;
 import io.gitlab.zeromatter.yomikaze.persistence.repository.RoleRepository;
 import lombok.RequiredArgsConstructor;
@@ -29,6 +30,10 @@ public class AccountListener {
         if (account.getRoles() == null || account.getRoles().isEmpty()) {
             Collection<Role> defaultRoles = roleRepository.findAllByDefaultRoleIsTrue();
             account.setRoles(defaultRoles);
+        }
+        Profile profile = account.getProfile();
+        if (profile.getDisplayName() == null || profile.getDisplayName().isEmpty()) {
+            profile.setDisplayName(account.getUsername());
         }
     }
 }

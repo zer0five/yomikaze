@@ -1,8 +1,8 @@
 package io.gitlab.zeromatter.yomikaze.service;
 
 import io.gitlab.zeromatter.yomikaze.persistence.entity.Account;
-import io.gitlab.zeromatter.yomikaze.persistence.entity.DBFile;
-import io.gitlab.zeromatter.yomikaze.persistence.repository.DBFileRepository;
+import io.gitlab.zeromatter.yomikaze.persistence.entity.Image;
+import io.gitlab.zeromatter.yomikaze.persistence.repository.ImageRepository;
 import io.gitlab.zeromatter.yomikaze.snowflake.Snowflake;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.Validate;
@@ -18,9 +18,9 @@ import java.util.Optional;
 
 @RequiredArgsConstructor
 @Service
-public class DatabaseFileStorageService implements FileStorageService<Snowflake, DBFile, Account> {
+public class DatabaseFileStorageService implements FileStorageService<Snowflake, Image, Account> {
 
-    private final DBFileRepository dbFileRepository;
+    private final ImageRepository imageRepository;
 
     @Override
     public Snowflake storeFile(MultipartFile file, Account owner) {
@@ -50,24 +50,24 @@ public class DatabaseFileStorageService implements FileStorageService<Snowflake,
         } catch (IOException e) {
             throw new IllegalStateException(e);
         }
-        DBFile dbFile = new DBFile();
-        dbFile.setName(name);
-        dbFile.setOwner(owner);
-        dbFile.setType("image/webp");
-        dbFile.setData(data);
-        dbFileRepository.save(dbFile);
-        return dbFile.getId();
+        Image image = new Image();
+        image.setName(name);
+        image.setOwner(owner);
+        image.setType("image/webp");
+        image.setData(data);
+        imageRepository.save(image);
+        return image.getId();
     }
 
     @Override
-    public DBFile loadFile(Snowflake id, Account owner) {
-        return dbFileRepository.findById(id).orElse(null);
+    public Image loadFile(Snowflake id, Account owner) {
+        return imageRepository.findById(id).orElse(null);
     }
 
     @Override
     public boolean deleteFile(Snowflake id) {
-        if (dbFileRepository.existsById(id)) {
-            dbFileRepository.deleteById(id);
+        if (imageRepository.existsById(id)) {
+            imageRepository.deleteById(id);
             return true;
         }
         return false;

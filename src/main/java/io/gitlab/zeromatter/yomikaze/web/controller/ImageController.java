@@ -1,9 +1,9 @@
 package io.gitlab.zeromatter.yomikaze.web.controller;
 
 import io.gitlab.zeromatter.yomikaze.persistence.entity.Account;
-import io.gitlab.zeromatter.yomikaze.persistence.entity.DBFile;
+import io.gitlab.zeromatter.yomikaze.persistence.entity.Image;
 import io.gitlab.zeromatter.yomikaze.persistence.repository.AccountRepository;
-import io.gitlab.zeromatter.yomikaze.persistence.repository.DBFileRepository;
+import io.gitlab.zeromatter.yomikaze.persistence.repository.ImageRepository;
 import io.gitlab.zeromatter.yomikaze.service.DatabaseFileStorageService;
 import io.gitlab.zeromatter.yomikaze.snowflake.Snowflake;
 import lombok.RequiredArgsConstructor;
@@ -30,7 +30,7 @@ import java.util.Optional;
 public class ImageController {
 
     private final DatabaseFileStorageService fileStorageService;
-    private final DBFileRepository dbFileRepository;
+    private final ImageRepository imageRepository;
     private final AccountRepository accountRepository;
 
     @PreAuthorize("authentication != null && isAuthenticated()")
@@ -56,8 +56,8 @@ public class ImageController {
                 return model;
             }
             Snowflake id = fileStorageService.storeFile(file, account);
-            DBFile dbFile = dbFileRepository.findById(id).orElseThrow(() -> new UsernameNotFoundException("File not found"));
-            log.info(MessageFormat.format("Uploaded file {0} with id {1}", dbFile.getName(), dbFile.getId()));
+            Image image = imageRepository.findById(id).orElseThrow(() -> new UsernameNotFoundException("File not found"));
+            log.info(MessageFormat.format("Uploaded file {0} with id {1}", image.getName(), image.getId()));
         }
         model.addObject("success", true);
         return model;
@@ -66,7 +66,7 @@ public class ImageController {
     @GetMapping("/image/{id}")
     public String getImage(@PathVariable("id") String id) {
         Snowflake snowflake = Snowflake.of(id);
-        Optional<DBFile> dbFile = dbFileRepository.findById(snowflake);
+        Optional<Image> dbFile = imageRepository.findById(snowflake);
         if (!dbFile.isPresent()) {
             throw new EntityNotFoundException("File not found");
         }
@@ -86,11 +86,11 @@ public class ImageController {
     private ResponseEntity<Object> getFile(String owner, String id, String name) {
         Snowflake snowflake = Snowflake.of(id);
         Snowflake ownerSnowflake = Snowflake.of(owner);
-        Optional<DBFile> file = dbFileRepository.findByIdAndOwner_IdAndNameLikeIgnoreCase(snowflake, ownerSnowflake, name);
+        Optional<Image> file = imageRepository.findByIdAndOwner_IdAndNameLikeIgnoreCase(snowflake, ownerSnowflake, name);
         if (!file.isPresent()) {
             return ResponseEntity.notFound().build();
         }
-        DBFile actualFile = file.get();
+        Image actualFile = file.get();
         if (actualFile.getData() == null || actualFile.getData().length == 0) {
             return ResponseEntity.noContent().build();
         }
@@ -109,7 +109,7 @@ public class ImageController {
     @GetMapping("/attachment/{id}")
     public String getAttachment(@PathVariable("id") String id) {
         Snowflake snowflake = Snowflake.of(id);
-        DBFile file = dbFileRepository.findById(snowflake).orElseThrow(() -> new EntityNotFoundException("File not found"));
+        Image file = imageRepository.findById(snowflake).orElseThrow(() -> new EntityNotFoundException("File not found"));
         Snowflake owner = file.getOwner().getId();
         return MessageFormat.format("redirect:/attachment/{0}/{1}/{2}", owner, id, file.getName());
     }

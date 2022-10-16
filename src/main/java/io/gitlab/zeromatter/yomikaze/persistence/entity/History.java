@@ -17,13 +17,13 @@ public class History {
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @OnDelete(action = OnDeleteAction.CASCADE)
-    @JoinColumn(name = "account_id", nullable = false)
+    @JoinColumn(name = "account", nullable = false)
     private Account account;
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @OnDelete(action = OnDeleteAction.CASCADE)
-    @JoinColumn(name = "comic_id", nullable = false)
-    private Comic comic;
+    @JoinColumn(name = "chapter", nullable = false)
+    private Chapter chapter;
 
 
     @Override

@@ -17,10 +17,10 @@ import java.util.Objects;
 @Setter
 @ToString
 @RequiredArgsConstructor
-public class DBFile {
+public class Image {
 
     @Id
-    @GeneratedValue(generator = "file-snowflake")
+    @GeneratedValue(generator = "image-snowflake")
     @Column(name = "id", nullable = false, updatable = false)
     private Snowflake id;
 
@@ -46,12 +46,12 @@ public class DBFile {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || Hibernate.getClass(this) != Hibernate.getClass(o)) return false;
-        DBFile dbFile = (DBFile) o;
-        return id != null && Objects.equals(id, dbFile.id);
+        Image image = (Image) o;
+        return id != null && Objects.equals(id, image.id);
     }
 
     @Override
     public int hashCode() {
-        return Long.hashCode(id.getId());
+        return id.hashCode();
     }
 }

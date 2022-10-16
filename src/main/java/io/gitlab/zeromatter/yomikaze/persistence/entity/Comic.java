@@ -11,6 +11,7 @@ import org.hibernate.Hibernate;
 import org.hibernate.annotations.UpdateTimestamp;
 
 import javax.persistence.*;
+import java.net.URI;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -29,15 +30,17 @@ public class Comic {
     @JsonSerialize(using = SnowflakeJsonSerializer.class)
     private Snowflake id;
 
-    @Column(name = "title", nullable = false)
-    private String title;
+    @Column(name = "name", nullable = false)
+    private String name;
+
+    @Column(name = "aliases")
+    private String aliases;
 
     @Column(name = "description", length = 1023)
     private String description = "";
 
-    @Column(name = "cover_picture")
-    private String coverPicture;
-
+    @Column(name = "thumbnail")
+    private URI thumbnail;
     @Column(name = "published")
     private Instant published;
 
@@ -61,6 +64,11 @@ public class Comic {
     @ToString.Exclude
     private Account uploader = null;
 
+    @OneToMany(fetch = FetchType.LAZY)
+    @JoinColumn(name = "comic")
+    @ToString.Exclude
+    @OrderColumn(name = "index")
+    private Collection<Chapter> chapters = new ArrayList<>();
 
     @Override
     public boolean equals(Object o) {

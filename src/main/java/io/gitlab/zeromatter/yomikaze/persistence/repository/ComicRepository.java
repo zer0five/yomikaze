@@ -68,8 +68,8 @@ public interface ComicRepository extends CrudRepository<Comic, Snowflake> {
     )
     Page<Comic> findByGenresContainingAllAndGenresContainingNone(Collection<Genre> whitelist, Collection<Genre> blacklist, Pageable pageable);
 
-    Page<Comic> findComicsByTitleIsContainingIgnoreCase(String title, Pageable pageable);
+    Page<Comic> findComicsByNameIsContainingIgnoreCase(String title, Pageable pageable);
 
-    Page<Comic> findComicsByTitleIsStartingWithIgnoreCase(String title, Pageable pageable);
+    Page<Comic> findComicsByNameIsStartingWithIgnoreCase(String title, Pageable pageable);
 
 }

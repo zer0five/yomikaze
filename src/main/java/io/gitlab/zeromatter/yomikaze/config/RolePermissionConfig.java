@@ -20,7 +20,6 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
-import java.util.Set;
 
 @RequiredArgsConstructor
 @Component
@@ -128,10 +127,10 @@ public class RolePermissionConfig implements ApplicationListener<ContextRefreshe
             adminAccount.setUsername("admin");
             adminAccount.setEmail("admin@yomikaze.org");
             adminAccount.setPassword(passwordEncoder.encode("admin"));
-            Set<Role> roles = adminAccount.getRoles();
-            roles.add(memberRole);
-            roles.add(uploaderRole);
-            roles.add(adminRole);
+            adminAccount.addRole(memberRole);
+            adminAccount.addRole(uploaderRole);
+            adminAccount.addRole(adminRole);
+            adminAccount.getProfile().setDisplayName("Administrator");
             accountRepository.save(adminAccount);
         }
 
