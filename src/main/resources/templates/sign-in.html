@@ -1,16 +1,11 @@
 <!DOCTYPE html>
-<html lang="en" xmlns="http://www.w3.org/1999/xhtml" xmlns:th="https://www.thymeleaf.org">
+<html lang="en" th:insert="/layouts/default">
 
 <head>
     <title>yomikaze::sign-in</title>
-    <meta charset="UTF-8">
-    <link rel="shortcut icon" th:href="@{/asset/logo.svg}" type="image/svg">
-    <link rel="stylesheet" th:href="@{/asset/css/tailwind.min.css}">
-    <script defer th:src="@{/asset/js/alpine.min.js}"></script>
-    <script th:src="@{/asset/js/feather.min.js}"></script>
 </head>
-
-<div class="hero min-h-screen bg-base-200">
+<body>
+<div class="hero min-h-screen bg-base-200" th:fragment="content">
     <div class="hero-content flex-col lg:flex-row-reverse">
         <div class="text-center lg:text-left lg:px-16">
             <h1 class="text-5xl font-bold">Sign In</h1>
@@ -48,10 +43,9 @@
                     </label>
                 </div>
                 <div class="form-control">
-                    <button :disabled="submit" class="btn btn-accent">
+                    <button :class="{loading: submit}" :disabled="submit" class="btn btn-accent">
                         <span x-show="!submit">Sign In</span>
-                        <span x-init="feather.replace()" x-show="submit">
-                            <i class="animate-spin inline-block mr-2" data-feather="loader"></i>
+                        <span x-show="submit">
                             Signing In...
                         </span>
                     </button>
@@ -59,4 +53,6 @@
             </form>
         </div>
     </div>
+
 </div>
+</body>

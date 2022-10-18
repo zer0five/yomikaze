@@ -1,178 +1,170 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" th:insert="/layouts/default">
 <head>
-    <meta charset="UTF-8">
     <title>Upload file</title>
-    <link rel="shortcut icon" th:href="@{/asset/logo.svg}" type="image/svg">
-    <link rel="stylesheet" th:href="@{/asset/css/tailwind.min.css}">
-    <script defer th:src="@{/asset/js/alpine.min.js}"></script>
-    <script th:src="@{/asset/js/feather.min.js}"></script>
 </head>
 
 <body>
-<!-- Upload -->
-<section>
-    <div class="bg-white p7 rounded w-9/12 mx-auto">
-        <div class="border-r-accent border-3 px-4">
-            <h1 class="text-3xl font-bold">Upload file</h1>
-        </div>
-        <div class="relative flex flex-col p-4 text-gray-400 border border-gray-300 rounded" x-data="dataFileDnD()">
-            <span class="text-3xl font-bold text-green-500" th:if="${success == true}">Upload success</span>
-            <span class="text-3xl font-bold text-red-500" th:if="${success == false}">Upload failed</span>
-            <form
+<th:block th:fragment="content">
+    <!-- Upload -->
+    <section>
+        <div class="bg-white p7 rounded w-9/12 mx-auto">
+            <div class="border-r-accent border-3 px-4">
+                <h1 class="text-3xl font-bold">Upload file</h1>
+            </div>
+            <div class="relative flex flex-col p-4 text-gray-400 border border-gray-300 rounded" x-data="dataFileDnD()">
+                <span class="text-3xl font-bold text-green-500" th:if="${success == true}">Upload success</span>
+                <span class="text-3xl font-bold text-red-500" th:if="${success == false}">Upload failed</span>
+                <form
                     class="relative flex flex-col text-gray-400 border-2 border-gray-300 border-dashed rounded cursor-pointer"
                     enctype="multipart/form-data" id="upload" method="post" th:action="@{/image/upload}" x-ref="dnd">
 
-                <input @change="addFiles($event)"
-                       @dragleave="$refs.dnd.classList.remove('border-blue-400'); $refs.dnd.classList.remove('ring-4'); $refs.dnd.classList.remove('ring-inset');"
-                       @dragover="$refs.dnd.classList.add('border-blue-400'); $refs.dnd.classList.add('ring-4'); $refs.dnd.classList.add('ring-inset');"
-                       @drop="$refs.dnd.classList.remove('border-blue-400'); $refs.dnd.classList.remove('ring-4'); $refs.dnd.classList.remove('ring-inset');"
-                       accept="image/png image/jpeg image/jpg image/webp"
-                       class="absolute inset-0 z-50 w-full h-full p-0 m-0 outline-none opacity-0 cursor-pointer"
-                       id="files" multiple name="files" required title="" type="file"/>
+                    <input @change="addFiles($event)"
+                           @dragleave="$refs.dnd.classList.remove('border-blue-400'); $refs.dnd.classList.remove('ring-4'); $refs.dnd.classList.remove('ring-inset');"
+                           @dragover="$refs.dnd.classList.add('border-blue-400'); $refs.dnd.classList.add('ring-4'); $refs.dnd.classList.add('ring-inset');"
+                           @drop="$refs.dnd.classList.remove('border-blue-400'); $refs.dnd.classList.remove('ring-4'); $refs.dnd.classList.remove('ring-inset');"
+                           accept="image/png image/jpeg image/jpg image/webp"
+                           class="absolute inset-0 z-50 w-full h-full p-0 m-0 outline-none opacity-0 cursor-pointer"
+                           id="files" multiple name="files" required title="" type="file"/>
 
 
-                <div class="flex flex-col items-center justify-center py-10 text-center">
-                    <svg class="w-6 h-6 mr-1 text-current-50" fill="none" stroke="currentColor" viewBox="0 0 24 24"
-                         xmlns="http://www.w3.org/2000/svg">
-                        <path
+                    <div class="flex flex-col items-center justify-center py-10 text-center">
+                        <svg class="w-6 h-6 mr-1 text-current-50" fill="none" stroke="currentColor" viewBox="0 0 24 24"
+                             xmlns="http://www.w3.org/2000/svg">
+                            <path
                                 d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"
                                 stroke-linecap="round" stroke-linejoin="round" stroke-width="2"/>
-                    </svg>
-                    <p class="m-0">Drag your files here or click in this area.</p>
-                </div>
-            </form>
+                        </svg>
+                        <p class="m-0">Drag your files here or click in this area.</p>
+                    </div>
+                </form>
 
-            <template x-if="files.length > 0">
-                <div @dragover.prevent="$event.dataTransfer.dropEffect = 'move'" @drop.prevent="drop($event)"
-                     class="grid grid-cols-2 gap-4 mt-4 md:grid-cols-6">
-                    <template x-for="(_, index) in Array.from({ length: files.length })">
-                        <div :class="{'border-blue-600': fileDragging === index}" :data-index="index"
-                             @dragend="fileDragging = null" @dragstart="dragstart($event)"
-                             class="relative flex flex-col items-center overflow-hidden text-center bg-gray-100 border rounded cursor-move select-none"
-                             draggable="true" style="padding-top: 100%;">
-                            <button @click="remove(index)"
-                                    class="absolute top-0 right-0 z-50 p-1 bg-white rounded-bl focus:outline-none"
-                                    type="button">
-                                <svg class="w-4 h-4 text-gray-700" fill="none" stroke="currentColor" viewBox="0 0 24 24"
-                                     xmlns="http://www.w3.org/2000/svg">
-                                    <path
+                <template x-if="files.length > 0">
+                    <div @dragover.prevent="$event.dataTransfer.dropEffect = 'move'" @drop.prevent="drop($event)"
+                         class="grid grid-cols-2 gap-4 mt-4 md:grid-cols-6">
+                        <template x-for="(_, index) in Array.from({ length: files.length })">
+                            <div :class="{'border-blue-600': fileDragging === index}" :data-index="index"
+                                 @dragend="fileDragging = null" @dragstart="dragstart($event)"
+                                 class="relative flex flex-col items-center overflow-hidden text-center bg-gray-100 border rounded cursor-move select-none"
+                                 draggable="true" style="padding-top: 100%;">
+                                <button @click="remove(index)"
+                                        class="absolute top-0 right-0 z-50 p-1 bg-white rounded-bl focus:outline-none"
+                                        type="button">
+                                    <svg class="w-4 h-4 text-gray-700" fill="none" stroke="currentColor"
+                                         viewBox="0 0 24 24"
+                                         xmlns="http://www.w3.org/2000/svg">
+                                        <path
                                             d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
                                             stroke-linecap="round" stroke-linejoin="round" stroke-width="2"/>
-                                </svg>
-                            </button>
-                            <template x-if="files[index].type.includes('image/')">
-                                <img alt=""
-                                     class="absolute inset-0 z-0 object-cover w-full h-full border-4 border-white preview"
-                                     src="/"
-                                     x-bind:alt="files[index].name" x-bind:src="loadFile(files[index])"/>
-                            </template>
+                                    </svg>
+                                </button>
+                                <template x-if="files[index].type.includes('image/')">
+                                    <img alt=""
+                                         class="absolute inset-0 z-0 object-cover w-full h-full border-4 border-white preview"
+                                         src="/"
+                                         x-bind:alt="files[index].name" x-bind:src="loadFile(files[index])"/>
+                                </template>
 
-                            <div
+                                <div
                                     class="absolute bottom-0 left-0 right-0 flex flex-col p-2 text-xs bg-white bg-opacity-50">
                                 <span class="w-full font-bold text-gray-900 truncate"
                                       x-text="files[index].name">Loading</span>
-                                <span class="text-xs text-gray-900" x-text="humanFileSize(files[index].size)">...</span>
-                            </div>
+                                    <span class="text-xs text-gray-900"
+                                          x-text="humanFileSize(files[index].size)">...</span>
+                                </div>
 
-                            <div
+                                <div
                                     :class="{'bg-blue-200 bg-opacity-80': fileDropping === index && fileDragging !== index}"
                                     @dragenter="dragenter($event)" @dragleave="fileDropping = null"
                                     class="absolute inset-0 z-40 transition-colors duration-300">
+                                </div>
                             </div>
-                        </div>
-                    </template>
-                </div>
-            </template>
-            <button @click="upload.submit()" class="mx-auto my-2 btn btn-accent rounded shadow" type="button">Submit
-            </button>
+                        </template>
+                    </div>
+                </template>
+                <button @click="upload.submit()" class="mx-auto my-2 btn btn-accent rounded shadow" type="button">Submit
+                </button>
+            </div>
         </div>
-    </div>
-    <script th:src="@{/asset/js/create-file-list.js}"></script>
-    <script>
-        function dataFileDnD() {
-            return {
-                files: [],
-                fileDragging: null,
-                fileDropping: null,
-                form: null,
-                humanFileSize(size) {
-                    const i = Math.floor(Math.log(size) / Math.log(1024));
-                    return (
-                        (size / Math.pow(1024, i)).toFixed(2) * 1 +
-                        " " +
-                        ["B", "kB", "MB", "GB", "TB"][i]
-                    );
-                },
-                remove(index) {
-                    let files = [...this.files];
-                    files.splice(index, 1);
+        <script th:src="@{/asset/js/create-file-list.js}"></script>
+        <script>
+            function dataFileDnD() {
+                return {
+                    files: [],
+                    fileDragging: null,
+                    fileDropping: null,
+                    form: null,
+                    humanFileSize(size) {
+                        const i = Math.floor(Math.log(size) / Math.log(1024));
+                        return (
+                            (size / Math.pow(1024, i)).toFixed(2) * 1 +
+                            " " +
+                            ["B", "kB", "MB", "GB", "TB"][i]
+                        );
+                    },
+                    remove(index) {
+                        let files = [...this.files];
+                        files.splice(index, 1);
 
-                    this.files = createFileList(files);
-                },
-                drop(e) {
-                    let removed, add;
-                    let files = [...this.files];
+                        this.files = createFileList(files);
+                    },
+                    drop(e) {
+                        let removed, add;
+                        let files = [...this.files];
 
-                    removed = files.splice(this.fileDragging, 1);
-                    files.splice(this.fileDropping, 0, ...removed);
+                        removed = files.splice(this.fileDragging, 1);
+                        files.splice(this.fileDropping, 0, ...removed);
 
-                    this.files = createFileList(files);
+                        this.files = createFileList(files);
 
-                    this.fileDropping = null;
-                    this.fileDragging = null;
-                },
-                dragenter(e) {
-                    let targetElem = e.target.closest("[draggable]");
+                        this.fileDropping = null;
+                        this.fileDragging = null;
+                    },
+                    dragenter(e) {
+                        let targetElem = e.target.closest("[draggable]");
 
-                    this.fileDropping = targetElem.getAttribute("data-index");
-                },
-                dragstart(e) {
-                    this.fileDragging = e.target
-                        .closest("[draggable]")
-                        .getAttribute("data-index");
-                    e.dataTransfer.effectAllowed = "move";
-                },
-                loadFile(file) {
-                    const preview = document.querySelectorAll(".preview");
-                    const blobUrl = URL.createObjectURL(file);
+                        this.fileDropping = targetElem.getAttribute("data-index");
+                    },
+                    dragstart(e) {
+                        this.fileDragging = e.target
+                            .closest("[draggable]")
+                            .getAttribute("data-index");
+                        e.dataTransfer.effectAllowed = "move";
+                    },
+                    loadFile(file) {
+                        const preview = document.querySelectorAll(".preview");
+                        const blobUrl = URL.createObjectURL(file);
 
-                    preview.forEach(elem => {
-                        elem.onload = () => {
-                            URL.revokeObjectURL(elem.src); // free memory
-                        };
-                    });
+                        preview.forEach(elem => {
+                            elem.onload = () => {
+                                URL.revokeObjectURL(elem.src); // free memory
+                            };
+                        });
 
-                    return blobUrl;
-                },
-                addFiles(e) {
-                    const files = createFileList([...this.files], [...e.target.files]);
-                    this.files = files;
-                    console.log(files);
-                }
-            };
-        }
-    </script>
-</section>
+                        return blobUrl;
+                    },
+                    addFiles(e) {
+                        const files = createFileList([...this.files], [...e.target.files]);
+                        this.files = files;
+                        console.log(files);
+                    }
+                };
+            }
+        </script>
+    </section>
 
-<section th:if="${success == true && images != null}">
-    <div class="container mx-auto">
-        <h2 class="text-2xl font-bold text-center">Your Images</h2>
-        <div class="grid grid-cols-1 gap-4 mt-4 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
-            <!--/*@thymesVar id="image" type="io.gitlab.zeromatter.yomikaze.snowflake.Snowflake"*/-->
-            <div class="relative" th:each="image : ${images}">
-                <img alt="" class="object-cover w-full h-48 rounded shadow" src="https://via.placeholder.com/150"
-                     th:src="@{/attachment/{id}(id=${image.id})}">
-                <div
-                        class="absolute top-0 right-0 flex flex-col items-end justify-center w-full h-full p-2 text-xs text-white bg-black bg-opacity-50">
-                    <span class="font-bold truncate">Loading</span>
-                    <span>...</span>
-                    <!--                    <span class="font-bold truncate" th:text="${image.name}">Loading</span>-->
-                    <!--                    <span th:text="${image.size}">...</span>-->
+    <section th:if="${success == true && images != null}">
+        <div class="container mx-auto">
+            <h2 class="text-2xl font-bold text-center">Your Images</h2>
+            <div class="grid grid-cols-1 gap-4 mt-4 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
+                <!--/*@thymesVar id="image" type="io.gitlab.zeromatter.yomikaze.snowflake.Snowflake"*/-->
+                <div class="relative" th:each="image : ${images}">
+                    <img alt="" class="object-cover w-full h-48 rounded shadow" src="https://via.placeholder.com/150"
+                         th:src="@{/attachment/{id}(id=${image.id})}">
                 </div>
             </div>
         </div>
-    </div>
-</section>
+    </section>
+</th:block>
 </body>
 </html>

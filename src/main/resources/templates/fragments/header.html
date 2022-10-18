@@ -1,9 +1,12 @@
 <header th:fragment="header">
     <div class="navbar bg-base-100">
         <div class="flex-1">
-            <a class="btn btn-ghost gap-2 text-xl text-white hover:bg-[#74C7EC]">
+            <a class="btn btn-ghost gap-2 text-xl text-white hover:bg-transparent">
                 <img alt="logo" class="w-10 h-10" src="/asset/logo.svg" th:src="@{/asset/logo.svg}"/>
-                yomikaze
+                <div class="font-title text-primary inline-flex text-lg transition-all duration-200 md:text-3xl">
+                    <span class="text-base-content lowercase">yomi</span>
+                    <span class="lowercase">kaze</span>
+                </div>
             </a>
             <div class="form-control">
                 <label class="input-group">
