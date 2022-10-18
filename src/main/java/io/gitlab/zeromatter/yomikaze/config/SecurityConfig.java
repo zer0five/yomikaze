@@ -30,45 +30,45 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain configure(HttpSecurity http) throws Exception {
         return http
+            .userDetailsService(userDetailsService)
+            .authorizeHttpRequests(authorize -> authorize
+                .anyRequest().permitAll()
+            )
+            .httpBasic(basic -> basic.realmName("yomikaze"))
+            .sessionManagement(session -> session
+                .sessionAuthenticationFailureHandler((request, response, exception) -> {
+                    log.info("sessionAuthenticationFailureHandler");
+                    response.sendRedirect("/login");
+                })
+                .sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED)
+                .sessionFixation().migrateSession()
+                .maximumSessions(1)
+            )
+            .formLogin(form -> form
+                .loginPage("/login")
+                .failureUrl("/login?failure")
+                .defaultSuccessUrl("/")
+            )
+            .rememberMe(rememberMe -> rememberMe
+                .tokenValiditySeconds(60 * 3600 * 24 * 7)
                 .userDetailsService(userDetailsService)
-                .authorizeHttpRequests(authorize -> authorize
-                        .anyRequest().permitAll()
-                )
-                .httpBasic(basic -> basic.realmName("yomikaze"))
-                .sessionManagement(session -> session
-                        .sessionAuthenticationFailureHandler((request, response, exception) -> {
-                            log.info("sessionAuthenticationFailureHandler");
-                            response.sendRedirect("/login");
-                        })
-                        .sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED)
-                        .sessionFixation().migrateSession()
-                        .maximumSessions(1)
-                )
-                .formLogin(form -> form
-                        .loginPage("/login")
-                        .failureUrl("/login?failure")
-                        .defaultSuccessUrl("/")
-                )
-                .rememberMe(rememberMe -> rememberMe
-                        .tokenValiditySeconds(60 * 3600 * 24 * 7)
-                        .userDetailsService(userDetailsService)
-                )
-                .logout(logout -> logout
-                        .logoutUrl("/logout")
-                        .logoutRequestMatcher(new AntPathRequestMatcher("/logout"))
-                        .deleteCookies("YOMIKAZE_SESSION", "token", "JSESSIONID")
-                        .clearAuthentication(true)
-                        .invalidateHttpSession(true)
-                        .logoutSuccessUrl("/login")
-                )
-                .exceptionHandling(exceptions -> exceptions
-                                .accessDeniedHandler((request, response, exception) -> {
-                                    System.out.println("Access denied: " + exception.getMessage());
-                                    response.sendRedirect("/access-denied.html");
-                                })
+            )
+            .logout(logout -> logout
+                .logoutUrl("/logout")
+                .logoutRequestMatcher(new AntPathRequestMatcher("/logout"))
+                .deleteCookies("YOMIKAZE_SESSION", "token", "JSESSIONID")
+                .clearAuthentication(true)
+                .invalidateHttpSession(true)
+                .logoutSuccessUrl("/login")
+            )
+            .exceptionHandling(exceptions -> exceptions
+                    .accessDeniedHandler((request, response, exception) -> {
+                        System.out.println("Access denied: " + exception.getMessage());
+                        response.sendRedirect("/access-denied.html");
+                    })
 //                        .accessDeniedPage("/access-denied.html")
-                )
-                .build();
+            )
+            .build();
     }
 
     @Bean

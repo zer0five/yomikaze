@@ -3,6 +3,7 @@ package io.gitlab.zeromatter.yomikaze.snowflake;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.Random;
 import java.util.concurrent.atomic.AtomicLong;
 
 /**
@@ -20,10 +21,10 @@ public class SnowflakeFactory {
      * modified after initialization.
      */
     public static final long EPOCH = new Calendar.Builder()
-            .set(Calendar.YEAR, 2022)
-            .set(Calendar.MONTH, Calendar.JANUARY)
-            .set(Calendar.DAY_OF_MONTH, 1).build()
-            .getTimeInMillis();
+        .set(Calendar.YEAR, 2022)
+        .set(Calendar.MONTH, Calendar.JANUARY)
+        .set(Calendar.DAY_OF_MONTH, 1).build()
+        .getTimeInMillis();
     /*
      * bits allocations for timeStamp, datacenterId, workerId and sequence
      */
@@ -57,6 +58,7 @@ public class SnowflakeFactory {
      * object status variables
      */
     public static final long SEQUENCE_MASK = ~(-1L << SEQUENCE_BITS);
+    private static final Random random = new Random();
     /**
      * data center number the process running on, its value can't be modified
      * after initialization.
@@ -64,7 +66,6 @@ public class SnowflakeFactory {
      * max: 2^5-1 range: [0,31]
      */
     private final long datacenterId;
-
     /**
      * machine or process number, its value can't be modified after
      * initialization.
@@ -96,11 +97,11 @@ public class SnowflakeFactory {
     public SnowflakeFactory(long datacenterId, long workerId) {
         if (datacenterId > MAX_DATACENTER_ID || datacenterId < 0) {
             throw new IllegalArgumentException(
-                    String.format("datacenter Id can't be greater than %d or less than 0", MAX_DATACENTER_ID));
+                String.format("datacenter Id can't be greater than %d or less than 0", MAX_DATACENTER_ID));
         }
         if (workerId > MAX_WORKER_ID || workerId < 0) {
             throw new IllegalArgumentException(
-                    String.format("worker Id can't be greater than %d or less than 0", MAX_WORKER_ID));
+                String.format("worker Id can't be greater than %d or less than 0", MAX_WORKER_ID));
         }
 
         this.datacenterId = datacenterId;
@@ -153,6 +154,10 @@ public class SnowflakeFactory {
         return (-1L << lb) ^ (-1L << rb);
     }
 
+    public static SnowflakeFactory randomFactory() {
+        return new SnowflakeFactory(random.nextInt(32), random.nextInt(32));
+    }
+
     /**
      * generate an unique and incrementing id
      *
@@ -163,8 +168,8 @@ public class SnowflakeFactory {
 
         if (currTimestamp < lastTimestamp) {
             throw new IllegalStateException(
-                    String.format("Clock moved backwards. Refusing to generate id for %d milliseconds",
-                            lastTimestamp - currTimestamp));
+                String.format("Clock moved backwards. Refusing to generate id for %d milliseconds",
+                    lastTimestamp - currTimestamp));
         }
 
         if (currTimestamp == lastTimestamp) {
@@ -181,9 +186,9 @@ public class SnowflakeFactory {
         lastTimestamp = currTimestamp;
 
         return ((currTimestamp - EPOCH) << TIMESTAMP_SHIFT) | //
-                (datacenterId << DATACENTER_ID_SHIFT) | //
-                (workerId << WORKER_ID_SHIFT) | // new line for nice looking
-                sequence;
+            (datacenterId << DATACENTER_ID_SHIFT) | //
+            (workerId << WORKER_ID_SHIFT) | // new line for nice looking
+            sequence;
     }
 
     public Snowflake next() {
@@ -200,8 +205,8 @@ public class SnowflakeFactory {
     /**
      * running loop blocking until next millisecond
      *
+     * @param currTimestamp current time stamp
      * @return current time stamp in millisecond
-     * @param    currTimestamp    current time stamp
      */
     protected long waitNextMillis(long currTimestamp) {
         waitCount.incrementAndGet();
@@ -226,8 +231,8 @@ public class SnowflakeFactory {
     @Override
     public String toString() {
         return "Snowflake Settings [timestampBits=" + TIMESTAMP_BITS + ", datacenterIdBits=" + DATACENTER_ID_BITS
-                + ", workerIdBits=" + WORKER_ID_BITS + ", sequenceBits=" + SEQUENCE_BITS + ", epoch=" + EPOCH
-                + ", datacenterId=" + datacenterId + ", workerId=" + workerId + "]";
+            + ", workerIdBits=" + WORKER_ID_BITS + ", sequenceBits=" + SEQUENCE_BITS + ", epoch=" + EPOCH
+            + ", datacenterId=" + datacenterId + ", workerId=" + workerId + "]";
     }
 
     public long getEpoch() {

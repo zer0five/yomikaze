@@ -4,10 +4,12 @@ import io.gitlab.zeromatter.yomikaze.persistence.entity.Account;
 import io.gitlab.zeromatter.yomikaze.persistence.entity.Image;
 import io.gitlab.zeromatter.yomikaze.persistence.repository.AccountRepository;
 import io.gitlab.zeromatter.yomikaze.persistence.repository.ImageRepository;
-import io.gitlab.zeromatter.yomikaze.service.DatabaseFileStorageService;
+import io.gitlab.zeromatter.yomikaze.service.DatabaseImageStorageService;
 import io.gitlab.zeromatter.yomikaze.snowflake.Snowflake;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.core.io.InputStreamResource;
+import org.springframework.core.io.Resource;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PostAuthorize;
@@ -20,7 +22,10 @@ import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.ModelAndView;
 
 import javax.persistence.EntityNotFoundException;
+import java.sql.Blob;
+import java.sql.SQLException;
 import java.text.MessageFormat;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -29,7 +34,7 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class ImageController {
 
-    private final DatabaseFileStorageService fileStorageService;
+    private final DatabaseImageStorageService imageStorageService;
     private final ImageRepository imageRepository;
     private final AccountRepository accountRepository;
 
@@ -50,16 +55,18 @@ public class ImageController {
             return model;
         }
         Account account = accountRepository.findByUsername(auth.getName()).orElseThrow(() -> new UsernameNotFoundException("User not found"));
+        List<Snowflake> images = new ArrayList<>();
         for (MultipartFile file : files) {
             if (file.isEmpty()) {
-                model.addObject("failure", true);
+                model.addObject("success", false);
                 return model;
             }
-            Snowflake id = fileStorageService.storeFile(file, account);
-            Image image = imageRepository.findById(id).orElseThrow(() -> new UsernameNotFoundException("File not found"));
-            log.info(MessageFormat.format("Uploaded file {0} with id {1}", image.getName(), image.getId()));
+            Snowflake id = imageStorageService.storeSafe(file, account).orElseThrow(() -> new EntityNotFoundException("Image not found"));
+            log.info(MessageFormat.format("Uploaded file {0} with id {1}", file.getOriginalFilename(), id));
+            images.add(id);
         }
         model.addObject("success", true);
+        model.addObject("images", images);
         return model;
     }
 
@@ -75,15 +82,15 @@ public class ImageController {
 
     @GetMapping("/image/{id}/{name}")
     @ResponseBody
-    public ResponseEntity<Object> getImage(@PathVariable("id") String id, @PathVariable("name") String name) {
+    public ResponseEntity<Resource> getImage(@PathVariable("id") String id, @PathVariable("name") String name) throws SQLException {
         return getFile(id, name);
     }
 
-    private ResponseEntity<Object> getFile(String id, String name) {
+    private ResponseEntity<Resource> getFile(String id, String name) throws SQLException {
         return getFile(null, id, name);
     }
 
-    private ResponseEntity<Object> getFile(String owner, String id, String name) {
+    private ResponseEntity<Resource> getFile(String owner, String id, String name) throws SQLException {
         Snowflake snowflake = Snowflake.of(id);
         Snowflake ownerSnowflake = Snowflake.of(owner);
         Optional<Image> file = imageRepository.findByIdAndOwner_IdAndNameLikeIgnoreCase(snowflake, ownerSnowflake, name);
@@ -91,18 +98,21 @@ public class ImageController {
             return ResponseEntity.notFound().build();
         }
         Image actualFile = file.get();
-        if (actualFile.getData() == null || actualFile.getData().length == 0) {
+        Blob data = actualFile.getData();
+        if (data == null || data.length() == 0) {
             return ResponseEntity.noContent().build();
         }
-        MediaType mediaType = MediaType.parseMediaType(actualFile.getType());
+        MediaType mediaType = actualFile.getMediaType();
+        Resource resource = new InputStreamResource(data.getBinaryStream());
         return ResponseEntity.ok()
-                .contentType(mediaType)
-                .body(actualFile.getData());
+            .contentType(mediaType)
+            .contentLength(data.length())
+            .body(resource);
     }
 
     @GetMapping("/attachment/{owner}/{id}/{name}")
     @ResponseBody
-    public ResponseEntity<Object> getAttachment(@PathVariable("owner") String owner, @PathVariable("id") String id, @PathVariable("name") String name) {
+    public ResponseEntity<Resource> getAttachment(@PathVariable("owner") String owner, @PathVariable("id") String id, @PathVariable("name") String name) throws SQLException {
         return getFile(owner, id, name);
     }
 

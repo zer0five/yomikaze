@@ -19,8 +19,8 @@ import java.util.Objects;
 public class Request {
     @Id
     @Column(name = "id",
-            nullable = false,
-            updatable = false)
+        nullable = false,
+        updatable = false)
     @GeneratedValue(generator = "snowflake")
     private Snowflake id;
     @Column(name = "message", nullable = false)
@@ -30,16 +30,16 @@ public class Request {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(
-            name = "requester",
-            referencedColumnName = "id", nullable = false
+        name = "requester",
+        referencedColumnName = "id", nullable = false
 
     )
     @ToString.Exclude
     private Account requester;
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(
-            name = "approved_by",
-            referencedColumnName = "id"
+        name = "approved_by",
+        referencedColumnName = "id"
 
     )
     @ToString.Exclude

@@ -21,9 +21,9 @@ public class Library {
 
     @Id
     @Column(
-            name = "id",
-            nullable = false,
-            updatable = false
+        name = "id",
+        nullable = false,
+        updatable = false
     )
     @GeneratedValue(generator = "library-snowflake")
     @Setter(AccessLevel.NONE)
@@ -31,9 +31,9 @@ public class Library {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(
-            name = "comic_id",
-            nullable = false,
-            updatable = false
+        name = "comic_id",
+        nullable = false,
+        updatable = false
     )
     @ToString.Exclude
     @OnDelete(action = OnDeleteAction.CASCADE)
@@ -41,9 +41,9 @@ public class Library {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(
-            name = "account_id",
-            nullable = false,
-            updatable = false
+        name = "account_id",
+        nullable = false,
+        updatable = false
     )
     @OnDelete(action = OnDeleteAction.CASCADE)
     @ToString.Exclude

@@ -16,7 +16,7 @@ public interface ComicRepository extends CrudRepository<Comic, Snowflake> {
     Page<Comic> findAll(Pageable pageable);
 
     @Query(
-            // @formatter:off
+        // @formatter:off
             "select c " +
             "from #{#entityName} c " +
                 "join c.genres g " +
@@ -28,7 +28,7 @@ public interface ComicRepository extends CrudRepository<Comic, Snowflake> {
     Page<Comic> findByGenresContainingAll(Collection<Genre> genres, Pageable pageable);
 
     @Query(
-            // @formatter:off
+        // @formatter:off
             "select c " +
             "from #{#entityName} c " +
             "where c not in (" +
@@ -44,7 +44,7 @@ public interface ComicRepository extends CrudRepository<Comic, Snowflake> {
     Page<Comic> findByGenresContainingNone(Collection<Genre> genres, Pageable pageable);
 
     @Query(
-            // @formatter:off
+        // @formatter:off
             "select c " +
             "from #{#entityName} c " +
             "where c not in (" +

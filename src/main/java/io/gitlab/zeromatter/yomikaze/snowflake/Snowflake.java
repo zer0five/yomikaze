@@ -39,6 +39,10 @@ public class Snowflake implements Serializable {
         return new Snowflake(idLong);
     }
 
+    public static Builder builder() {
+        return new Builder();
+    }
+
     @JsonIgnore
     public long getId() {
         return this.id;
@@ -81,10 +85,6 @@ public class Snowflake implements Serializable {
     @Override
     public int hashCode() {
         return Long.hashCode(id);
-    }
-
-    public static Builder builder() {
-        return new Builder();
     }
 
     public static class Builder {

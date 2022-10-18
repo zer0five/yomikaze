@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<!--/*@thymesVar id="locale" type="java.lang.String"*/-->
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta content="width=device-width, initial-scale=1.0" name="viewport">
+    <link rel="shortcut icon" th:href="@{/asset/logo.svg}" type="image/svg">
+    <link rel="stylesheet" th:href="@{/asset/css/tailwind.min.css}" type="text/css"/>
+    <title>yomikaze</title>
+</head>
+
+<body class="bg-base-100 text-primary-content" th:fragment="body">
+<th:block th:replace="/fragments/header"></th:block>
+<div class="container" th:insert="this :: content">
+    <!--  Main content here  -->
+</div>
+<th:block th:replace="/fragments/footer"></th:block>
+<th:block th:replace="/fragments/scripts"></th:block>
+</body>
+</html>

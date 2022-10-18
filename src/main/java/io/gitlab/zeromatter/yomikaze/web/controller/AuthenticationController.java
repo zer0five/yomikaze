@@ -55,13 +55,13 @@ public class AuthenticationController {
     @ExceptionHandler({EntityExistsException.class})
     protected ResponseEntity<Object> handleEntityExistsException(EntityExistsException e, HttpServletRequest request) {
         return ResponseEntity
-                .status(HttpStatus.CONFLICT)
-                .body(GenericResponse
-                        .builder()
-                        .status(false)
-                        .message("Username or email already exists")
-                        .build()
-                );
+            .status(HttpStatus.CONFLICT)
+            .body(GenericResponse
+                .builder()
+                .status(false)
+                .message("Username or email already exists")
+                .build()
+            );
     }
 
 }

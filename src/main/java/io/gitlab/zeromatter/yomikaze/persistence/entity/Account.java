@@ -28,64 +28,55 @@ public class Account {
 
     @Id
     @JoinColumn(
-            name = "id",
-            nullable = false,
-            updatable = false
+        name = "id",
+        nullable = false,
+        updatable = false
     )
     @GeneratedValue(generator = "account-snowflake")
     @Setter(AccessLevel.NONE)
     @JsonSerialize(using = SnowflakeJsonSerializer.class)
     private Snowflake id;
-
-    public void setId(long id) {
-        this.id = Snowflake.of(id);
-    }
-
     @Column(
-            name = "username",
-            nullable = false,
-            unique = true,
-            updatable = false
+        name = "username",
+        nullable = false,
+        unique = true,
+        updatable = false
     )
     private String username;
-
     @Column(
-            name = "email",
-            nullable = false,
-            unique = true
+        name = "email",
+        nullable = false,
+        unique = true
     )
     private String email;
-
     @Column(
-            name = "password",
-            nullable = false
+        name = "password",
+        nullable = false
     )
     @JsonIgnore
     @ToString.Exclude
     private String password;
-
     @ToString.Exclude
     @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(name = "account_has_role",
-            joinColumns = @JoinColumn(
-                    name = "role_id",
-                    referencedColumnName = "id"
-            ),
-            inverseJoinColumns = @JoinColumn(
-                    name = "account_id",
-                    referencedColumnName = "id"
-            )
+        joinColumns = @JoinColumn(
+            name = "role_id",
+            referencedColumnName = "id"
+        ),
+        inverseJoinColumns = @JoinColumn(
+            name = "account_id",
+            referencedColumnName = "id"
+        )
     )
     @OnDelete(action = OnDeleteAction.CASCADE)
     private Set<Role> roles = new HashSet<>();
-
     @PrimaryKeyJoinColumn
     @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
     @ToString.Exclude
     private Profile profile = new Profile(this);
 
-    public void setRoles(Collection<Role> roles) {
-        this.roles = new HashSet<>(roles);
+    public void setId(long id) {
+        this.id = Snowflake.of(id);
     }
 
     public void addRole(Role role) {
@@ -114,6 +105,10 @@ public class Account {
 
     public Collection<Role> getRoles() {
         return Collections.unmodifiableSet(roles);
+    }
+
+    public void setRoles(Collection<Role> roles) {
+        this.roles = new HashSet<>(roles);
     }
 
     @Override

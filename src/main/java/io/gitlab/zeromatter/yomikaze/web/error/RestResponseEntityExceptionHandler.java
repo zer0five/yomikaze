@@ -34,10 +34,10 @@ public class RestResponseEntityExceptionHandler {
             fieldError.put(fieldName, messages.getMessage(errorMessage, null, errorMessage, request.getLocale()));
         });
         final GenericResponse bodyOfResponse = GenericResponse.builder()
-                .status(false)
-                .message("Validation failed")
-                .data(fieldError)
-                .build();
+            .status(false)
+            .message("Validation failed")
+            .data(fieldError)
+            .build();
         return ResponseEntity.badRequest().body(bodyOfResponse);
     }
 }

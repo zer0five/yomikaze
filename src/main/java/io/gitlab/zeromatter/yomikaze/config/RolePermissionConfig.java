@@ -39,12 +39,12 @@ public class RolePermissionConfig implements ApplicationListener<ContextRefreshe
     @Transactional
     public Permission createPermissionIfNotFound(String authority) {
         return permissionRepository
-                .findByAuthority(authority)
-                .orElseGet(() -> {
-                    Permission permission = new Permission();
-                    permission.setAuthority(authority);
-                    return permissionRepository.save(permission);
-                });
+            .findByAuthority(authority)
+            .orElseGet(() -> {
+                Permission permission = new Permission();
+                permission.setAuthority(authority);
+                return permissionRepository.save(permission);
+            });
     }
 
     @Transactional
@@ -55,14 +55,14 @@ public class RolePermissionConfig implements ApplicationListener<ContextRefreshe
     @Transactional
     public Role createRoleIfNotFound(String name, Collection<Permission> privileges, boolean defaultRole) {
         return roleRepository
-                .findByName(name)
-                .orElseGet(() -> {
-                    Role role = new Role();
-                    role.setName(name);
-                    role.setPermissions(privileges);
-                    role.setDefaultRole(defaultRole);
-                    return roleRepository.save(role);
-                });
+            .findByName(name)
+            .orElseGet(() -> {
+                Role role = new Role();
+                role.setName(name);
+                role.setPermissions(privileges);
+                role.setDefaultRole(defaultRole);
+                return roleRepository.save(role);
+            });
     }
 
 
@@ -73,53 +73,53 @@ public class RolePermissionConfig implements ApplicationListener<ContextRefreshe
 
         String member = "Member";
         List<Permission> memberPermissions = Arrays.asList(
-                createPermissionIfNotFound("comic.search.advanced"),
-                createPermissionIfNotFound("history.record.comic"),
-                createPermissionIfNotFound("history.record.chapter"),
-                createPermissionIfNotFound("history.record.page"),
-                createPermissionIfNotFound("history.delete"),
-                createPermissionIfNotFound("history.delete.all"),
-                createPermissionIfNotFound("library.add"),
-                createPermissionIfNotFound("library.delete"),
-                createPermissionIfNotFound("library.delete.all"),
-                createPermissionIfNotFound("library.organize"),
-                createPermissionIfNotFound("request.create.uploader"),
-                createPermissionIfNotFound("request.cancel"),
-                createPermissionIfNotFound("request.cancel.all"),
-                createPermissionIfNotFound("report.create")
+            createPermissionIfNotFound("comic.search.advanced"),
+            createPermissionIfNotFound("history.record.comic"),
+            createPermissionIfNotFound("history.record.chapter"),
+            createPermissionIfNotFound("history.record.page"),
+            createPermissionIfNotFound("history.delete"),
+            createPermissionIfNotFound("history.delete.all"),
+            createPermissionIfNotFound("library.add"),
+            createPermissionIfNotFound("library.delete"),
+            createPermissionIfNotFound("library.delete.all"),
+            createPermissionIfNotFound("library.organize"),
+            createPermissionIfNotFound("request.create.uploader"),
+            createPermissionIfNotFound("request.cancel"),
+            createPermissionIfNotFound("request.cancel.all"),
+            createPermissionIfNotFound("report.create")
         );
         Role memberRole = createRoleIfNotFound(member, memberPermissions, true);
 
         String uploader = "Uploader";
         List<Permission> uploaderPermissions = Arrays.asList(
-                createPermissionIfNotFound("comic.create"),
-                createPermissionIfNotFound("comic.update"),
-                createPermissionIfNotFound("comic.delete"),
-                createPermissionIfNotFound("chapter.create"),
-                createPermissionIfNotFound("chapter.update"),
-                createPermissionIfNotFound("chapter.delete"),
-                createPermissionIfNotFound("page.create"),
-                createPermissionIfNotFound("page.delete")
+            createPermissionIfNotFound("comic.create"),
+            createPermissionIfNotFound("comic.update"),
+            createPermissionIfNotFound("comic.delete"),
+            createPermissionIfNotFound("chapter.create"),
+            createPermissionIfNotFound("chapter.update"),
+            createPermissionIfNotFound("chapter.delete"),
+            createPermissionIfNotFound("page.create"),
+            createPermissionIfNotFound("page.delete")
         );
         Role uploaderRole = createRoleIfNotFound(uploader, uploaderPermissions);
 
         String admin = "Admin";
         List<Permission> adminPermissions = Arrays.asList(
-                createPermissionIfNotFound("request.approve"),
-                createPermissionIfNotFound("request.approve.all"),
-                createPermissionIfNotFound("request.reject"),
-                createPermissionIfNotFound("request.reject.all"),
-                createPermissionIfNotFound("report.resolve"),
-                createPermissionIfNotFound("comic.update.other"),
-                createPermissionIfNotFound("comic.delete.other"),
-                createPermissionIfNotFound("chapter.update.other"),
-                createPermissionIfNotFound("chapter.delete.other"),
-                createPermissionIfNotFound("page.delete.other"),
-                createPermissionIfNotFound("user.ban"),
-                createPermissionIfNotFound("user.unban"),
-                createPermissionIfNotFound("user.delete"),
-                createPermissionIfNotFound("user.delete.all"),
-                createPermissionIfNotFound("user.update")
+            createPermissionIfNotFound("request.approve"),
+            createPermissionIfNotFound("request.approve.all"),
+            createPermissionIfNotFound("request.reject"),
+            createPermissionIfNotFound("request.reject.all"),
+            createPermissionIfNotFound("report.resolve"),
+            createPermissionIfNotFound("comic.update.other"),
+            createPermissionIfNotFound("comic.delete.other"),
+            createPermissionIfNotFound("chapter.update.other"),
+            createPermissionIfNotFound("chapter.delete.other"),
+            createPermissionIfNotFound("page.delete.other"),
+            createPermissionIfNotFound("user.ban"),
+            createPermissionIfNotFound("user.unban"),
+            createPermissionIfNotFound("user.delete"),
+            createPermissionIfNotFound("user.delete.all"),
+            createPermissionIfNotFound("user.update")
         );
         Role adminRole = createRoleIfNotFound(admin, adminPermissions);
         if (!accountRepository.findByUsername("admin").isPresent()) {

@@ -35,14 +35,14 @@ class ComicRepositoryTest {
     void setUp() {
         if (initialized) return;
         Iterable<Genre> genres = genreRepository.saveAll(Arrays.asList(
-                new Genre("Action"),
-                new Genre("Adventure"),
-                new Genre("Comedy"),
-                new Genre("Drama"),
-                new Genre("Fantasy")
+            new Genre("Action"),
+            new Genre("Adventure"),
+            new Genre("Comedy"),
+            new Genre("Drama"),
+            new Genre("Fantasy")
         ));
         genresMap = StreamSupport.stream(genres.spliterator(), false)
-                .collect(Collectors.toMap(Genre::getName, Function.identity()));
+            .collect(Collectors.toMap(Genre::getName, Function.identity()));
         Comic comic = new Comic();
         comic.setName("Test 01");
         comic.setGenres(Arrays.asList(genresMap.get("Action"), genresMap.get("Adventure"), genresMap.get("Comedy")));
@@ -87,9 +87,9 @@ class ComicRepositoryTest {
     @Test
     void testComicAdvancedSearch() {
         Page<Comic> comics = comicRepository.findByGenresContainingAllAndGenresContainingNone(
-                Arrays.asList(genresMap.get("Action"), genresMap.get("Adventure")),
-                singletonList(genresMap.get("Fantasy")),
-                pageable
+            Arrays.asList(genresMap.get("Action"), genresMap.get("Adventure")),
+            singletonList(genresMap.get("Fantasy")),
+            pageable
         );
         assertEquals(2, comics.getTotalElements());
         List<String> comicList = comics.getContent().stream().map(Comic::getName).collect(Collectors.toList());

@@ -1,76 +1,20 @@
 <!DOCTYPE html>
-<html data-theme="ayu-dark" lang="en">
 
+<html lang="en" th:insert="/layouts/default">
 <head>
     <title>yomikaze::home</title>
-    <link href="/asset/logo.svg" rel="shortcut icon" type="image/svg">
-    <link href="/asset/css/tailwind.css" rel="stylesheet">
-    <script defer src="/asset/js/alpine.min.js"></script>
-    <script src="/asset/js/feather.min.js"></script>
 </head>
 
 <body>
-<section class="carousel w-full h-[32rem]" x-data="{ highlightMangas: [0, 1, 2, 3] }">
-    <template x-for="(highlightManga, highlightMangaIndex) in highlightMangas">
-        <div :id="'highlight' + highlightMangaIndex" class="carousel-item hero w-full bg-base-200 relative">
-            <div class="hero-content flex-row gap-8 md:mx-20 max-w-4xl" x-init="feather.replace()">
-                <img alt="cover" class="max-w-sm max-h-96 rounded-lg shadow-2xl"
-                     src="https://placeimg.com/600/800/arch"/>
-                <div>
-                    <h1 class="text-3xl font-bold">Name</h1>
-                    <p class="py-6 text-justify">Provident cupiditate voluptatem et in. Quaerat fugiat ut assumenda
-                        excepturi
-                        exercitationem quasi. In deleniti eaque aut repudiandae et a id nisi.</p>
-                    <div class="flex gap-2">
-                        <button class="btn btn-primary gap-2">
-                            <i data-feather="book-open"></i>
-                            <span class="hidden md:inline">Read Now</span>
-                        </button>
-                        <button class="btn btn-secondary gap-2">
-                            <i data-feather="info"></i>
-                            <span class="hidden lg:inline">Info</span>
-                        </button>
-                        <button class="btn btn-accent gap-2">
-                            <i data-feather="bookmark"></i>
-                            <span class="hidden lg:inline">Bookmark</span>
-                        </button>
-                    </div>
-                </div>
-                <div
-                        class="absolute hidden md:flex justify-between transform -translate-y-1/2 left-5 right-5 top-1/2 text-white">
-                    <a :href="'#highlight' + (highlightMangaIndex === 0 ? highlightMangas.length - 1 : highlightMangaIndex - 1)"
-                       class="btn btn-circle">
-                        <i data-feather="chevron-left"></i>
-                    </a>
-                    <a :href="'#highlight' + ((highlightMangaIndex + 1) % highlightMangas.length)"
-                       class="btn btn-circle">
-                        <i data-feather="chevron-right"></i>
-                    </a>
-                </div>
-            </div>
-        </div>
-    </template>
-</section>
-
-<section x-data="{ mangas: [0, 1, 2, 3, 4, 5, 6, 7] }">
-    <div class="container md:px-5 py-24 mx-auto">
-        <div class="flex flex-wrap justify-evenly">
-            <template x-for="manga in mangas">
-                <div
-                        class="group w-64 aspect-[19/25] my-4 mx-2 rounded-lg shadow-2xl overflow-hidden flex relative hover:border-4 hover:border-primary">
-                    <img alt="gallery"
-                         class="absolute inset-0 w-full h-full object-cover object-center group-hover:blur-md"
-                         src="https://placeimg.com/600/800/arch">
-                    <div class="px-8 py-10 relative z-10 w-full bg-base-200/75 opacity-0 group-hover:opacity-100">
-                        <h1 class="title-font text-lg font-medium text-white">Name</h1>
-                        <h2 class="tracking-widest text-sm title-font font-medium text-secondary">Author</h2>
-                        <p class="leading-relaxed">Des</p>
-                    </div>
-                </div>
-            </template>
+<th:block th:fragment="content">
+    <div class="flex flex-col items-center justify-center min-h-screen">
+        <div class="flex flex-col items-center justify-center">
+            <img alt="logo" class="w-32 h-32" th:src="@{/asset/logo.svg}">
+            <h1 class="text-4xl font-bold">yomikaze</h1>
+            <p class="text-xl">A simple web application</p>
         </div>
     </div>
-</section>
+</th:block>
 </body>
 
 </html>

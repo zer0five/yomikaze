@@ -28,12 +28,12 @@ public class JpaPersistenceConfig {
         String jdbcUrl = System.getenv("JDBC_DATABASE_URL");
         if (jdbcUrl != null) {
             return DataSourceBuilder.create()
-                    .type(HikariDataSource.class)
-                    .url(jdbcUrl)
-                    .build();
+                .type(HikariDataSource.class)
+                .url(jdbcUrl)
+                .build();
         }
         String databaseUrl = Optional.ofNullable(System.getenv("DATABASE_URL"))
-                .orElseThrow(() -> new IllegalArgumentException("DATABASE_URL is not set"));
+            .orElseThrow(() -> new IllegalArgumentException("DATABASE_URL is not set"));
         URI uri = new URI(databaseUrl);
         String userInfo = uri.getUserInfo();
         int userInfoSplitter = userInfo.indexOf(':');
@@ -43,10 +43,10 @@ public class JpaPersistenceConfig {
         int port = uri.getPort();
         String database = uri.getPath().substring(1);
         return DataSourceBuilder.create()
-                .type(HikariDataSource.class)
-                .url("jdbc:postgresql://" + host + ":" + port + "/" + database)
-                .username(username)
-                .password(password)
-                .build();
+            .type(HikariDataSource.class)
+            .url("jdbc:postgresql://" + host + ":" + port + "/" + database)
+            .username(username)
+            .password(password)
+            .build();
     }
 }

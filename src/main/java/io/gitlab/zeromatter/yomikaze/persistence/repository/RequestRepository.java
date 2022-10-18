@@ -11,7 +11,7 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface RequestRepository extends CrudRepository<Request, Snowflake> {
 
-    Page<Request> findAllByRequester(Account requester,Pageable pageable) ;
+    Page<Request> findAllByRequester(Account requester, Pageable pageable);
 
     Page<Request> findAllByApprovedIsNull(Pageable pageable);
 

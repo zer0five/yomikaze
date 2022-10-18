@@ -19,6 +19,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.ModelAndView;
+
 import javax.persistence.EntityNotFoundException;
 import java.util.Optional;
 
@@ -28,10 +29,11 @@ import java.util.Optional;
 public class RequestController {
     private final AccountRepository accountRepository;
     private final RequestRepository requestRepository;
+
     //for user
     @PreAuthorize("authentication != null && isAuthenticated()")
     @PostAuthorize("hasAuthority('request.create.uploader')")
-    @GetMapping({"","/"})
+    @GetMapping({"", "/"})
     public ModelAndView request(ModelAndView modelAndView, Authentication authentication, Optional<Integer> page, Optional<Integer> size) {
         Account account = accountRepository.findByUsername(authentication.getName()).orElseThrow(() -> new UsernameNotFoundException("User not found!"));
         modelAndView.setViewName("request-page");
@@ -41,9 +43,10 @@ public class RequestController {
         return modelAndView;
 
     }
+
     @PreAuthorize("authentication != null && isAuthenticated()")
     @PostAuthorize("hasAuthority('request.create.uploader')")
-    @PostMapping({"","/"})
+    @PostMapping({"", "/"})
     public String request(String message, Authentication authentication) {
         Account account = accountRepository.findByUsername(authentication.getName()).orElseThrow(() -> new UsernameNotFoundException("User not found!"));
         Request request = new Request();
@@ -53,6 +56,7 @@ public class RequestController {
 
         return "redirect:/request";
     }
+
     @PreAuthorize("authentication != null && isAuthenticated()")
     @PostAuthorize("hasAuthority('request.cancel')")
     @GetMapping("/delete/{id}")
@@ -79,8 +83,6 @@ public class RequestController {
         return modelAndView;
 
     }
-
-
 
 
 }

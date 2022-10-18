@@ -45,8 +45,8 @@ public class Comment {
 
     @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(name = "comment_likes",
-            joinColumns = @JoinColumn(name = "comment"),
-            inverseJoinColumns = @JoinColumn(name = "account"))
+        joinColumns = @JoinColumn(name = "comment"),
+        inverseJoinColumns = @JoinColumn(name = "account"))
     @ToString.Exclude
     private Set<Account> likedBy = new HashSet<>();
 

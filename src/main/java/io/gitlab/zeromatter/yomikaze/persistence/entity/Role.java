@@ -26,18 +26,18 @@ public class Role {
     @Id
     @GeneratedValue(generator = "role-snowflake")
     @Column(
-            name = "id",
-            nullable = false,
-            updatable = false
+        name = "id",
+        nullable = false,
+        updatable = false
     )
     @JsonSerialize(using = SnowflakeJsonSerializer.class)
     private Snowflake id;
 
     @Column(
-            name = "name",
-            nullable = false,
-            unique = true,
-            updatable = false
+        name = "name",
+        nullable = false,
+        unique = true,
+        updatable = false
     )
     private String name;
 
@@ -50,14 +50,14 @@ public class Role {
 
     @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(name = "role_permissions",
-            joinColumns = @JoinColumn(
-                    name = "role_id",
-                    referencedColumnName = "id"
-            ),
-            inverseJoinColumns = @JoinColumn(
-                    name = "permission_id",
-                    referencedColumnName = "id"
-            )
+        joinColumns = @JoinColumn(
+            name = "role_id",
+            referencedColumnName = "id"
+        ),
+        inverseJoinColumns = @JoinColumn(
+            name = "permission_id",
+            referencedColumnName = "id"
+        )
     )
     @ToString.Exclude
     private Collection<Permission> permissions;

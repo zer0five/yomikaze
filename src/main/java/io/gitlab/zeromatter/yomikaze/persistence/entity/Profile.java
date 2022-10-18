@@ -20,9 +20,9 @@ public class Profile {
 
     @Id
     @Column(
-            name = "id",
-            nullable = false,
-            updatable = false
+        name = "id",
+        nullable = false,
+        updatable = false
     )
     @Setter(AccessLevel.NONE)
     private Snowflake id;
@@ -30,9 +30,9 @@ public class Profile {
     @MapsId
     @OneToOne(mappedBy = "profile")
     @JoinColumn(
-            name = "id",
-            nullable = false,
-            updatable = false
+        name = "id",
+        nullable = false,
+        updatable = false
     )
     @ToString.Exclude
     private Account account;

@@ -6,9 +6,10 @@ import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 import org.hibernate.Hibernate;
-import org.hibernate.annotations.Type;
+import org.springframework.http.MediaType;
 
 import javax.persistence.*;
+import java.sql.Blob;
 import java.util.Objects;
 
 @Entity(name = "image")
@@ -33,14 +34,23 @@ public class Image {
     @Column(name = "data", nullable = false)
     @Lob
     @Basic(fetch = FetchType.LAZY)
-    @Type(type = "org.hibernate.type.ImageType")
     @ToString.Exclude
-    private byte[] data;
+    private Blob data;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "owner", referencedColumnName = "id", nullable = false)
     @ToString.Exclude
     private Account owner;
+
+    @Transient
+    private MediaType mediaType = null;
+
+    public MediaType getMediaType() {
+        if (mediaType == null) {
+            mediaType = MediaType.parseMediaType(type);
+        }
+        return mediaType;
+    }
 
     @Override
     public boolean equals(Object o) {

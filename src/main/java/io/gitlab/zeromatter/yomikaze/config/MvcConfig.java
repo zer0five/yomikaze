@@ -17,11 +17,8 @@ public class MvcConfig implements WebMvcConfigurer {
 
     @Override
     public void addViewControllers(ViewControllerRegistry registry) {
-        registry.addViewController("/index.html").setViewName("index");
+        registry.addViewController("/home").setViewName("index");
         registry.addViewController("/").setViewName("index");
-        registry.addViewController("/sign-in.html").setViewName("sign-in");
-        registry.addViewController("/sign-up.html").setViewName("sign-up");
-        registry.addViewController("/upload.html").setViewName("upload");
     }
 
     @Override
@@ -51,6 +48,4 @@ public class MvcConfig implements WebMvcConfigurer {
     public WebServerFactoryCustomizer<ConfigurableServletWebServerFactory> enableDefaultServlet() {
         return factory -> factory.setRegisterDefaultServlet(true);
     }
-
-
 }

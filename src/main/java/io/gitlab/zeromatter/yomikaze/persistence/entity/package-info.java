@@ -1,99 +1,99 @@
 @TypeDef(name = "snowflake", typeClass = SnowflakeType.class, defaultForType = Snowflake.class)
 @GenericGenerator(
-        name = "snowflake",
-        strategy = "io.gitlab.zeromatter.yomikaze.snowflake.hibernate.SnowflakeGenerator",
-        parameters = {
-                @Parameter(name = SnowflakeGenerator.SNOWFLAKE_DATA_CENTER_ID, value = "0"),
-                @Parameter(name = SnowflakeGenerator.SNOWFLAKE_WORKER_ID, value = "0")
-        }
+    name = "snowflake",
+    strategy = "io.gitlab.zeromatter.yomikaze.snowflake.hibernate.SnowflakeGenerator",
+    parameters = {
+        @Parameter(name = SnowflakeGenerator.SNOWFLAKE_DATA_CENTER_ID, value = "0"),
+        @Parameter(name = SnowflakeGenerator.SNOWFLAKE_WORKER_ID, value = "0")
+    }
 )
 @GenericGenerator(
-        name = "account-snowflake",
-        strategy = "io.gitlab.zeromatter.yomikaze.snowflake.hibernate.SnowflakeGenerator",
-        parameters = {
-                @Parameter(name = SnowflakeGenerator.SNOWFLAKE_DATA_CENTER_ID, value = "1"),
-                @Parameter(name = SnowflakeGenerator.SNOWFLAKE_WORKER_ID, value = "1")
-        }
+    name = "account-snowflake",
+    strategy = "io.gitlab.zeromatter.yomikaze.snowflake.hibernate.SnowflakeGenerator",
+    parameters = {
+        @Parameter(name = SnowflakeGenerator.SNOWFLAKE_DATA_CENTER_ID, value = "1"),
+        @Parameter(name = SnowflakeGenerator.SNOWFLAKE_WORKER_ID, value = "1")
+    }
 )
 @GenericGenerator(
-        name = "role-snowflake",
-        strategy = "io.gitlab.zeromatter.yomikaze.snowflake.hibernate.SnowflakeGenerator",
-        parameters = {
-                @Parameter(name = SnowflakeGenerator.SNOWFLAKE_DATA_CENTER_ID, value = "1"),
-                @Parameter(name = SnowflakeGenerator.SNOWFLAKE_WORKER_ID, value = "2")
-        }
+    name = "role-snowflake",
+    strategy = "io.gitlab.zeromatter.yomikaze.snowflake.hibernate.SnowflakeGenerator",
+    parameters = {
+        @Parameter(name = SnowflakeGenerator.SNOWFLAKE_DATA_CENTER_ID, value = "1"),
+        @Parameter(name = SnowflakeGenerator.SNOWFLAKE_WORKER_ID, value = "2")
+    }
 )
 @GenericGenerator(
-        name = "permission-snowflake",
-        strategy = "io.gitlab.zeromatter.yomikaze.snowflake.hibernate.SnowflakeGenerator",
-        parameters = {
-                @Parameter(name = SnowflakeGenerator.SNOWFLAKE_DATA_CENTER_ID, value = "1"),
-                @Parameter(name = SnowflakeGenerator.SNOWFLAKE_WORKER_ID, value = "3")
-        }
+    name = "permission-snowflake",
+    strategy = "io.gitlab.zeromatter.yomikaze.snowflake.hibernate.SnowflakeGenerator",
+    parameters = {
+        @Parameter(name = SnowflakeGenerator.SNOWFLAKE_DATA_CENTER_ID, value = "1"),
+        @Parameter(name = SnowflakeGenerator.SNOWFLAKE_WORKER_ID, value = "3")
+    }
 )
 @GenericGenerator(
-        name = "history-snowflake",
-        strategy = "io.gitlab.zeromatter.yomikaze.snowflake.hibernate.SnowflakeGenerator",
-        parameters = {
-                @Parameter(name = SnowflakeGenerator.SNOWFLAKE_DATA_CENTER_ID, value = "1"),
-                @Parameter(name = SnowflakeGenerator.SNOWFLAKE_WORKER_ID, value = "4")
-        }
+    name = "history-snowflake",
+    strategy = "io.gitlab.zeromatter.yomikaze.snowflake.hibernate.SnowflakeGenerator",
+    parameters = {
+        @Parameter(name = SnowflakeGenerator.SNOWFLAKE_DATA_CENTER_ID, value = "1"),
+        @Parameter(name = SnowflakeGenerator.SNOWFLAKE_WORKER_ID, value = "4")
+    }
 )
 @GenericGenerator(
-        name = "comic-snowflake",
-        strategy = "io.gitlab.zeromatter.yomikaze.snowflake.hibernate.SnowflakeGenerator",
-        parameters = {
-                @Parameter(name = SnowflakeGenerator.SNOWFLAKE_DATA_CENTER_ID, value = "1"),
-                @Parameter(name = SnowflakeGenerator.SNOWFLAKE_WORKER_ID, value = "5")
-        }
+    name = "comic-snowflake",
+    strategy = "io.gitlab.zeromatter.yomikaze.snowflake.hibernate.SnowflakeGenerator",
+    parameters = {
+        @Parameter(name = SnowflakeGenerator.SNOWFLAKE_DATA_CENTER_ID, value = "1"),
+        @Parameter(name = SnowflakeGenerator.SNOWFLAKE_WORKER_ID, value = "5")
+    }
 )
 @GenericGenerator(
-        name = "genre-snowflake",
-        strategy = "io.gitlab.zeromatter.yomikaze.snowflake.hibernate.SnowflakeGenerator",
-        parameters = {
-                @Parameter(name = SnowflakeGenerator.SNOWFLAKE_DATA_CENTER_ID, value = "1"),
-                @Parameter(name = SnowflakeGenerator.SNOWFLAKE_WORKER_ID, value = "6")
-        }
+    name = "genre-snowflake",
+    strategy = "io.gitlab.zeromatter.yomikaze.snowflake.hibernate.SnowflakeGenerator",
+    parameters = {
+        @Parameter(name = SnowflakeGenerator.SNOWFLAKE_DATA_CENTER_ID, value = "1"),
+        @Parameter(name = SnowflakeGenerator.SNOWFLAKE_WORKER_ID, value = "6")
+    }
 )
 @GenericGenerator(
-        name = "image-snowflake",
-        strategy = "io.gitlab.zeromatter.yomikaze.snowflake.hibernate.SnowflakeGenerator",
-        parameters = {
-                @Parameter(name = SnowflakeGenerator.SNOWFLAKE_DATA_CENTER_ID, value = "1"),
-                @Parameter(name = SnowflakeGenerator.SNOWFLAKE_WORKER_ID, value = "7")
-        }
+    name = "image-snowflake",
+    strategy = "io.gitlab.zeromatter.yomikaze.snowflake.hibernate.SnowflakeGenerator",
+    parameters = {
+        @Parameter(name = SnowflakeGenerator.SNOWFLAKE_DATA_CENTER_ID, value = "1"),
+        @Parameter(name = SnowflakeGenerator.SNOWFLAKE_WORKER_ID, value = "7")
+    }
 )
 @GenericGenerator(
-        name = "library-snowflake",
-        strategy = "io.gitlab.zeromatter.yomikaze.snowflake.hibernate.SnowflakeGenerator",
-        parameters = {
-                @Parameter(name = SnowflakeGenerator.SNOWFLAKE_DATA_CENTER_ID, value = "1"),
-                @Parameter(name = SnowflakeGenerator.SNOWFLAKE_WORKER_ID, value = "8")
-        }
+    name = "library-snowflake",
+    strategy = "io.gitlab.zeromatter.yomikaze.snowflake.hibernate.SnowflakeGenerator",
+    parameters = {
+        @Parameter(name = SnowflakeGenerator.SNOWFLAKE_DATA_CENTER_ID, value = "1"),
+        @Parameter(name = SnowflakeGenerator.SNOWFLAKE_WORKER_ID, value = "8")
+    }
 )
 @GenericGenerator(
-        name = "chapter-snowflake",
-        strategy = "io.gitlab.zeromatter.yomikaze.snowflake.hibernate.SnowflakeGenerator",
-        parameters = {
-                @Parameter(name = SnowflakeGenerator.SNOWFLAKE_DATA_CENTER_ID, value = "1"),
-                @Parameter(name = SnowflakeGenerator.SNOWFLAKE_WORKER_ID, value = "9")
-        }
+    name = "chapter-snowflake",
+    strategy = "io.gitlab.zeromatter.yomikaze.snowflake.hibernate.SnowflakeGenerator",
+    parameters = {
+        @Parameter(name = SnowflakeGenerator.SNOWFLAKE_DATA_CENTER_ID, value = "1"),
+        @Parameter(name = SnowflakeGenerator.SNOWFLAKE_WORKER_ID, value = "9")
+    }
 )
 @GenericGenerator(
-        name = "page-snowflake",
-        strategy = "io.gitlab.zeromatter.yomikaze.snowflake.hibernate.SnowflakeGenerator",
-        parameters = {
-                @Parameter(name = SnowflakeGenerator.SNOWFLAKE_DATA_CENTER_ID, value = "1"),
-                @Parameter(name = SnowflakeGenerator.SNOWFLAKE_WORKER_ID, value = "10")
-        }
+    name = "page-snowflake",
+    strategy = "io.gitlab.zeromatter.yomikaze.snowflake.hibernate.SnowflakeGenerator",
+    parameters = {
+        @Parameter(name = SnowflakeGenerator.SNOWFLAKE_DATA_CENTER_ID, value = "1"),
+        @Parameter(name = SnowflakeGenerator.SNOWFLAKE_WORKER_ID, value = "10")
+    }
 )
 @GenericGenerator(
-        name = "comment-snowflake",
-        strategy = "io.gitlab.zeromatter.yomikaze.snowflake.hibernate.SnowflakeGenerator",
-        parameters = {
-                @Parameter(name = SnowflakeGenerator.SNOWFLAKE_DATA_CENTER_ID, value = "1"),
-                @Parameter(name = SnowflakeGenerator.SNOWFLAKE_WORKER_ID, value = "11")
-        }
+    name = "comment-snowflake",
+    strategy = "io.gitlab.zeromatter.yomikaze.snowflake.hibernate.SnowflakeGenerator",
+    parameters = {
+        @Parameter(name = SnowflakeGenerator.SNOWFLAKE_DATA_CENTER_ID, value = "1"),
+        @Parameter(name = SnowflakeGenerator.SNOWFLAKE_WORKER_ID, value = "11")
+    }
 )
 package io.gitlab.zeromatter.yomikaze.persistence.entity;
 

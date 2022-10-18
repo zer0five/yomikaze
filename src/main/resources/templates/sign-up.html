@@ -2,53 +2,55 @@
 <html lang="en">
 
 <head>
-  <title>yomikaze::sign-up</title>
-  <meta charset="UTF-8">
-  <link rel="shortcut icon" th:href="@{/asset/logo.svg}" type="image/svg">
-  <link rel="stylesheet" th:href="@{/asset/css/tailwind.css}">
-  <script defer th:src="@{/asset/js/alpine.min.js}"></script>
-  <script th:src="@{/asset/js/feather.min.js}"></script>
+    <title>yomikaze::sign-up</title>
+    <meta charset="UTF-8">
+    <link rel="shortcut icon" th:href="@{/asset/logo.svg}" type="image/svg">
+    <link rel="stylesheet" th:href="@{/asset/css/tailwind.min.css}">
+    <script defer th:src="@{/asset/js/alpine.min.js}"></script>
+    <script th:src="@{/asset/js/feather.min.js}"></script>
 </head>
 
 <div class="hero min-h-screen bg-base-200">
-  <div class="hero-content flex-col lg:flex-row-reverse">
-    <div class="text-center lg:text-left lg:px-16">
-      <h1 class="text-5xl font-bold">Sign up now!</h1>
-      <p class="py-6">
-        Sign-up an account to get access member only features.
-      </p>
+    <div class="hero-content flex-col lg:flex-row-reverse">
+        <div class="text-center lg:text-left lg:px-16">
+            <h1 class="text-5xl font-bold">Sign up now!</h1>
+            <p class="py-6">
+                Sign-up an account to get access member only features.
+            </p>
+        </div>
+        <div class="card flex-shrink-0 w-full max-w-sm shadow-2xl bg-base-100">
+            <form class="card-body" method="POST" th:action="@{/sign-up}">
+                <div class="form-control">
+                    <label class="label" for="username">
+                        <span class="label-text">Username</span>
+                    </label>
+                    <input class="input input-bordered" id="username" name="username" placeholder="Username"
+                           type="text"/>
+                </div>
+                <div class="form-control">
+                    <label class="label" for="email">
+                        <span class="label-text">Email</span>
+                    </label>
+                    <input class="input input-bordered" id="email" name="email" placeholder="Email" type="email"/>
+                </div>
+                <div class="form-control">
+                    <label class="label" for="password">
+                        <span class="label-text">Password</span>
+                    </label>
+                    <input class="input input-bordered" id="password" name="password" placeholder="Password"
+                           type="password"/>
+                </div>
+                <div class="form-control">
+                    <label class="label" for="password-confirmation">
+                        <span class="label-text">Confirm Password</span>
+                    </label>
+                    <input class="input input-bordered" id="password-confirmation" name="password-confirmation"
+                           placeholder="Confirm password" type="password"/>
+                </div>
+                <div class="form-control mt-6">
+                    <button class="btn btn-accent">Sign Up</button>
+                </div>
+            </form>
+        </div>
     </div>
-    <div class="card flex-shrink-0 w-full max-w-sm shadow-2xl bg-base-100">
-      <form class="card-body" method="POST" th:action="@{/sign-up}">
-        <div class="form-control">
-          <label class="label" for="username">
-            <span class="label-text">Username</span>
-          </label>
-          <input class="input input-bordered" id="username" name="username" placeholder="Username" type="text"/>
-        </div>
-        <div class="form-control">
-          <label class="label" for="email">
-            <span class="label-text">Email</span>
-          </label>
-          <input class="input input-bordered" id="email" name="email" placeholder="Email" type="email"/>
-        </div>
-        <div class="form-control">
-          <label class="label" for="password">
-            <span class="label-text">Password</span>
-          </label>
-          <input class="input input-bordered" id="password" name="password" placeholder="Password" type="password"/>
-        </div>
-        <div class="form-control">
-          <label class="label" for="password-confirmation">
-            <span class="label-text">Confirm Password</span>
-          </label>
-          <input class="input input-bordered" id="password-confirmation" name="password-confirmation"
-                 placeholder="Confirm password" type="password"/>
-        </div>
-        <div class="form-control mt-6">
-          <button class="btn btn-accent">Sign Up</button>
-        </div>
-      </form>
-    </div>
-  </div>
 </div>

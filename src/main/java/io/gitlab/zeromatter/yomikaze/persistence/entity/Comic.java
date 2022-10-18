@@ -53,8 +53,8 @@ public class Comic {
 
     @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(name = "comic_genres",
-            joinColumns = @JoinColumn(name = "comic_id"),
-            inverseJoinColumns = @JoinColumn(name = "genre_id")
+        joinColumns = @JoinColumn(name = "comic_id"),
+        inverseJoinColumns = @JoinColumn(name = "genre_id")
     )
     @ToString.Exclude
     private Collection<Genre> genres = new ArrayList<>();
