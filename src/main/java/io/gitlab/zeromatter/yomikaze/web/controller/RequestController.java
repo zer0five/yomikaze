@@ -36,7 +36,7 @@ public class RequestController {
     @GetMapping({"", "/"})
     public ModelAndView request(ModelAndView modelAndView, Authentication authentication, Optional<Integer> page, Optional<Integer> size) {
         Account account = accountRepository.findByUsername(authentication.getName()).orElseThrow(() -> new UsernameNotFoundException("User not found!"));
-        modelAndView.setViewName("request-page");
+        modelAndView.setViewName("request-uploader-page");
         Pageable pageable = PageRequest.of(page.orElse(1) - 1, 5);
         Page<Request> requests = requestRepository.findAllByRequester(account, pageable);
         modelAndView.addObject("requests", requests);
