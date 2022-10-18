@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <meta content="IE=edge" http-equiv="X-UA-Compatible">
+    <meta content="width=device-width, initial-scale=1.0" name="viewport">
+    <!--    &lt;!&ndash; script tailwindcss &ndash;&gt;-->
+    <!--    <script src="https://cdn.tailwindcss.com"></script>-->
+    <!--    <script src="https://cdn.tailwindcss.com?plugins=forms,typography,aspect-ratio,line-clamp"></script>-->
+    <!--    <script src="https://cdn.jsdelivr.net/npm/tw-elements/dist/js/index.min.js"></script>-->
+    <!--    &lt;!&ndash; link flowbite &ndash;&gt;-->
+    <!--    <link rel="stylesheet" href="https://unpkg.com/flowbite@1.5.3/dist/flowbite.min.css"/>-->
+    <!--    &lt;!&ndash; link icon &ndash;&gt;-->
+    <!--    <link rel="stylesheet"-->
+    <!--          href="https://demos.creative-tim.com/notus-js/assets/vendor/@fortawesome/fontawesome-free/css/all.min.css">-->
+    <script defer th:src="@{/asset/js/alpine.min.js}"></script>
+    <script th:src="@{/asset/js/feather.min.js}"></script>
+    <link rel="stylesheet" th:href="@{/asset/css/tailwind.min.css}"/>
+    <title>Request to uploader</title>
+</head>
+
+<body>
+<!--<script defer src="https://unpkg.com/alpinejs@3.10.2/dist/cdn.min.js"></script>-->
+<!--<link rel="stylesheet" href="https://unpkg.com/boxicons@2.0.7/css/boxicons.min.css"/>-->
+
+<!-- page -->
+<main class="min-h-screen w-full bg-gray-100 text-gray-700" x-data="layout">
+    <!-- header page -->
+    <header class="flex w-full items-center justify-between border-b-2 border-gray-200 bg-white p-2">
+        <!-- logo -->
+        <div class="flex items-center space-x-2">
+            <button @click="asideOpen = !asideOpen" class="text-3xl" type="button"><i
+                class="bx bx-menu"></i></button>
+            <div><a class="inline" href="index.html"><img class="inline mb-1 rounded-full" src="asset/logo.svg">
+                <p class="inline relative top-1 ml-2  text-2xl">Yomikaze</p>
+            </a></div>
+        </div>
+
+        <!-- button profile -->
+        <div>
+            <button @click="profileOpen = !profileOpen" @click.outside="profileOpen = false"
+                    class="h-9 w-9 overflow-hidden rounded-full"
+                    type="button">
+                <img alt="plchldr.co" src="https://plchldr.co/i/40x40?bg=111111"/>
+            </button>
+
+            <!-- dropdown profile -->
+            <div
+                class="absolute right-2 mt-1 w-48 divide-y divide-gray-200 rounded-md border border-gray-200 bg-white shadow-md"
+                x-show="profileOpen" x-transition>
+                <div class="flex items-center space-x-2 p-2">
+                    <img alt="plchldr.co" class="h-9 w-9 rounded-full" src="https://plchldr.co/i/40x40?bg=111111"/>
+                    <div class="font-medium">Hafiz Haziq</div>
+                </div>
+
+                <div class="flex flex-col space-y-3 p-2">
+                    <a class="transition hover:text-blue-600" href="#">My Profile</a>
+                    <a class="transition hover:text-blue-600" href="#">Edit Profile</a>
+                    <a class="transition hover:text-blue-600" href="#">Settings</a>
+                </div>
+
+                <div class="p-2">
+                    <button class="flex items-center space-x-2 transition hover:text-blue-600">
+                        <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"
+                             xmlns="http://www.w3.org/2000/svg">
+                            <path
+                                d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"
+                                stroke-linecap="round" stroke-linejoin="round"
+                                stroke-width="2">
+                            </path>
+                        </svg>
+                        <div>Log Out</div>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <div class="flex">
+        <!-- aside -->
+        <aside class="flex w-72 flex-col space-y-2 border-r-2 border-gray-200 bg-white p-2" style="height: 90.5vh"
+               x-show="asideOpen">
+
+            <a class="flex items-center space-x-1 rounded-md px-2 py-3 hover:bg-gray-100 hover:text-blue-600"
+               href="#">
+                <span class="text-2xl"><i class="bx bx-user"></i></span>
+                <span>Profile</span>
+            </a>
+
+            <a class="flex items-center space-x-1 rounded-md px-2 py-3 hover:bg-gray-100 hover:text-blue-600"
+               href="#">
+                    <span class="text-2xl">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="1.5"
+                             viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                            <path
+                                d="M14.857 17.082a23.848 23.848 0 005.454-1.31A8.967 8.967 0 0118 9.75v-.7V9A6 6 0 006 9v.75a8.967 8.967 0 01-2.312 6.022c1.733.64 3.56 1.085 5.455 1.31m5.714 0a24.255 24.255 0 01-5.714 0m5.714 0a3 3 0 11-5.714 0"
+                                stroke-linecap="round"
+                                stroke-linejoin="round"/>
+                        </svg>
+                    </span>
+                <span>Notification</span>
+                <div
+                    class="py-1 px-3 relative left-0 sm:left-2 md:left-6 lg:left-24 bg-gray-400 text-white rounded flex justify-end text-xs">
+                    8
+                </div>
+            </a>
+
+            <a class="flex items-center space-x-1 rounded-md px-2 py-3 hover:bg-gray-100 hover:text-blue-600"
+               href="#">
+                    <span class="text-2xl">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="1.5"
+                             viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                            <path
+                                d="M12 21v-8.25M15.75 21v-8.25M8.25 21v-8.25M3 9l9-6 9 6m-1.5 12V10.332A48.36 48.36 0 0012 9.75c-2.551 0-5.056.2-7.5.582V21M3 21h18M12 6.75h.008v.008H12V6.75z"
+                                stroke-linecap="round"
+                                stroke-linejoin="round"/>
+                        </svg>
+                    </span>
+                <span>Library</span>
+            </a>
+        </aside>
+
+        <!-- main content page -->
+        <div class="max-w-2xl mx-auto">
+            <div class="relative shadow-md sm:rounded-lg">
+                <div class="p-4 text-white flex justify-end">
+                    <button
+                        class="bg-red-400 rounded-full px-2 py-1 hover:scale-95 hover:bg-red-500 transition duration-150 ease-in-out"
+                        data-modal-toggle="defaultModal">Send
+                        request
+                    </button>
+                </div>
+                <!-- Main modal -->
+                <div aria-hidden="true"
+                     class="hidden overflow-y-auto overflow-x-hidden fixed top-0 right-0 left-0  z-50 w-full md:inset-0 h-modal md:h-full"
+                     id="defaultModal"
+                     tabindex="-1">
+                    <div class="relative p-4 mx-auto w-full max-w-2xl h-full md:h-auto">
+                        <!-- Modal content -->
+                        <div class="relative bg-white rounded-lg shadow dark:bg-gray-700">
+                            <!-- Modal header -->
+                            <div
+                                class="flex justify-between items-start p-4 rounded-t border-b dark:border-gray-600">
+                                <h3 class="text-xl font-semibold text-gray-900 dark:text-white">
+                                    Request to become uploader
+                                </h3>
+                                <button
+                                    class="text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm p-1.5 ml-auto inline-flex items-center dark:hover:bg-gray-600 dark:hover:text-white"
+                                    data-modal-toggle="defaultModal"
+                                    type="button">
+                                    <svg aria-hidden="true" class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20"
+                                         xmlns="http://www.w3.org/2000/svg">
+                                        <path clip-rule="evenodd"
+                                              d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
+                                              fill-rule="evenodd"></path>
+                                    </svg>
+                                    <span class="sr-only">Close modal</span>
+                                </button>
+                            </div>
+                            <!-- Modal body -->
+                            <form method="POST" th:action="@{/request}">
+                                <div class="p-6 space-y-6">
+                                    <label class="block mb-2 text-xl font-medium text-gray-900 dark:text-gray-400"
+                                           for="message">Your
+                                        Message</label>
+
+                                    <textarea
+                                        class="block p-2.5 w-full resize-none text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                                        id="message" placeholder="Your message..."
+                                        rows="4"
+                                        th:name="message"></textarea>
+
+
+                                </div>
+                                <!-- Modal footer -->
+                                <div
+                                    class="flex items-center justify-end p-6 space-x-2 rounded-b border-t border-gray-200 dark:border-gray-600">
+                                    <input
+                                        class="text-white bg-sky-400 hover:bg-sky-500 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
+                                        data-modal-toggle="defaultModal" type="submit"
+                                        value="Request">
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+                <table class="w-full text-sm text-left text-gray-500 dark:text-gray-400">
+                    <thead class=" text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
+                    <tr>
+
+                        <th class="px-6 py-3" scope="col">
+                            Date
+                        </th>
+                        <th class="px-6 py-3" scope="col">
+                            Message
+                        </th>
+                        <th class="px-6 py-3" scope="col">
+                            Status
+                        </th>
+
+                        <th class="px-6 py-3" scope="col">
+                            Action
+                        </th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <!--/*@thymesVar id="requests" type="org.springframework.data.domain.Page"*/-->
+                    <!--/*@thymesVar id="request" type="io.gitlab.zeromatter.yomikaze.persistence.entity.Request"*/-->
+                    <tr class="bg-white border-b dark:bg-gray-800 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600"
+                        th:each="request : ${requests}"
+                        th:object="${request}">
+                        <th class="px-6 py-4 font-medium text-gray-900 dark:text-white whitespace-nowrap" scope="row"
+                            th:text="*{id.timestamp}">
+
+                        </th>
+                        <td class="px-6 py-4"
+                            th:text="*{message}">
+
+                        </td>
+                        <td class="px-6 py-4"
+                            th:text="*{isApproved}">
+                        </td>
+
+                        <td
+                            class="pr-8 py-4 text-right">
+                            <a class="gap-2" th:href="@{/request/delete/{id}(id = *{id})}">
+                                <i data-feather="trash-2" x-init="feather.replace()"></i>
+                            </a>
+                        </td>
+
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+</main>
+
+<script>
+    document.addEventListener("alpine:init", () => {
+        Alpine.data("layout", () => ({
+            profileOpen: false,
+            asideOpen: true,
+        }));
+    });
+</script>
+
+<!-- footer -->
+<section>
+    <footer class="relative md:bg-black bg-slate-50 p-8 pb-6">
+        <div class="container mx-auto px-4 md:text-white text-black">
+            <div class="flex flex-wrap text-left lg:text-left">
+                <div class="w-full lg:w-6/12 px-4">
+                    <h4 class="text-3xl fonat-semibold">Yomikaze</h4>
+                    <!--logo -->
+                    <div class="mt-6 lg:mb-0 mb-6">
+                        <button
+                            class="bg-white text-blueGray-800 shadow-lg font-normal h-10 w-10 items-center justify-center align-center rounded-full outline-none focus:outline-none mr-2"
+                            type="button">
+                            <i class="fab fa-github text-black"></i>
+                        </button>
+                        <button
+                            class="relative top-1.5 -left-1 bg-white text-blueGray-800 shadow-lg font-normal h-10 w-10 items-center justify-center align-center rounded-full outline-none focus:outline-none mr-2"
+                            type="button">
+                            <img alt="" class="relative h-6 w-6 left-2 rounded-full" src="asset/logo.svg">
+                        </button>
+                    </div>
+                </div>
+                <div class="w-full lg:w-6/12 px-4">
+                    <div class="flex justify-end items-top mb-6">
+                        <div class="w-full lg:w-4/12 px-4">
+                            <span class="block uppercase  text-sm font-semibold mb-2">About Us</span>
+                            <ul class="list-unstyled">
+                                <li>
+                                    <p class="font-medium block pb-2 text-sm">Group 4</p>
+                                </li>
+                                <li>
+                                    <p class="font-medium block pb-2 text-sm"><a href="#">ZeroFour04@gmail.com</a>
+                                    </p>
+                                </li>
+                                <li>
+                                    <p class="font-medium block pb-2 text-sm">SWP 391</p>
+                                </li>
+
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <hr class="my-6 md:border-white border-black">
+            <div class="flex flex-wrap items-center md:justify-between justify-center">
+                <div class="w-full md:w-4/12 px-4 mx-auto text-center">
+                    <div class="text-sm text-blueGray-500 font-semibold py-1">
+                        <span>   Copyright &copy; 2022 FPTU</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </footer>
+</section>
+
+<!--<script src="https://unpkg.com/flowbite@1.3.4/dist/flowbite.js"></script>-->
+</body>
+
+</html>
