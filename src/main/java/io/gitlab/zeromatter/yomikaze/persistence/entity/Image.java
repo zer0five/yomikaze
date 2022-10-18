@@ -11,8 +11,8 @@ import org.hibernate.annotations.Type;
 import javax.persistence.*;
 import java.util.Objects;
 
-@Entity(name = "files")
-@Table(name = "files")
+@Entity(name = "image")
+@Table(name = "image")
 @Getter
 @Setter
 @ToString

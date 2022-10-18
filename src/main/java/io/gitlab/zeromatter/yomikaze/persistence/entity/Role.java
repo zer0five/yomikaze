@@ -67,11 +67,11 @@ public class Role {
         if (this == o) return true;
         if (o == null || Hibernate.getClass(this) != Hibernate.getClass(o)) return false;
         Role role = (Role) o;
-        return id != null && Objects.equals(id, role.id);
+        return Objects.equals(id, role.id);
     }
 
     @Override
     public int hashCode() {
-        return Long.hashCode(id.getId());
+        return Objects.hashCode(id);
     }
 }

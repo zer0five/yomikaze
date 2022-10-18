@@ -15,7 +15,7 @@ import java.util.Set;
 @Setter
 @ToString
 @RequiredArgsConstructor
-@Entity
+@Entity(name = "genres")
 @Table(name = "genre")
 public class Genre {
     @Id
@@ -47,11 +47,11 @@ public class Genre {
         if (this == o) return true;
         if (o == null || Hibernate.getClass(this) != Hibernate.getClass(o)) return false;
         Genre genre = (Genre) o;
-        return id != null && Objects.equals(id, genre.id);
+        return Objects.equals(id, genre.id);
     }
 
     @Override
     public int hashCode() {
-        return Long.hashCode(id.getId());
+        return Objects.hashCode(id);
     }
 }

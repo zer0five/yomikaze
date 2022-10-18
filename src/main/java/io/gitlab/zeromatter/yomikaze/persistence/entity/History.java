@@ -1,12 +1,22 @@
 package io.gitlab.zeromatter.yomikaze.persistence.entity;
 
 import io.gitlab.zeromatter.yomikaze.snowflake.Snowflake;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import lombok.Setter;
+import lombok.ToString;
+import org.hibernate.Hibernate;
 import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
 
 import javax.persistence.*;
+import java.util.Objects;
 
-@Entity
+@Getter
+@Setter
+@ToString
+@RequiredArgsConstructor
+@Entity(name = "history")
 @Table(name = "history")
 public class History {
 
@@ -18,16 +28,25 @@ public class History {
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @OnDelete(action = OnDeleteAction.CASCADE)
     @JoinColumn(name = "account", nullable = false)
+    @ToString.Exclude
     private Account account;
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @OnDelete(action = OnDeleteAction.CASCADE)
     @JoinColumn(name = "chapter", nullable = false)
+    @ToString.Exclude
     private Chapter chapter;
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || Hibernate.getClass(this) != Hibernate.getClass(o)) return false;
+        History history = (History) o;
+        return Objects.equals(id, history.id);
+    }
 
     @Override
     public int hashCode() {
-        return Long.hashCode(id.getId());
+        return Objects.hashCode(id);
     }
 }

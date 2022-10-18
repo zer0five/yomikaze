@@ -44,19 +44,19 @@ class ComicRepositoryTest {
         genresMap = StreamSupport.stream(genres.spliterator(), false)
                 .collect(Collectors.toMap(Genre::getName, Function.identity()));
         Comic comic = new Comic();
-        comic.setTitle("Test 01");
+        comic.setName("Test 01");
         comic.setGenres(Arrays.asList(genresMap.get("Action"), genresMap.get("Adventure"), genresMap.get("Comedy")));
         comicRepository.save(comic);
         comic = new Comic();
-        comic.setTitle("Test 02");
+        comic.setName("Test 02");
         comic.setGenres(Arrays.asList(genresMap.get("Action"), genresMap.get("Adventure"), genresMap.get("Drama")));
         comicRepository.save(comic);
         comic = new Comic();
-        comic.setTitle("Test 03");
+        comic.setName("Test 03");
         comic.setGenres(Arrays.asList(genresMap.get("Action"), genresMap.get("Fantasy")));
         comicRepository.save(comic);
         comic = new Comic();
-        comic.setTitle("Test 04");
+        comic.setName("Test 04");
         comic.setGenres(Arrays.asList(genresMap.get("Adventure"), genresMap.get("Comedy")));
         comicRepository.save(comic);
         pageable = Pageable.ofSize(10);
@@ -67,7 +67,7 @@ class ComicRepositoryTest {
     void testComicContainsAllGenres() {
         Page<Comic> comics = comicRepository.findByGenresContainingAll(Arrays.asList(genresMap.get("Action"), genresMap.get("Adventure")), pageable);
         assertEquals(2, comics.getTotalElements());
-        List<String> comicList = comics.getContent().stream().map(Comic::getTitle).collect(Collectors.toList());
+        List<String> comicList = comics.getContent().stream().map(Comic::getName).collect(Collectors.toList());
         assertTrue(comicList.contains("Test 01"));
         assertTrue(comicList.contains("Test 02"));
     }
@@ -77,7 +77,7 @@ class ComicRepositoryTest {
         Genre genre = genresMap.get("Fantasy");
         Page<Comic> comics = comicRepository.findByGenresContainingNone(singletonList(genre), pageable);
         assertEquals(3, comics.getTotalElements());
-        Collection<String> comicList = comics.stream().map(Comic::getTitle).collect(Collectors.toList());
+        Collection<String> comicList = comics.stream().map(Comic::getName).collect(Collectors.toList());
         assertTrue(comicList.contains("Test 01"));
         assertTrue(comicList.contains("Test 02"));
         assertFalse(comicList.contains("Test 03"));
@@ -92,7 +92,7 @@ class ComicRepositoryTest {
                 pageable
         );
         assertEquals(2, comics.getTotalElements());
-        List<String> comicList = comics.getContent().stream().map(Comic::getTitle).collect(Collectors.toList());
+        List<String> comicList = comics.getContent().stream().map(Comic::getName).collect(Collectors.toList());
         assertTrue(comicList.contains("Test 01"));
         assertTrue(comicList.contains("Test 02"));
     }

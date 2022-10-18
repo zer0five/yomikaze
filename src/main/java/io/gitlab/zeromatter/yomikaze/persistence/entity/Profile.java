@@ -76,6 +76,6 @@ public class Profile {
 
     @Override
     public int hashCode() {
-        return account.hashCode();
+        return Objects.hashCode(id);
     }
 }

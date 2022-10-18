@@ -81,6 +81,7 @@ public class Account {
 
     @PrimaryKeyJoinColumn
     @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
+    @ToString.Exclude
     private Profile profile = new Profile(this);
 
     public void setRoles(Collection<Role> roles) {
@@ -120,12 +121,12 @@ public class Account {
         if (this == o) return true;
         if (o == null || Hibernate.getClass(this) != Hibernate.getClass(o)) return false;
         Account account = (Account) o;
-        return id != null && Objects.equals(id, account.id);
+        return Objects.equals(id, account.id);
     }
 
     @Override
     public int hashCode() {
-        return Long.hashCode(id.getId());
+        return Objects.hashCode(id);
     }
 
 }
