@@ -1,32 +1,32 @@
 spring:
-    profiles:
-        active: default,${SPRING_PROFILE:dev}
-    jpa:
-        open-in-view: false
-        properties:
-            hibernate:
-                enable_lazy_load_no_trans: true
-        hibernate:
-            ddl-auto: update
-        show-sql: false
-    servlet:
-        multipart:
-            max-file-size: ${MAX_UPLOAD_SIZE:8MB}
-            max-request-size: ${MAX_REQUEST_SIZE:128MB}
-    data:
-        redis:
-            repositories:
-                enabled: false
-    datasource:
-        hikari:
-            auto-commit: false
-    thymeleaf:
-        enabled: true
-        cache: false
-        mode: HTML5
-        encoding: UTF-8
+  profiles:
+    active: default,${SPRING_PROFILE:dev}
+  jpa:
+    open-in-view: false
+    properties:
+      hibernate:
+        enable_lazy_load_no_trans: true
+    hibernate:
+      ddl-auto: update
+    show-sql: false
+  servlet:
+    multipart:
+      max-file-size: ${MAX_UPLOAD_SIZE:8MB}
+      max-request-size: ${MAX_REQUEST_SIZE:128MB}
+  data:
+    redis:
+      repositories:
+        enabled: false
+  datasource:
+    hikari:
+      auto-commit: false
+  thymeleaf:
+    enabled: true
+    cache: false
+    mode: HTML5
+    encoding: UTF-8
 logging:
-    level:
-        web: info
-        sql: info
-        root: info
+  level:
+    web: info
+    sql: info
+    root: info

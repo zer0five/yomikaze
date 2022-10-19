@@ -1,18 +1,27 @@
 debug: false
 
 spring:
-    datasource:
-        type: com.zaxxer.hikari.HikariDataSource
-        url: jdbc:postgresql://127.0.0.1/yomikaze
-        username: postgres
-        password: 5702
-    jpa:
-        hibernate:
-            ddl-auto: create
-    session:
-        store-type: none
-
+  datasource:
+    type: com.zaxxer.hikari.HikariDataSource
+    url: jdbc:h2:mem:yomikaze
+    username: sa
+    password:
+  jpa:
+    database-platform: org.hibernate.dialect.H2Dialect
+    hibernate:
+      ddl-auto: create
+  h2:
+    console:
+      enabled: true
+      path: /h2-console
+  session:
+    store-type: none
+  cache:
+    type: none
+  autoconfigure:
+    exclude:
+      - org.springframework.boot.autoconfigure.data.redis.RedisAutoConfiguration
 logging:
-    level:
-        web: debug
-        sql: debug
+  level:
+    web: debug
+    sql: debug

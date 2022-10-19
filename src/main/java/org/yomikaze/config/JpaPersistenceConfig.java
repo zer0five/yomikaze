@@ -17,7 +17,7 @@ import java.util.Optional;
 
 @Configuration
 @EnableCaching
-@EnableJpaRepositories(basePackages = "io.gitlab.zeromatter.yomikaze.persistence.repository")
+@EnableJpaRepositories(basePackages = "org.yomikaze.persistence.repository")
 @Slf4j
 public class JpaPersistenceConfig {
     @Bean
