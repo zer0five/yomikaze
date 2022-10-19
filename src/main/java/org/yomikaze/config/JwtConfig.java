@@ -20,12 +20,11 @@ import java.security.interfaces.RSAPublicKey;
 @Configuration
 public class JwtConfig {
 
-    @Value("classpath:public.pem")
+    @Value("classpath:keys/public.pem")
     private RSAPublicKey publicKey;
 
-    @Value("classpath:private.pem")
+    @Value("classpath:keys/private.pem")
     private RSAPrivateKey privateKey;
-
 
     @Bean
     public JwtDecoder jwtDecoder() {

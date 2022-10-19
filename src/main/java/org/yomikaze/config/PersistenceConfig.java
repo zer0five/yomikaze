@@ -19,7 +19,7 @@ import java.util.Optional;
 @EnableCaching
 @EnableJpaRepositories(basePackages = "org.yomikaze.persistence.repository")
 @Slf4j
-public class JpaPersistenceConfig {
+public class PersistenceConfig {
     @Bean
     @Primary
     @Profile("heroku-manual-config")
