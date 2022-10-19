@@ -19,7 +19,7 @@
             </p>
         </div>
         <div class="card flex-shrink-0 w-full max-w-sm shadow-2xl bg-base-100">
-            <!--/*@thymesVar id="registration" type="io.gitlab.zeromatter.yomikaze.web.dto.RegistrationData"*/-->
+            <!--/*@thymesVar id="registration" type="org.yomikaze.web.dto.RegistrationData"*/-->
             <form class="card-body" method="POST" action ="#" th:action="@{/sign-up}" th:object="${registration}">
                 <div class="form-control">
                     <label class="label" for="username">
