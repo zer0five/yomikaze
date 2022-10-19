@@ -13,7 +13,7 @@
     <artifactId>yomikaze</artifactId>
     <version>1.0.0-SNAPSHOT</version>
     <name>yomikaze</name>
-    <description>yomikaze</description>
+    <description>読み風</description>
 
     <packaging>jar</packaging>
 

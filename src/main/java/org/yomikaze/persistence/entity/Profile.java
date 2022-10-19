@@ -8,6 +8,7 @@ import org.hibernate.Hibernate;
 import org.yomikaze.snowflake.Snowflake;
 
 import javax.persistence.*;
+import java.io.Serializable;
 import java.util.Date;
 import java.util.Objects;
 
@@ -16,7 +17,7 @@ import java.util.Objects;
 @ToString
 @Entity(name = "profile")
 @Table(name = "profile")
-public class Profile {
+public class Profile implements Serializable {
 
     @Id
     @Column(

@@ -23,6 +23,14 @@ spring:
     redis:
       time-to-live: 1h
       key-prefix: yomikaze::cache
+  data:
+    redis:
+      repositories:
+        enabled: false
+    jpa:
+      repositories:
+        enabled: true
+        bootstrap-mode: default
   thymeleaf:
     enabled: true
     enable-spring-el-compiler: true

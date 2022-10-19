@@ -5,22 +5,15 @@
     <div class="navbar bg-base-100">
         <div class="navbar-start gap-4">
             <a class="btn btn-ghost gap-2 text-xl text-white hover:bg-transparent" th:href="@{/}">
-                <img alt="logo" class="w-12 h-12" src="#" th:src="@{/asset/logo.svg}"/>
+                <img alt="logo" class="w-12 h-12" src="#" th:src="@{/asset/image/logo.svg}"/>
                 <div class="font-title text-primary inline-flex text-lg transition-all duration-200 md:text-3xl">
                     <span class="text-base-content lowercase">yomi</span>
                     <span class="lowercase">kaze</span>
                 </div>
             </a>
-            <label class="btn btn-ghost btn-circle text-base-content">
-                <input @change="theme_id = (theme_id + 1) % 3" class="hidden" type="checkbox"/>
-                <i :class="{'feather-sun': theme_id === 0, 'feather-sunset': theme_id === 1, 'feather-moon': theme_id === 2 }"
-                   aria-hidden="true" class="feather-sun"></i>
-                <!--                <i x-show="theme_id === 1" class="feather-sunset" aria-hidden="true"></i>-->
-                <!--                <i x-show="theme_id === 2" class="feather-moon" aria-hidden="true"></i>-->
-                <!--                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-sun" x-show="theme_id === 0"><circle cx="12" cy="12" r="5"></circle><line x1="12" y1="1" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line><line x1="1" y1="12" x2="3" y2="12"></line><line x1="21" y1="12" x2="23" y2="12"></line><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line></svg>-->
-                <!--                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-sunset" x-show="theme_id === 1" style="display: none;"><path d="M17 18a5 5 0 0 0-10 0"></path><line x1="12" y1="9" x2="12" y2="2"></line><line x1="4.22" y1="10.22" x2="5.64" y2="11.64"></line><line x1="1" y1="18" x2="3" y2="18"></line><line x1="21" y1="18" x2="23" y2="18"></line><line x1="18.36" y1="11.64" x2="19.78" y2="10.22"></line><line x1="23" y1="22" x2="1" y2="22"></line><polyline points="16 5 12 9 8 5"></polyline></svg>-->
-                <!--                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-moon" x-show="theme_id === 2" style="display: none;"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg>-->
-            </label>
+            <button @click="theme_id = (theme_id + 1) % 3" class="btn btn-ghost btn-circle text-base-content">
+                <i x-data="{icons: ['sun', 'sunset', 'moon']}" :data-feather="icons[theme_id]" aria-hidden="true"></i>
+            </button>
         </div>
         <div class="navbar-center">
             <div class="form-control">
@@ -28,13 +21,13 @@
                     <input class="input input-bordered input-accent" placeholder="Search" type="text"/>
                     <button
                         class="btn btn-square btn-accent btn-outline stroke-accent hover:stroke-white dark:hover:stroke-black">
-                        <i data-feather="search" x-init="feather.replace()"></i>
+                        <i data-feather="search"></i>
                     </button>
                 </label>
             </div>
         </div>
         <div class="navbar-end">
-            <th:block sec:authorize="!isAnonymous()" th:object="${#session.getAttribute('account')}">
+            <th:block sec:authorize="!isAnonymous()" th:object="${#authentication.principal}">
                 <div class="dropdown">
                     <div class="btn btn-ghost m-1 gap-2" tabindex="0">
                         <div class="avatar" th:if="*{profile.picture != null}">
@@ -48,17 +41,45 @@
                                 <span class="text-xl" th:text="*{profile.displayName.substring(0, 1)}"></span>
                             </div>
                         </div>
-                        <span class="text-base-content hidden md:block" th:text="*{profile.displayName}"></span>
+                        <span class="hidden md:block" th:text="*{profile.displayName}">Name</span>
                     </div>
                     <ul class="dropdown-content menu menu-compact p-2 shadow bg-base-100 rounded-box w-52" tabindex="0">
-                        <li><a>Profile</a></li>
-                        <li><a>Library</a></li>
-                        <li><a>History</a></li>
-                        <li><a>Settings</a></li>
-                        <li class="divider"></li>
                         <li>
-                            <a class="text-error hover:bg-error hover:text-error-content"
-                               th:href="@{/logout}">Logout</a>
+                            <a>
+                                <i data-feather="user" aria-hidden="true"></i>
+                                Profile
+                            </a>
+                        </li>
+                        <li>
+                            <a>
+                                <i data-feather="bookmark" aria-hidden="true"></i>
+                                Library
+                            </a>
+                        </li>
+                        <li>
+                            <a>
+                                <i data-feather="rotate-ccw" aria-hidden="true"></i>
+                                History
+                            </a>
+                        </li>
+                        <li>
+                            <a>
+                                <i data-feather="settings" aria-hidden="true"></i>
+                                Settings
+                            </a>
+                        </li>
+                        <li class="menu-title">
+                            <span>
+                                <hr/>
+                            </span>
+                        </li>
+                        <li>
+                            <a href="/logout"
+                               class="text-error hover:bg-error hover:text-error-content"
+                               th:href="@{/logout}">
+                                <i data-feather="log-out" aria-hidden="true"></i>
+                                Logout
+                            </a>
                         </li>
                     </ul>
                 </div>

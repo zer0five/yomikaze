@@ -12,6 +12,7 @@ import org.yomikaze.snowflake.Snowflake;
 import org.yomikaze.snowflake.json.SnowflakeJsonSerializer;
 
 import javax.persistence.*;
+import java.io.Serializable;
 import java.util.Collection;
 import java.util.Objects;
 
@@ -22,7 +23,7 @@ import java.util.Objects;
 @Entity(name = "role")
 @Table(name = "role")
 @JsonInclude(JsonInclude.Include.NON_EMPTY)
-public class Role {
+public class Role implements Serializable {
     @Id
     @GeneratedValue(generator = "role-snowflake")
     @Column(

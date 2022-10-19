@@ -19,8 +19,10 @@
                  th:if="${param.failure != null}">
                 <span class="block sm:inline" th:utext="#{authentication.login.unknown}"></span>
             </div>
-            <form @submit="submit = true" class="card-body" method="POST" th:action="@{/login}"
-                  x-data="{submit: false}">
+            <form class="card-body" method="POST"
+                  x-data="{submit: false}" @submit="submit = true"
+                  th:action="@{/login}"
+            >
                 <div class="form-control">
                     <label class="label" for="username">
                         <span class="label-text">Username or Email</span>
@@ -44,10 +46,7 @@
                 </div>
                 <div class="form-control">
                     <button :class="{loading: submit}" :disabled="submit" class="btn btn-accent">
-                        <span x-show="!submit">Sign In</span>
-                        <span x-show="submit">
-                            Signing In...
-                        </span>
+                        <span x-text="submit ? 'Signing In...' : 'Sign In'">Sign In</span>
                     </button>
                 </div>
             </form>
