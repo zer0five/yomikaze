@@ -23,6 +23,19 @@ spring:
     redis:
       time-to-live: 1h
       key-prefix: yomikaze::cache
+  thymeleaf:
+    enabled: true
+    enable-spring-el-compiler: true
+    cache: true
+    mode: HTML
+    encoding: UTF-8
+    prefix: classpath:/templates/
+    suffix: .html
+    servlet:
+      content-type: text/html
+    template-resolver-order: 1
+    check-template-location: true
+
 
 logging:
   level:
