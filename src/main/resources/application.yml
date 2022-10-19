@@ -23,7 +23,7 @@ spring:
   thymeleaf:
     enabled: true
     cache: false
-    mode: HTML5
+    mode: HTML
     encoding: UTF-8
 logging:
   level:

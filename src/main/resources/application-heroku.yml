@@ -23,6 +23,9 @@ spring:
     redis:
       time-to-live: 1h
       key-prefix: yomikaze::cache
+  thymeleaf:
+    enabled: true
+    cache: true
 
 logging:
   level:
