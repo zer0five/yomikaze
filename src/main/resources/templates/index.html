@@ -2,12 +2,12 @@
 
 <html lang="en" th:insert="/layouts/default">
 <head>
-    <title>yomikaze::home</title>
+    <title th:fragment="page-title">yomikaze::home</title>
 </head>
 
 <body>
 <th:block th:fragment="content">
-    <div class="flex flex-col items-center justify-center min-h-screen">
+    <div class="flex flex-col items-center justify-center min-h-screen text-base-content">
         <div class="flex flex-col items-center justify-center">
             <img alt="logo" class="w-32 h-32" th:src="@{/asset/logo.svg}">
             <h1 class="text-4xl font-bold">yomikaze</h1>

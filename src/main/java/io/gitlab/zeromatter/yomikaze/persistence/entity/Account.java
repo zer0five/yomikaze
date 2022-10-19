@@ -13,9 +13,12 @@ import lombok.ToString;
 import org.hibernate.Hibernate;
 import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
 
 import javax.persistence.*;
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Getter
 @Setter
@@ -24,7 +27,7 @@ import java.util.*;
 @Table(name = "account")
 @JsonInclude(JsonInclude.Include.NON_EMPTY)
 @EntityListeners(AccountListener.class)
-public class Account {
+public class Account implements UserDetails {
 
     @Id
     @JoinColumn(
@@ -70,6 +73,7 @@ public class Account {
     )
     @OnDelete(action = OnDeleteAction.CASCADE)
     private Set<Role> roles = new HashSet<>();
+
     @PrimaryKeyJoinColumn
     @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
     @ToString.Exclude
@@ -124,4 +128,31 @@ public class Account {
         return Objects.hashCode(id);
     }
 
+    @Override
+    public Collection<? extends GrantedAuthority> getAuthorities() {
+        return getRoles().stream()
+            .map(Role::getPermissions)
+            .flatMap(Collection::stream)
+            .collect(Collectors.toSet());
+    }
+
+    @Override
+    public boolean isAccountNonExpired() {
+        return true;
+    }
+
+    @Override
+    public boolean isAccountNonLocked() {
+        return true;
+    }
+
+    @Override
+    public boolean isCredentialsNonExpired() {
+        return true;
+    }
+
+    @Override
+    public boolean isEnabled() {
+        return true;
+    }
 }

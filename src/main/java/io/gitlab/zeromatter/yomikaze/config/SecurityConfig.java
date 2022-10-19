@@ -1,10 +1,13 @@
 package io.gitlab.zeromatter.yomikaze.config;
 
+import io.gitlab.zeromatter.yomikaze.persistence.entity.Account;
+import io.gitlab.zeromatter.yomikaze.persistence.repository.AccountRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.java.Log;
 import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpHeaders;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
@@ -12,10 +15,13 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 import org.springframework.session.web.http.CookieSerializer;
 import org.springframework.session.web.http.DefaultCookieSerializer;
+
+import javax.servlet.http.HttpSession;
 
 @Log
 @EnableCaching
@@ -26,6 +32,7 @@ import org.springframework.session.web.http.DefaultCookieSerializer;
 public class SecurityConfig {
 
     private final UserDetailsService userDetailsService;
+    private final AccountRepository accountRepository;
 
     @Bean
     public SecurityFilterChain configure(HttpSecurity http) throws Exception {
@@ -48,6 +55,24 @@ public class SecurityConfig {
                 .loginPage("/login")
                 .failureUrl("/login?failure")
                 .defaultSuccessUrl("/")
+                .successHandler((request, response, authentication) -> {
+                    Account account = accountRepository.findByUsername(authentication.getName())
+                        .orElseThrow(() -> new UsernameNotFoundException("User not found"));
+                    HttpSession session = request.getSession();
+                    session.setAttribute("account", account);
+                    System.out.println("authentication: " + authentication);
+                    System.out.println("authentication.principal: " + authentication.getPrincipal());
+                    System.out.println("authentication.details: " + authentication.getDetails());
+                    System.out.println("authentication.authorities: " + authentication.getAuthorities());
+                    System.out.println("authentication.credentials: " + authentication.getCredentials());
+                    System.out.println("authentication.name: " + authentication.getName());
+                    String referer = request.getHeader(HttpHeaders.REFERER);
+                    if (referer != null) {
+                        response.sendRedirect(referer);
+                    } else {
+                        response.sendRedirect("/");
+                    }
+                })
             )
             .rememberMe(rememberMe -> rememberMe
                 .tokenValiditySeconds(60 * 3600 * 24 * 7)

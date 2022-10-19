@@ -6,4 +6,4 @@ npx tailwindcss build \
     --input ./tailwind/tailwind.input.css \
     --output ./webapp/asset/css/tailwind.min.css \
     --watch \
-    --minify
+    --verbose

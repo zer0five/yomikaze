@@ -1,8 +1,11 @@
 /** @type {import('tailwindcss').Config} */
 module.exports = {
-    plugins: [require("daisyui")],
+    plugins: [require("daisyui"), require("flowbite/plugin")],
+    content: [
+        "../../node_modules/flowbite/**/*.js"
+    ],
     daisyui: {
-        darkTheme: "ayu-mirage",
+        darkTheme: "ayu-dark",
         themes: [
             {
                 "ayu-light": {
@@ -31,19 +34,19 @@ module.exports = {
                     "warning": "#FFD173",
                     "error": "#FF6666",
                 },
-                // "ayu-dark": {
-                //     "primary": "#39BAE6",
-                //     "secondary": "#7FD962",
-                //     "accent": "#E6B450",
-                //     "neutral": "#ACB6BF",
-                //     "base-100": "#0F131A",
-                //     "base-200": "#0D1017",
-                //     "base-300": "#0B0E14",
-                //     "info": "#59C2FF",
-                //     "success": "#7FD962",
-                //     "warning": "#FFB454",
-                //     "error": "#D95757",
-                // },
+                "ayu-dark": {
+                    "primary": "#39BAE6",
+                    "secondary": "#7FD962",
+                    "accent": "#E6B450",
+                    "neutral": "#ACB6BF",
+                    "base-100": "#0F131A",
+                    "base-200": "#0D1017",
+                    "base-300": "#0B0E14",
+                    "info": "#59C2FF",
+                    "success": "#7FD962",
+                    "warning": "#FFB454",
+                    "error": "#D95757",
+                },
             },
         ],
     },

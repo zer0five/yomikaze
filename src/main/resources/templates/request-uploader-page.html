@@ -168,21 +168,28 @@
                         class="bg-white border-b dark:bg-gray-800 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600"
                         th:each="request : ${requests}"
                         th:object="${request}">
-                        <th scope="row" th:text="*{id.timestamp}"
-                            class="px-6 py-4 font-medium text-gray-900 dark:text-white whitespace-nowrap">
+                        <th class="px-6 py-4 font-medium text-gray-900 dark:text-white whitespace-nowrap" scope="row"
+                            th:text="*{#dates.format(id.timestamp, 'hh:mm:ss dd/MM/yyyy')}">
 
                         </th>
                         <td class="px-6 py-4" th:text="*{message}">
 
                         </td>
                         <td class="px-6 py-4">
-                                <th:block th:if="${*{approved}!=null}" >
-
-                                </th:block>
+                            <span class="badge badge-warning gap-2" th:if="*{approved == null}">
+                                Pending
+                            </span>
+                            <span class="badge badge-error gap-2" th:if="*{approved != null && not approved}">
+                                Rejected
+                            </span>
+                            <span class="badge badge-success gap-2" th:if="*{approved != null && approved}">
+                                Accepted
+                            </span>
                         </td>
 
                         <td class="pr-8 py-4 text-right">
-                            <button class=" gap-2" x-init="feather.replace()">
+                            <button class="btn btn-ghost rounded-full gap-2" th:if="*{approved == null}"
+                                    x-init="feather.replace()">
                                 <i data-feather="trash-2"></i>
                             </button>
                         </td>
