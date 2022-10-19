@@ -19,33 +19,39 @@
             </p>
         </div>
         <div class="card flex-shrink-0 w-full max-w-sm shadow-2xl bg-base-100">
-            <form class="card-body" method="POST" th:action="@{/sign-up}">
+            <!--/*@thymesVar id="registration" type="io.gitlab.zeromatter.yomikaze.web.dto.RegistrationData"*/-->
+            <form class="card-body" method="POST" action ="#" th:action="@{/sign-up}" th:object="${registration}">
                 <div class="form-control">
                     <label class="label" for="username">
                         <span class="label-text">Username</span>
                     </label>
-                    <input class="input input-bordered" id="username" name="username" placeholder="Username"
-                           type="text"/>
+                    <input class="input input-bordered" id="username" placeholder="Username"
+                           type="text" th:field="*{username}">
+                    <span class="text-error" th:if="${#fields.hasErrors('username')}" th:errors="*{username}"></span>
                 </div>
                 <div class="form-control">
                     <label class="label" for="email">
                         <span class="label-text">Email</span>
                     </label>
-                    <input class="input input-bordered" id="email" name="email" placeholder="Email" type="email"/>
+                    <input class="input input-bordered" id="email" placeholder="Email" type="email" th:field="*{email}"/>
+                    <span class="text-error" th:if="${#fields.hasErrors('email')}" th:errors="*{email}"></span>
                 </div>
                 <div class="form-control">
                     <label class="label" for="password">
                         <span class="label-text">Password</span>
                     </label>
                     <input class="input input-bordered" id="password" name="password" placeholder="Password"
-                           type="password"/>
+                           type="password" th:field="*{password}"/>
+                    <span class="text-error" th:if="${#fields.hasErrors('password')}" th:errors="*{password}"></span>
                 </div>
                 <div class="form-control">
                     <label class="label" for="password-confirmation">
                         <span class="label-text">Confirm Password</span>
                     </label>
                     <input class="input input-bordered" id="password-confirmation" name="password-confirmation"
-                           placeholder="Confirm password" type="password"/>
+                           placeholder="Confirm password" type="password" th:field="*{passwordConfirmation}"/>
+                    <span class="text-error" th:if="${#fields.hasErrors('passwordConfirmation')}"
+                          th:errors="*{passwordConfirmation}"></span>
                 </div>
                 <div class="form-control mt-6">
                     <button class="btn btn-accent">Sign Up</button>

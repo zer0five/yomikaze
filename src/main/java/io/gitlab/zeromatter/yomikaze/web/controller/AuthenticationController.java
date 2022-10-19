@@ -9,15 +9,17 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
 
 import javax.persistence.EntityExistsException;
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpSession;
 import javax.validation.Valid;
-import java.net.URI;
-import java.util.Optional;
 
 @Log
 @Controller
@@ -32,36 +34,42 @@ public class AuthenticationController {
         return "sign-in";
     }
 
+//    @GetMapping({"/register", "/sign-up"})
+//    public String register(RegistrationData registration, @RequestHeader("referer") Optional<URI> referer, HttpSession session) {
+//        referer.ifPresent(uri -> session.setAttribute("redirect", uri));
+//        return "sign-up";
+//    }
+//
+//    @PostMapping({"/register", "/sign-up"})
+//    public String register(@Valid RegistrationData registration, BindingResult bindingResult, @SessionAttribute("redirect") Optional<URI> redirect, HttpSession session, HttpServletRequest request) throws EntityExistsException {
+//        if (bindingResult.hasErrors()) {
+//            return "sign-up";
+//        }
+//        authenticationService.register(registration);
+//        URI uri = redirect.orElseGet(() -> {
+//            if (request.getContextPath().isEmpty()) {
+//                return URI.create("/");
+//            } else {
+//                return URI.create(request.getContextPath());
+//            }
+//        });
+//        redirect.ifPresent(u -> session.removeAttribute("redirect"));
+//        return "redirect:" + uri;
+//    }
+
     @GetMapping({"/register", "/sign-up"})
-    public String register(@RequestHeader("referer") Optional<URI> referer, HttpSession session) {
-        referer.ifPresent(uri -> session.setAttribute("redirect", uri));
+public String register(Model model) {
+        model.addAttribute("registration", new RegistrationData());
         return "sign-up";
     }
 
     @PostMapping({"/register", "/sign-up"})
-    public ResponseEntity<Object> register(@Valid RegistrationData registration, @SessionAttribute("redirect") Optional<URI> redirect, HttpSession session, HttpServletRequest request) throws EntityExistsException {
+    public String register(@Valid RegistrationData registration, BindingResult bindingResult) {
+        if (bindingResult.hasErrors()) {
+            return "sign-up";
+        }
         authenticationService.register(registration);
-        URI uri = redirect.orElseGet(() -> {
-            if (request.getContextPath().isEmpty()) {
-                return URI.create("/");
-            } else {
-                return URI.create(request.getContextPath());
-            }
-        });
-        redirect.ifPresent(u -> session.removeAttribute("redirect"));
-        return ResponseEntity.status(HttpStatus.FOUND).location(uri).build();
-    }
-
-    @ExceptionHandler({EntityExistsException.class})
-    protected ResponseEntity<Object> handleEntityExistsException(EntityExistsException e, HttpServletRequest request) {
-        return ResponseEntity
-            .status(HttpStatus.CONFLICT)
-            .body(GenericResponse
-                .builder()
-                .status(false)
-                .message("Username or email already exists")
-                .build()
-            );
+        return "redirect:/";
     }
 
 }

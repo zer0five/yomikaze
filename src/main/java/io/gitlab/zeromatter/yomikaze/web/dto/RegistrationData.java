@@ -2,11 +2,13 @@ package io.gitlab.zeromatter.yomikaze.web.dto;
 
 import io.gitlab.zeromatter.yomikaze.validation.UsernameExistsConstraint;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import javax.validation.constraints.Email;
 import javax.validation.constraints.Pattern;
 
 @Data
+@NoArgsConstructor
 public class RegistrationData {
 
     @Pattern(regexp = "^\\w{3,16}$", message = "registration.username.invalid")
