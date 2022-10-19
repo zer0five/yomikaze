@@ -33,7 +33,8 @@ public class RequestController {
     //for user
     @PreAuthorize("authentication != null && isAuthenticated()")
     @PostAuthorize("hasAuthority('request.create.uploader')")
-    @GetMapping({"", "/"})
+
+
     public ModelAndView request(ModelAndView modelAndView, Authentication authentication, Optional<Integer> page, Optional<Integer> size) {
         Account account = accountRepository.findByUsername(authentication.getName()).orElseThrow(() -> new UsernameNotFoundException("User not found!"));
         modelAndView.setViewName("request-uploader-page");
