@@ -17,11 +17,11 @@
 </head>
 
 <body class="bg-base-100 text-base-content overflow-x-hidden" th:fragment="body">
-<th:block th:replace="/fragments/header"></th:block>
+<th:block th:replace="fragments/header"></th:block>
 <div th:replace="this :: content">
     <!--  Main content here  -->
 </div>
-<th:block th:replace="/fragments/footer"></th:block>
-<th:block th:replace="/fragments/scripts"></th:block>
+<th:block th:replace="fragments/footer"></th:block>
+<th:block th:replace="fragments/scripts"></th:block>
 </body>
 </html>
