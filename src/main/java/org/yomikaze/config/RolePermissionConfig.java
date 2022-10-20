@@ -12,6 +12,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 import org.yomikaze.persistence.entity.Account;
 import org.yomikaze.persistence.entity.Permission;
+import org.yomikaze.persistence.entity.Profile;
 import org.yomikaze.persistence.entity.Role;
 import org.yomikaze.persistence.repository.AccountRepository;
 import org.yomikaze.persistence.repository.PermissionRepository;
@@ -20,6 +21,7 @@ import org.yomikaze.persistence.repository.RoleRepository;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
+import java.util.Optional;
 
 @RequiredArgsConstructor
 @Component
@@ -122,17 +124,24 @@ public class RolePermissionConfig implements ApplicationListener<ContextRefreshe
             createPermissionIfNotFound("user.update")
         );
         Role adminRole = createRoleIfNotFound(admin, adminPermissions);
-        if (!accountRepository.findByUsername("admin").isPresent()) {
-            Account adminAccount = new Account();
-            adminAccount.setUsername("admin");
-            adminAccount.setEmail("admin@yomikaze.org");
-            adminAccount.setPassword(passwordEncoder.encode("admin"));
-            adminAccount.addRole(memberRole);
-            adminAccount.addRole(uploaderRole);
-            adminAccount.addRole(adminRole);
-            adminAccount.getProfile().setDisplayName("Administrator");
-            accountRepository.save(adminAccount);
-
+        Optional<Account> adminAccount = accountRepository.findByUsername("admin");
+        if (adminAccount.isPresent()) {
+            if (adminAccount.get().getProfile() == null) {
+                Profile profile = new Profile();
+                profile.setAccount(adminAccount.get());
+                profile.setDisplayName("Administrator");
+                adminAccount.get().setProfile(profile);
+            }
+        } else {
+            Account account = new Account();
+            account.setUsername("admin");
+            account.setEmail("admin@yomikaze.org");
+            account.setPassword(passwordEncoder.encode("admin"));
+            account.addRole(memberRole);
+            account.addRole(uploaderRole);
+            account.addRole(adminRole);
+            account.getProfile().setDisplayName("Administrator");
+            accountRepository.save(account);
         }
 
         setInitialized(true);

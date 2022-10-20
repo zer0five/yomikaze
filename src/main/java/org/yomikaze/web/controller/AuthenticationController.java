@@ -8,15 +8,14 @@ import org.springframework.stereotype.Controller;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+import org.yomikaze.persistence.entity.Account;
 import org.yomikaze.service.AuthenticationService;
-import org.yomikaze.web.dto.RegistrationData;
+import org.yomikaze.service.RedirectService;
+import org.yomikaze.web.dto.Registration;
 
 import javax.servlet.http.HttpSession;
 import java.net.URI;
-import java.util.Arrays;
-import java.util.HashSet;
 import java.util.Optional;
-import java.util.Set;
 
 @Log
 @Controller
@@ -25,38 +24,32 @@ import java.util.Set;
 @Validated
 public class AuthenticationController {
     private final AuthenticationService authenticationService;
-    private static final Set<String> NOT_TO_REDIRECT = new HashSet<>(Arrays.asList("/login", "/register", "/sign-in", "/sign-up"));
+    private final RedirectService redirectService;
 
     @RequestMapping({"/login", "/sign-in"})
     public String login(@RequestHeader(HttpHeaders.REFERER) Optional<URI> referer, HttpSession session) {
-        referer.filter(uri -> !NOT_TO_REDIRECT.contains(uri.getPath())).ifPresent(uri -> session.setAttribute("redirect", uri));
-        return "sign-in";
+        redirectService.storeRedirect(session, referer);
+        return "views/auth/sign-in";
     }
 
     @GetMapping({"/register", "/sign-up"})
-    public String register(
-        @ModelAttribute("registration") RegistrationData registration,
-        @RequestHeader("referer") Optional<URI> referer, HttpSession session) {
-        referer.filter(uri -> !NOT_TO_REDIRECT.contains(uri.getPath())).ifPresent(uri -> session.setAttribute("redirect", uri));
-        return "sign-up";
+    public String register(@ModelAttribute Registration registration,
+                           @RequestHeader(HttpHeaders.REFERER) Optional<URI> referer,
+                           HttpSession session) {
+        redirectService.storeRedirect(session, referer);
+        return "views/auth/sign-up";
     }
 
     @PostMapping({"/register", "/sign-up"})
-    public String register(
-        @Validated @ModelAttribute("registration") RegistrationData registration,
-        BindingResult bindingResult,
-        @SessionAttribute("redirect") Optional<URI> redirect,
-        HttpSession session) {
+    public String register(@Validated @ModelAttribute Registration registration,
+                           BindingResult bindingResult,
+                           HttpSession session) {
         if (bindingResult.hasErrors()) {
-            return "sign-up";
+            return "views/auth/sign-up";
         }
-        authenticationService.register(registration);
-        if (redirect.isPresent()) {
-            session.removeAttribute("redirect");
-            return "redirect:" + redirect.get();
-        } else {
-            return "redirect:/";
-        }
+        Account account = authenticationService.register(registration);
+        authenticationService.authenticate(account, registration.getPassword());
+        return redirectService.getRedirectSpring(session);
     }
 
 

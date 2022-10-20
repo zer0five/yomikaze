@@ -60,7 +60,7 @@ public class SecurityConfig {
                 .logoutSuccessUrl("/login")
             )
             .exceptionHandling(exceptions -> exceptions
-                        .accessDeniedPage("/access-denied.html")
+                .accessDeniedPage("/access-denied.html")
             )
             .build();
     }

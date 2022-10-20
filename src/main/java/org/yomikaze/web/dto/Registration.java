@@ -13,7 +13,7 @@ import java.util.Objects;
 
 @Data
 @NoArgsConstructor
-public class RegistrationData {
+public class Registration {
 
     @NotBlank(message = "registration.username.blank")
     @Length(min = 3, max = 32, message = "registration.username.invalid.length")

@@ -41,6 +41,7 @@ public class Comic {
 
     @Column(name = "thumbnail")
     private URI thumbnail;
+
     @Column(name = "published")
     private Instant published;
 
