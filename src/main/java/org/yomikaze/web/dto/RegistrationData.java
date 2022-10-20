@@ -34,7 +34,7 @@ public class RegistrationData {
     private String passwordConfirmation;
 
     @AssertTrue(message="registration.password.confirmation.mismatch")
-    private boolean isPasswordConfirmationValid() {
+    public boolean isPasswordConfirmationValid() {
         return Objects.equals(password, passwordConfirmation);
     }
 
