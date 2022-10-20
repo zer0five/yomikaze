@@ -48,9 +48,6 @@ public class SnowflakeTypeDescriptor extends AbstractTypeDescriptor<Snowflake> {
         if (Long.class.isAssignableFrom(value.getClass())) {
             return Snowflake.of((Long) value);
         }
-        if (long.class.isAssignableFrom(value.getClass())) {
-            return Snowflake.of((long) value);
-        }
         if (String.class.isAssignableFrom(value.getClass())) {
             return Snowflake.of((String) value);
         }
