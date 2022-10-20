@@ -11,13 +11,12 @@ import org.springframework.security.config.annotation.method.configuration.Enabl
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
-import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 import org.springframework.session.web.http.CookieSerializer;
 import org.springframework.session.web.http.DefaultCookieSerializer;
 import org.yomikaze.persistence.entity.Account;
-import org.yomikaze.persistence.repository.AccountRepository;
+import org.yomikaze.service.YomikazeUserDetailsService;
 
 import javax.servlet.http.HttpSession;
 import java.net.URI;
@@ -30,8 +29,7 @@ import java.net.URI;
 @EnableGlobalMethodSecurity(prePostEnabled = true, proxyTargetClass = true, securedEnabled = true, jsr250Enabled = true)
 public class SecurityConfig {
 
-    private final UserDetailsService userDetailsService;
-    private final AccountRepository accountRepository;
+    private final YomikazeUserDetailsService userDetailsService;
 
     @Bean
     public SecurityFilterChain configure(HttpSecurity http) throws Exception {
@@ -42,10 +40,8 @@ public class SecurityConfig {
             )
             .httpBasic(basic -> basic.realmName("yomikaze"))
             .sessionManagement(session -> session
-                .sessionAuthenticationFailureHandler((request, response, exception) -> {
-                    log.info("sessionAuthenticationFailureHandler");
-                    response.sendRedirect("/login");
-                })
+                .sessionAuthenticationErrorUrl("/login")
+                .invalidSessionUrl("/logout")
                 .sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED)
                 .sessionFixation().migrateSession()
                 .maximumSessions(1)
@@ -53,22 +49,23 @@ public class SecurityConfig {
             .formLogin(form -> form
                 .loginPage("/login")
                 .failureUrl("/login?failure")
-//                .defaultSuccessUrl("/")
-                .successHandler((request, response, authentication) -> {
-                    if (!(authentication.getPrincipal() instanceof Account)) {
-                        log.info("Principal {} is not an Account", authentication.getPrincipal());
-                        throw new IllegalStateException("Principal is not an Account");
-                    }
-                    HttpSession session = request.getSession();
-                    URI redirect = (URI) session.getAttribute("redirect");
-                    if (redirect != null) {
-                        session.removeAttribute("redirect");
-                        log.info("Redirecting to {}", redirect);
-                        response.sendRedirect(redirect.toString());
-                    } else {
-                        response.sendRedirect("/");
-                    }
-                })
+                .defaultSuccessUrl("/")
+//                .successHandler((request, response, authentication) -> {
+//                    if (!(authentication.getPrincipal() instanceof Account)) {
+//                        log.info("Principal {} is not an Account", authentication.getPrincipal());
+//                        throw new IllegalStateException("Principal is not an Account");
+//                    }
+//                    log.info("Principal {} is an Account", authentication.getPrincipal());
+//                    HttpSession session = request.getSession();
+//                    URI redirect = (URI) session.getAttribute("redirect");
+//                    if (redirect == null) {
+//                        response.sendRedirect("/");
+//                    } else {
+//                        session.removeAttribute("redirect");
+//                        log.info("Redirecting to {}", redirect);
+//                        response.sendRedirect(redirect.toString());
+//                    }
+//                })
             )
             .rememberMe(rememberMe -> rememberMe
                 .tokenValiditySeconds(60 * 3600 * 24 * 7)

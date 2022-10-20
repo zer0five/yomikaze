@@ -22,9 +22,6 @@ public class AuthenticationService {
     private final AuthenticationManager authenticationManager;
 
     public void register(RegistrationData registrationData) {
-        if (accountRepository.existsByUsernameOrEmail(registrationData.getUsername(), registrationData.getEmail())) {
-            throw new EntityExistsException("Username or email already exists");
-        }
         Account account = new Account();
         account.setUsername(registrationData.getUsername());
         account.setPassword(passwordEncoder.encode(registrationData.getPassword()));

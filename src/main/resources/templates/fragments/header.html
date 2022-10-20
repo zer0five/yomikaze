@@ -1,11 +1,11 @@
 <header th:fragment="header"
-        xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity3"
+        xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity5"
         xmlns:th="http://www.thymeleaf.org"
 >
     <div class="navbar bg-base-100">
         <div class="navbar-start gap-4">
-            <a class="btn btn-ghost gap-2 text-xl text-white hover:bg-transparent" th:href="@{/}">
-                <img alt="logo" class="w-12 h-12" src="#" th:src="@{/asset/image/logo.svg}"/>
+            <a class="btn btn-ghost gap-2 text-xl text-white hover:bg-transparent" href="/" th:href="@{/}">
+                <img alt="logo" class="w-12 h-12" src="/asset/image/logo.svg" th:src="@{/asset/image/logo.svg}"/>
                 <div class="font-title text-primary inline-flex text-lg transition-all duration-200 md:text-3xl">
                     <span class="text-base-content lowercase">yomi</span>
                     <span class="lowercase">kaze</span>
@@ -16,54 +16,60 @@
             </button>
         </div>
         <div class="navbar-center">
-            <div class="form-control">
+            <form class="form-control" action="/search" th:action="@{/search}">
                 <label class="input-group">
-                    <input class="input input-bordered input-accent" placeholder="Search" type="text"/>
+                    <input class="input input-bordered input-accent" placeholder="Search" type="text" required/>
                     <button
+                        type="submit"
                         class="btn btn-square btn-accent btn-outline stroke-accent hover:stroke-white dark:hover:stroke-black">
                         <i data-feather="search"></i>
                     </button>
                 </label>
-            </div>
+            </form>
         </div>
         <div class="navbar-end">
-            <th:block sec:authorize="authenticated && !anonymous" th:if="${#authentication.principal != null}" th:object="${#authentication.principal}">
-                <div class="dropdown">
-                    <div class="btn btn-ghost m-1 gap-2" tabindex="0">
-                        <div class="avatar" th:if="*{profile.picture != null}">
+            <th:block sec:authorize="!anonymous">
+                <!--/*@thymesVar id="account" type="org.yomikaze.persistence.entity.Account"*/-->
+                <div class="dropdown dropdown-end" th:with="account = ${#authentication.principal}">
+                    <div class="btn btn-ghost m-1 gap-2" tabindex="0" th:with="profile = ${account.profile}">
+                        <div class="avatar" th:if="${profile.picture != null}">
                             <div class="w-8 h-8 rounded-full">
                                 <img alt="Profile picture"
-                                     th:src="*{profile.picture}"/>
+                                     th:src="${profile.picture}"/>
                             </div>
                         </div>
-                        <div class="avatar placeholder" th:if="*{profile.picture == null}">
+                        <div class="avatar placeholder" th:if="${profile.picture == null}">
                             <div class="bg-neutral-focus text-neutral-content rounded-full w-8">
-                                <span class="text-xl" th:text="*{profile.displayName.substring(0, 1)}"></span>
+                                <span class="text-xl" th:text="${profile.displayName.substring(0, 1)}"></span>
                             </div>
                         </div>
-                        <span class="hidden md:block" th:text="*{profile.displayName}">Name</span>
+                        <span class="hidden md:block" th:text="${profile.displayName}">Name</span>
                     </div>
-                    <ul class="dropdown-content menu menu-compact p-2 shadow bg-base-100 rounded-box w-52" tabindex="0">
+                    <ul class="dropdown-content menu menu-compact p-2 shadow-lg bg-base-300 rounded-box w-52" tabindex="0">
                         <li>
-                            <a>
+                            <a href="/profile"
+                               th:href="@{/profile}">
                                 <i data-feather="user" aria-hidden="true"></i>
                                 Profile
                             </a>
                         </li>
                         <li>
-                            <a>
+                            <a href="/library"
+                               th:href="@{/library}">
                                 <i data-feather="bookmark" aria-hidden="true"></i>
                                 Library
                             </a>
                         </li>
                         <li>
-                            <a>
+                            <a href="/history"
+                               th:href="@{/history}">
                                 <i data-feather="rotate-ccw" aria-hidden="true"></i>
                                 History
                             </a>
                         </li>
                         <li>
-                            <a>
+                            <a href="/settings"
+                               th:href="@{/settings}">
                                 <i data-feather="settings" aria-hidden="true"></i>
                                 Settings
                             </a>
@@ -84,9 +90,9 @@
                     </ul>
                 </div>
             </th:block>
-            <div class="gap-2" sec:authorize="isAnonymous()">
-                <a class="btn btn-info btn-outline rounded-full" href="#" th:href="@{/login}">Login</a>
-                <a class="btn btn-success btn-outline rounded-full" href="#" th:href="@{/register}">Register</a>
+            <div class="gap-2" sec:authorize="anonymous">
+                <a class="btn btn-info btn-outline rounded-full" href="#" th:href="@{/sign-in}">Sign In</a>
+                <a class="btn btn-success btn-outline rounded-full" href="#" th:href="@{/sign-up}">Sign Up</a>
             </div>
         </div>
     </div>

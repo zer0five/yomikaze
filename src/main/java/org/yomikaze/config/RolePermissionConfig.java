@@ -132,6 +132,7 @@ public class RolePermissionConfig implements ApplicationListener<ContextRefreshe
             adminAccount.addRole(adminRole);
             adminAccount.getProfile().setDisplayName("Administrator");
             accountRepository.save(adminAccount);
+
         }
 
         setInitialized(true);
