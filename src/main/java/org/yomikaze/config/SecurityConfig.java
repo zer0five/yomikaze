@@ -1,7 +1,7 @@
 package org.yomikaze.config;
 
 import lombok.RequiredArgsConstructor;
-import lombok.extern.java.Log;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -16,9 +16,13 @@ import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 import org.springframework.session.web.http.CookieSerializer;
 import org.springframework.session.web.http.DefaultCookieSerializer;
+import org.yomikaze.persistence.entity.Account;
 import org.yomikaze.persistence.repository.AccountRepository;
 
-@Log
+import javax.servlet.http.HttpSession;
+import java.net.URI;
+
+@Slf4j
 @EnableCaching
 @Configuration
 @RequiredArgsConstructor
@@ -49,7 +53,22 @@ public class SecurityConfig {
             .formLogin(form -> form
                 .loginPage("/login")
                 .failureUrl("/login?failure")
-                .defaultSuccessUrl("/")
+//                .defaultSuccessUrl("/")
+                .successHandler((request, response, authentication) -> {
+                    if (!(authentication.getPrincipal() instanceof Account)) {
+                        log.info("Principal {} is not an Account", authentication.getPrincipal());
+                        throw new IllegalStateException("Principal is not an Account");
+                    }
+                    HttpSession session = request.getSession();
+                    URI redirect = (URI) session.getAttribute("redirect");
+                    if (redirect != null) {
+                        session.removeAttribute("redirect");
+                        log.info("Redirecting to {}", redirect);
+                        response.sendRedirect(redirect.toString());
+                    } else {
+                        response.sendRedirect("/");
+                    }
+                })
             )
             .rememberMe(rememberMe -> rememberMe
                 .tokenValiditySeconds(60 * 3600 * 24 * 7)

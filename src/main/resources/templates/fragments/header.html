@@ -27,13 +27,13 @@
             </div>
         </div>
         <div class="navbar-end">
-            <th:block sec:authorize="!isAnonymous()" th:object="${#authentication.principal}">
+            <th:block sec:authorize="authenticated && !anonymous" th:if="${#authentication.principal != null}" th:object="${#authentication.principal}">
                 <div class="dropdown">
                     <div class="btn btn-ghost m-1 gap-2" tabindex="0">
                         <div class="avatar" th:if="*{profile.picture != null}">
                             <div class="w-8 h-8 rounded-full">
-                                <img alt="Profile picture" th:if="*{profile.picture != null}"
-                                     th:src="*{profile.picture}">
+                                <img alt="Profile picture"
+                                     th:src="*{profile.picture}"/>
                             </div>
                         </div>
                         <div class="avatar placeholder" th:if="*{profile.picture == null}">

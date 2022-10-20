@@ -1,6 +1,6 @@
 <footer class="footer items-center p-4 bg-base-300 text-base-content border-t border-t-primary">
     <div class="items-center grid-flow-col">
-        <img alt="logo" class="w-12 h-12" src="/" th:src="@{/asset/logo.svg}"/>
+        <img alt="logo" class="w-12 h-12" src="/asset/image/logo.svg" th:src="@{/asset/image/logo.svg}"/>
         <p>
             Copyright ©
             <th:block th:text="${#dates.year(#dates.createNow())}"/>
@@ -10,7 +10,7 @@
     <div class="grid-flow-col gap-4 md:place-self-center md:justify-self-end">
         <a class="link link-hover" href="https://gitlab.com/zero-matter/yomikaze" rel="noopener noreferrer"
            target="_blank">
-            <i data-feather="gitlab" x-init="feather.replace()"></i>
+            <i data-feather="gitlab"></i>
         </a>
     </div>
 </footer>
