@@ -22,6 +22,7 @@ public class SnowflakeTypeDescriptor extends AbstractTypeDescriptor<Snowflake> {
         return Snowflake.of(string);
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     public <X> X unwrap(Snowflake value, Class<X> type, WrapperOptions options) {
         if (value == null) {
@@ -30,7 +31,7 @@ public class SnowflakeTypeDescriptor extends AbstractTypeDescriptor<Snowflake> {
         if (Snowflake.class.isAssignableFrom(type)) {
             return (X) value;
         }
-        if (Long.class.isAssignableFrom(type)) {
+        if (long.class.isAssignableFrom(type) || Long.class.isAssignableFrom(type)) {
             return (X) Long.valueOf(value.getId());
         }
         if (String.class.isAssignableFrom(type)) {
@@ -47,8 +48,14 @@ public class SnowflakeTypeDescriptor extends AbstractTypeDescriptor<Snowflake> {
         if (Long.class.isAssignableFrom(value.getClass())) {
             return Snowflake.of((Long) value);
         }
+        if (long.class.isAssignableFrom(value.getClass())) {
+            return Snowflake.of((long) value);
+        }
         if (String.class.isAssignableFrom(value.getClass())) {
             return Snowflake.of((String) value);
+        }
+        if (Snowflake.class.isAssignableFrom(value.getClass())) {
+            return (Snowflake) value;
         }
         throw unknownWrap(value.getClass());
     }
