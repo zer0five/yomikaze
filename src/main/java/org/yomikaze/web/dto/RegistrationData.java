@@ -33,7 +33,8 @@ public class RegistrationData {
     @NotBlank(message = "registration.password.confirmation.blank")
     private String passwordConfirmation;
 
-    @AssertTrue(message="registration.password.confirmation.mismatch")
+    @AssertTrue(message = "registration.password.confirmation.mismatch")
+    @SuppressWarnings("unused")
     public boolean isPasswordConfirmationValid() {
         return Objects.equals(password, passwordConfirmation);
     }

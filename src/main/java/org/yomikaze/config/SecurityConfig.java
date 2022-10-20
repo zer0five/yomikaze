@@ -15,11 +15,7 @@ import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 import org.springframework.session.web.http.CookieSerializer;
 import org.springframework.session.web.http.DefaultCookieSerializer;
-import org.yomikaze.persistence.entity.Account;
 import org.yomikaze.service.YomikazeUserDetailsService;
-
-import javax.servlet.http.HttpSession;
-import java.net.URI;
 
 @Slf4j
 @EnableCaching
@@ -50,22 +46,6 @@ public class SecurityConfig {
                 .loginPage("/login")
                 .failureUrl("/login?failure")
                 .defaultSuccessUrl("/")
-//                .successHandler((request, response, authentication) -> {
-//                    if (!(authentication.getPrincipal() instanceof Account)) {
-//                        log.info("Principal {} is not an Account", authentication.getPrincipal());
-//                        throw new IllegalStateException("Principal is not an Account");
-//                    }
-//                    log.info("Principal {} is an Account", authentication.getPrincipal());
-//                    HttpSession session = request.getSession();
-//                    URI redirect = (URI) session.getAttribute("redirect");
-//                    if (redirect == null) {
-//                        response.sendRedirect("/");
-//                    } else {
-//                        session.removeAttribute("redirect");
-//                        log.info("Redirecting to {}", redirect);
-//                        response.sendRedirect(redirect.toString());
-//                    }
-//                })
             )
             .rememberMe(rememberMe -> rememberMe
                 .tokenValiditySeconds(60 * 3600 * 24 * 7)
@@ -80,11 +60,7 @@ public class SecurityConfig {
                 .logoutSuccessUrl("/login")
             )
             .exceptionHandling(exceptions -> exceptions
-                    .accessDeniedHandler((request, response, exception) -> {
-                        System.out.println("Access denied: " + exception.getMessage());
-                        response.sendRedirect("/access-denied.html");
-                    })
-//                        .accessDeniedPage("/access-denied.html")
+                        .accessDeniedPage("/access-denied.html")
             )
             .build();
     }
