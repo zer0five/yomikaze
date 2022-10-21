@@ -16,8 +16,8 @@ import java.util.Set;
 @Setter
 @ToString
 @RequiredArgsConstructor
-@Entity(name = "chapters")
-@Table(name = "chapters")
+@Entity(name = "chapter")
+@Table(name = "chapter")
 public class Chapter {
 
     @Id
@@ -33,6 +33,7 @@ public class Chapter {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "comic", nullable = false)
+    @ToString.Exclude
     private Comic comic;
 
     @OneToMany(fetch = FetchType.LAZY)
