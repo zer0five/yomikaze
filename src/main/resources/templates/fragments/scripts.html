@@ -1,3 +1,48 @@
 <th:block th:fragment="scripts">
     <script defer src="/asset/js/alpine.min.js" th:src="@{/asset/js/alpine.min.js}"></script>
+    <script>
+        document.addEventListener('alpine:init', () => {
+            Alpine.data('theme', () => ({
+                init() {
+                    this.$watch('id', (value) => localStorage.setItem('theme', value))
+                },
+                id: parseInt(localStorage.getItem('theme')) || 0,
+                themes: [
+                    {
+                        theme: 'ayu-light',
+                        name: 'Ayu Light',
+                        dark: false,
+                        icon: 'sun',
+                    },
+                    {
+                        theme: 'ayu-mirage',
+                        name: 'Ayu Mirage',
+                        dark: true,
+                        icon: 'sunset',
+                    },
+                    {
+                        theme: 'ayu-dark',
+                        name: 'Ayu Dark',
+                        dark: true,
+                        icon: 'moon',
+                    }
+                ],
+                nextTheme() {
+                    this.id = (this.id + 1) % this.themes.length;
+                },
+                get currentTheme() {
+                    return this.themes[this.id]
+                },
+                get theme() {
+                    return this.currentTheme.theme
+                },
+                get isDark() {
+                    return this.currentTheme.dark
+                },
+                get themeIcon() {
+                    return this.currentTheme.icon
+                }
+            }))
+        })
+    </script>
 </th:block>
