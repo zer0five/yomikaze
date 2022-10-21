@@ -6,9 +6,12 @@ import org.springframework.boot.web.server.WebServerFactoryCustomizer;
 import org.springframework.boot.web.servlet.server.ConfigurableServletWebServerFactory;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.CacheControl;
 import org.springframework.web.context.request.RequestContextListener;
 import org.springframework.web.servlet.config.annotation.*;
 import org.springframework.web.servlet.i18n.LocaleChangeInterceptor;
+
+import java.util.concurrent.TimeUnit;
 
 @Configuration
 @EnableWebMvc
@@ -28,7 +31,11 @@ public class MvcConfig implements WebMvcConfigurer {
 
     @Override
     public void addResourceHandlers(final ResourceHandlerRegistry registry) {
-        registry.addResourceHandler("/**").addResourceLocations("classpath:/static/");
+        registry.addResourceHandler("/**")
+            .addResourceLocations("classpath:/static/")
+            .setUseLastModified(true)
+            .setOptimizeLocations(true)
+            .setCacheControl(CacheControl.maxAge(365, TimeUnit.DAYS));
     }
 
     @Override
