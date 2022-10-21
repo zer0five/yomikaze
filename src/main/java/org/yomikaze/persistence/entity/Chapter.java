@@ -31,6 +31,10 @@ public class Chapter {
     @Column(name = "index", nullable = false)
     private Long index;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "comic", nullable = false)
+    private Comic comic;
+
     @OneToMany(fetch = FetchType.LAZY)
     @JoinColumn(name = "chapter", nullable = false)
     @ToString.Exclude

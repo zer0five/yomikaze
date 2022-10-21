@@ -1,9 +1,8 @@
 <header th:fragment="header"
         xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity5"
-        xmlns:th="http://www.thymeleaf.org"
->
+        xmlns:th="http://www.thymeleaf.org">
     <div class="navbar bg-base-100">
-        <div class="navbar-start gap-4">
+        <div class="navbar-start gap-2">
             <a class="btn btn-ghost gap-2 text-xl text-white hover:bg-transparent" href="/" th:href="@{/}">
                 <img alt="logo" class="w-12 h-12" src="/asset/image/logo.svg" th:src="@{/asset/image/logo.svg}"/>
                 <div class="font-title text-primary inline-flex text-lg transition-all duration-200 md:text-3xl">
@@ -11,8 +10,8 @@
                     <span class="lowercase">kaze</span>
                 </div>
             </a>
-            <button @click="theme_id = (theme_id + 1) % 3" class="btn btn-ghost btn-circle text-base-content">
-                <i x-data="{icons: ['sun', 'sunset', 'moon']}" :data-feather="icons[theme_id]" aria-hidden="true"></i>
+            <button @click="nextTheme()" class="btn btn-ghost btn-circle text-base-content">
+                <i :data-feather="themeIcon" aria-hidden="true"></i>
             </button>
         </div>
         <div class="navbar-center">
@@ -74,11 +73,7 @@
                                 Settings
                             </a>
                         </li>
-                        <li class="menu-title">
-                            <span>
-                                <hr/>
-                            </span>
-                        </li>
+                        <li></li>
                         <li>
                             <a href="/logout"
                                class="text-error hover:bg-error hover:text-error-content"

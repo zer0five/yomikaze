@@ -1,0 +1,10 @@
+server:
+  port: ${PORT:8443}
+  ssl:
+    key-store-type: PKCS12
+    key-store: classpath:keys/keystore.p12
+    key-store-password: ${KEYSTORE_PASSWORD}
+    key-alias: ${KEY_ALIAS:yomikaze}
+    enabled: true
+  http2:
+    enabled: true

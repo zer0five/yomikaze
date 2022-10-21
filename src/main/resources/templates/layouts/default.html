@@ -1,26 +1,27 @@
 <!DOCTYPE html>
-<html lang="en" x-bind:data-theme="themes[theme_id]"
-      x-data="{ theme_id: parseInt(localStorage.getItem('theme_id')) || 0, themes: [ 'ayu-light', 'ayu-mirage', 'ayu-dark' ] }"
-      x-init="$watch('theme_id', (val) => localStorage.setItem('theme_id', val));"
+<html lang="en"
       xmlns:th="http://www.thymeleaf.org"
+      th:lang="${#locale.language}"
+      x-data="theme"
+      :data-theme="theme"
 >
 <head>
     <meta charset="UTF-8">
     <meta content="width=device-width, initial-scale=1.0" name="viewport">
+    <meta name="description" th:content="#{site.description.generic}">
+    <title th:text="#{site.name} + '::' + ~{this :: page-title/text()}">name::title</title>
     <link rel="shortcut icon" type="image/svg" href="/asset/image/logo.svg"
           th:href="@{/asset/image/logo.svg}"/>
     <link rel="stylesheet" type="text/css" href="/asset/css/tailwind.min.css"
           th:href="@{/asset/css/tailwind.min.css}"/>
     <link rel="stylesheet" type="text/css" href="/asset/css/feather.min.css"
           th:href="@{/asset/css/feather.min.css}"/>
-    <title th:replace="this :: page-title">yomikaze</title>
 </head>
-
 <body class="bg-base-100 text-base-content overflow-x-hidden" th:fragment="body">
 <th:block th:replace="fragments/header"></th:block>
-<div th:replace="this :: content">
+<th:block th:replace="this :: content">
     <!--  Main content here  -->
-</div>
+</th:block>
 <th:block th:replace="fragments/footer"></th:block>
 <th:block th:replace="fragments/scripts"></th:block>
 </body>
