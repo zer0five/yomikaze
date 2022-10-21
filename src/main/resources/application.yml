@@ -25,6 +25,32 @@ spring:
     cache: false
     mode: HTML
     encoding: UTF-8
+
+server:
+  compression:
+    enabled: true
+    mime-types:
+    - text/html
+    - text/xml
+    - text/plain
+    - text/css
+    - text/javascript
+    - application/javascript
+    - application/json
+    - image/svg+xml
+    - image/png
+    - image/jpeg
+    - image/gif
+    - image/webp
+    - font/ttf
+    - font/otf
+    - font/woff
+    - font/woff2
+    - application/x-font-ttf
+    - application/x-font-otf
+    - application/x-font-woff
+    - application/x-font-woff2
+
 logging:
   level:
     web: info
