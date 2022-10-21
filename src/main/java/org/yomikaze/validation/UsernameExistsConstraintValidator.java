@@ -9,10 +9,9 @@ import javax.validation.ConstraintValidatorContext;
 @Data
 public class UsernameExistsConstraintValidator implements ConstraintValidator<UsernameExistsConstraint, String> {
 
-    private final AccountRepository accountRepository;
-
-    @Override
-    public boolean isValid(String value, ConstraintValidatorContext context) {
-        return !accountRepository.findByUsernameOrEmail(value, value).isPresent();
-    }
+        private final AccountRepository accountRepository;
+        @Override
+        public boolean isValid(String value, ConstraintValidatorContext context) {
+            return false;
+        }
 }

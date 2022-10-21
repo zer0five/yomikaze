@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.*;
 import org.yomikaze.persistence.entity.Account;
 import org.yomikaze.service.AuthenticationService;
 import org.yomikaze.service.RedirectService;
+import org.yomikaze.web.dto.LoginInfo;
 import org.yomikaze.web.dto.Registration;
 
 import javax.servlet.http.HttpSession;
@@ -27,7 +28,9 @@ public class AuthenticationController {
     private final RedirectService redirectService;
 
     @RequestMapping({"/login", "/sign-in"})
-    public String login(@RequestHeader(HttpHeaders.REFERER) Optional<URI> referer, HttpSession session) {
+    public String login(@ModelAttribute LoginInfo loginInfo,
+                        @RequestHeader(HttpHeaders.REFERER) Optional<URI> referer,
+                        HttpSession session) {
         redirectService.storeRedirect(session, referer);
         return "views/auth/sign-in";
     }
