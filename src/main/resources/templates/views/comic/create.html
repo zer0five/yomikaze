@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="en" th:insert="layouts/default">
+<head>
+    <title th:fragment="page-title">comic::new</title>
+</head>
+<body th:fragment="content">
+<div class="h-screen flex flex-col items-stretch p-8 gap-8" x-data="{ current_step: 1, urls: []}" id="main">
+    <ul class="steps w-full max-w-lg self-center">
+        <li class="step" :class="current_step === 1 ? 'step-primary' : ''">Fill in infos</li>
+        <li class="step" :class="current_step === 2 ? 'step-primary' : ''">Upload images</li>
+        <li class="step" :class="current_step === 3 ? 'step-primary' : ''">Finishing</li>
+    </ul>
+    <div class="grow flex items-center justify-center">
+        <div class="flex justify-center gap-4" x-show="current_step === 1">
+            <div>
+                <label class="label" for="chapter-no">
+                    <span class="label-text">Chapter Number</span>
+                </label>
+                <input id="chapter-no"
+                       name="chapterNo"
+                       class="input input-bordered w-24"
+                       type="number"
+                       value="0"/>
+            </div>
+            <div>
+                <label class="label" for="chapter-title">
+                    <span class="label-text">Chapter Title</span>
+                </label>
+                <input  id="chapter-title"
+                        name="chapterTitle"
+                        class="input input-bordered w-48 sm:w-64"
+                        type="text"
+                        placeholder="Chapter's title"
+                />
+            </div>
+        </div>
+        <div class="w-full flex flex-col items-center gap-4" x-show="current_step === 2">
+            <div class="w-full">
+                <div x-data="dataFileDnD()"
+                      class="relative flex flex-col p-4 text-base-content rounded bg-base-200"
+                >
+                    <form
+                        th:action="@{/api/v1/image/upload}"
+                        action="/api/v1/image/upload"
+                        @submit.prevent="uploadImages()"
+                        x-ref="dnd"
+                        method="POST"
+                        enctype="multipart/form-data"
+                        class="relative flex flex-col text-base-content border border-base-content border-dashed rounded cursor-pointer"
+                        id="upload"
+                    >
+                        <input type="file"
+                               accept="image/jpeg,image/jpg,image/png,image/webp"
+                               multiple
+                               class="absolute inset-0 z-50 w-full h-full p-0 m-0 outline-none opacity-0 cursor-pointer"
+                               @change="addFiles($event)"
+                               @dragover="$refs.dnd.classList.add('border-primary'); $refs.dnd.classList.add('ring-4'); $refs.dnd.classList.add('ring-inset');"
+                               @dragleave="$refs.dnd.classList.remove('border-primary'); $refs.dnd.classList.remove('ring-4'); $refs.dnd.classList.remove('ring-inset');"
+                               @drop="$refs.dnd.classList.remove('border-primary'); $refs.dnd.classList.remove('ring-4'); $refs.dnd.classList.remove('ring-inset');"
+                               name="files"
+                        >
+                        <div class="flex flex-col items-center justify-center py-10 text-center">
+                            <svg class="w-6 h-6 mr-1 text-current-50" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></svg>
+                            <p class="m-0">
+                                <span class="hidden sm:inline">Drag your files here or click in this area.</span>
+                                <span class="sm:hidden">Click in this area.</span>
+                            </p>
+                        </div>
+                    </form>
+                    <template x-if="files.length > 0">
+                        <div class="grid grid-cols-2 gap-4 mt-4 md:grid-cols-6"
+                             @drop.prevent="drop($event)"
+                             @dragover.prevent="$event.dataTransfer.dropEffect = 'move'">
+                            <template x-for="(file, index) in files">
+                                <div class="relative flex flex-col items-center overflow-hidden text-center bg-gray-100 border rounded cursor-move select-none"
+                                     style="padding-top: 100%;" @dragstart="dragstart($event)" @dragend="fileDragging = null"
+                                     :class="{'border-primary': fileDragging === index}" draggable="true" :data-index="index">
+                                    <button class="absolute top-0 right-0 z-50 p-1 bg-white rounded-bl focus:outline-none" type="button" @click="remove(index)">
+                                        <svg class="w-4 h-4 text-gray-700" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></svg>
+                                    </button>
+                                    <template x-if="file.type.includes('image/')">
+                                        <img
+                                            class="absolute inset-0 z-0 object-cover w-full h-full border-4 border-white preview"
+                                            x-bind:src="loadFile(file)"
+                                            x-bind:alt="file.name"
+                                            alt="image"
+                                        >
+                                    </template>
+
+                                    <div class="absolute bottom-0 left-0 right-0 flex flex-col p-2 text-xs bg-white bg-opacity-50">
+                                        <span class="w-full font-bold text-gray-900 truncate" x-text="files.name">
+                                            Loading...
+                                        </span>
+                                        <span class="text-xs text-gray-900" x-text="humanFileSize(files.size)">0B</span>
+                                    </div>
+
+                                    <div class="absolute inset-0 z-40 transition-colors duration-300"
+                                         @dragenter="dragenter($event)"
+                                         @dragleave="fileDropping = null"
+                                         :class="{'bg-primary bg-opacity-80': fileDropping === index && fileDragging !== index}">
+                                    </div>
+                                </div>
+                            </template>
+                        </div>
+                    </template>
+                    <div class="mt-4 row">
+                        <button form="upload" class="mx-auto btn btn-accent" type="submit">Upload</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="" x-show="current_step === 3">
+            <template x-if="urls.length > 0" x-for="url in urls">
+                <img :src="url" alt="image"/>
+            </template>
+        </div>
+    </div>
+    <div class="flex justify-between">
+        <button x-show="current_step === 1">&nbsp;</button>
+        <button
+            x-show="current_step >= 2"
+            class="btn self-start"
+            @click="current_step--"
+        >Back</button>
+        <button
+            x-show="current_step === 1"
+            class="btn btn-primary"
+            @click="current_step = 2"
+        >Next</button>
+        <button
+            x-show="current_step === 2"
+            class="btn btn-primary"
+            @click="current_step = 3"
+        >Next</button>
+        <button
+            x-show="current_step === 3"
+            class="btn btn-primary"
+            @click="console.log('#TODO')"
+        >Submit</button>
+    </div>
+</div>
+<script>
+    function dataFileDnD() {
+        return {
+            files: [],
+            fileDragging: null,
+            fileDropping: null,
+            humanFileSize(size) {
+                const i = Math.floor(Math.log(size) / Math.log(1024));
+                return (
+                    (size / Math.pow(1024, i)).toFixed(2) * 1 +
+                    " " +
+                    ["B", "kB", "MB", "GB", "TB"][i]
+                );
+            },
+            remove(index) {
+                let files = [...this.files];
+                files.splice(index, 1);
+
+                this.files = createFileList(files);
+            },
+            drop(e) {
+                let removed, add;
+                let files = [...this.files];
+
+                removed = files.splice(this.fileDragging, 1);
+                files.splice(this.fileDropping, 0, ...removed);
+
+                this.files = createFileList(files);
+
+                this.fileDropping = null;
+                this.fileDragging = null;
+            },
+            dragenter(e) {
+                let targetElem = e.target.closest("[draggable]");
+
+                this.fileDropping = targetElem.getAttribute("data-index");
+            },
+            dragstart(e) {
+                this.fileDragging = e.target
+                    .closest("[draggable]")
+                    .getAttribute("data-index");
+                e.dataTransfer.effectAllowed = "move";
+            },
+            loadFile(file) {
+                const preview = document.querySelectorAll(".preview");
+                const blobUrl = URL.createObjectURL(file);
+
+                preview.forEach(elem => {
+                    elem.onload = () => {
+                        URL.revokeObjectURL(elem.src); // free memory
+                    };
+                });
+
+                return blobUrl;
+            },
+            addFiles(e) {
+                this.files = createFileList([...this.files], [...e.target.files]);
+            },
+            replaceFiles(e) {
+                this.files = createFileList([...e.target.files]);
+            },
+            uploadImages() {
+                const formData = new FormData(this.$el);
+                fetch(this.$el.action, {
+                    method: this.$el.method,
+                    credentials: 'include',
+                    body: formData,
+                })
+                .then(response => response.json())
+                .then(data => {
+                    // todo: handle response
+                    // note: response is an array of urls
+                    // sample: ['/image/132415155', '/image/132415156']
+                })
+                .catch(error => console.error('Error:', error));
+            },
+        };
+    }
+</script>
+<script src="/asset/js/create-file-list.js" th:src="@{/asset/js/create-file-list.js}"></script>
+</body>
+</html>

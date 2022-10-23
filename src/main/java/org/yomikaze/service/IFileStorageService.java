@@ -6,7 +6,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.IOException;
 import java.util.Optional;
 
-public interface FileStorageService<I, F, O> {
+public interface IFileStorageService<I, F, O> {
 
     I store(MultipartFile file, @Nullable O owner) throws IOException;
 

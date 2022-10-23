@@ -22,7 +22,7 @@ import java.util.Optional;
 
 @RequiredArgsConstructor
 @Service
-public class DatabaseImageStorageService implements FileStorageService<Snowflake, Resource, Account> {
+public class DatabaseImageStorageService implements IFileStorageService<Snowflake, Resource, Account> {
 
     private final ImageRepository imageRepository;
 
@@ -57,7 +57,7 @@ public class DatabaseImageStorageService implements FileStorageService<Snowflake
         }
         Image image = new Image();
         image.setName(name);
-        image.setType(contentType);
+        image.setType("image/webp");
         image.setData(data);
         image.setOwner(owner);
         return imageRepository.save(image).getId();

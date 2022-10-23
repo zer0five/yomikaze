@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="en"
+      xmlns:th="http://www.thymeleaf.org"
+      th:lang="${#locale.language}"
+      x-data="theme"
+      :data-theme="theme"
+>
+<head>
+    <meta charset="UTF-8">
+    <meta content="width=device-width, initial-scale=1.0" name="viewport">
+    <meta name="description" th:content="#{site.description.generic}">
+    <title th:text="#{site.name} + '::' + ~{this :: page-title/text()}">name::title</title>
+    <link rel="shortcut icon" type="image/svg" href="/asset/image/logo.svg"
+          th:href="@{/asset/image/logo.svg}"/>
+    <link rel="stylesheet" type="text/css" href="/asset/css/tailwind.min.css"
+          th:href="@{/asset/css/tailwind.min.css}"/>
+    <link rel="stylesheet" type="text/css" href="/asset/css/feather.min.css"
+          th:href="@{/asset/css/feather.min.css}"/>
+</head>
+<body class="bg-base-100 text-base-content overflow-x-hidden" th:fragment="body">
+    <!-- TODO -->
+    <th:block th:replace="fragments/scripts"></th:block>
+</body>
+</html>
