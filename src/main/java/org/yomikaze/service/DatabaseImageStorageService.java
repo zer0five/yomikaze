@@ -16,7 +16,6 @@ import org.yomikaze.persistence.repository.ImageRepository;
 import org.yomikaze.snowflake.Snowflake;
 
 import java.io.IOException;
-import java.io.InputStream;
 import java.sql.Blob;
 import java.sql.SQLException;
 import java.text.MessageFormat;
@@ -29,16 +28,6 @@ public class DatabaseImageStorageService implements IFileStorageService<Snowflak
 
     private final ImageRepository imageRepository;
 
-    private final WebpImageProcessingService webpImageProcessingService;
-
-    private String getName(MultipartFile file) {
-        return Optional.ofNullable(file.getOriginalFilename())
-            .map(name -> {
-                int index = name.lastIndexOf('.');
-                return index == -1 ? name : name.substring(0, index);
-            }).orElse("untitled") + ".webp";
-    }
-
     @Override
     public Snowflake store(MultipartFile file, Account owner) throws IOException {
         Validate.notNull(owner, "Owner cannot be null");
@@ -50,25 +39,12 @@ public class DatabaseImageStorageService implements IFileStorageService<Snowflak
         if (!mediaType.getType().equalsIgnoreCase("image")) {
             throw new IllegalArgumentException("File is not an image");
         }
-        Blob data;
-        String name = getName(file);
-        String type = "image/webp";
-        if (mediaType.getSubtype().equalsIgnoreCase("webp")) {
-            data = BlobProxy.generateProxy(file.getInputStream(), file.getSize());
-        } else {
-            try {
-                InputStream converted = webpImageProcessingService.convertToWebp(file.getInputStream());
-                data = BlobProxy.generateProxy(converted, converted.available());
-            } catch (Exception e) {
-                log.warn("Failed to convert image {} to webp", name);
-                data = BlobProxy.generateProxy(file.getInputStream(), file.getSize());
-                type = contentType;
-                name = Optional.ofNullable(file.getOriginalFilename()).orElse(MessageFormat.format("untitled.{0}", mediaType.getSubtype()));
-            }
-        }
+        Blob data = BlobProxy.generateProxy(file.getInputStream(), file.getSize());
+        String name = Optional.ofNullable(file.getOriginalFilename())
+            .orElse(MessageFormat.format("untitled.{0}", mediaType.getSubtype()));
         Image image = new Image();
         image.setName(name);
-        image.setType(type);
+        image.setType(contentType);
         image.setData(data);
         image.setOwner(owner);
         return imageRepository.save(image).getId();
