@@ -25,6 +25,44 @@ spring:
     cache: false
     mode: HTML
     encoding: UTF-8
+  mail:
+    host: ${MAIL_HOST:smtp.gmail.com}
+    port: ${MAIL_PORT:587}
+    username: ${EMAIL_USERNAME}
+    password: ${EMAIL_PASSWORD}
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
+            required: true
+
+server:
+  compression:
+    enabled: true
+    mime-types:
+    - text/html
+    - text/xml
+    - text/plain
+    - text/css
+    - text/javascript
+    - application/javascript
+    - application/json
+    - image/svg+xml
+    - image/png
+    - image/jpeg
+    - image/gif
+    - image/webp
+    - font/ttf
+    - font/otf
+    - font/woff
+    - font/woff2
+    - application/x-font-ttf
+    - application/x-font-otf
+    - application/x-font-woff
+    - application/x-font-woff2
+
 logging:
   level:
     web: info

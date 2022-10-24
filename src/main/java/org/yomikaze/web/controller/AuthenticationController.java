@@ -9,6 +9,7 @@ import org.springframework.validation.BindingResult;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.yomikaze.persistence.entity.Account;
+import org.yomikaze.service.AccountVerificationService;
 import org.yomikaze.service.AuthenticationService;
 import org.yomikaze.service.RedirectService;
 import org.yomikaze.web.dto.LoginInfo;
@@ -26,6 +27,7 @@ import java.util.Optional;
 public class AuthenticationController {
     private final AuthenticationService authenticationService;
     private final RedirectService redirectService;
+    private final AccountVerificationService verificationService;
 
     @RequestMapping({"/login", "/sign-in"})
     public String login(@ModelAttribute LoginInfo loginInfo,
@@ -51,7 +53,7 @@ public class AuthenticationController {
             return "views/auth/sign-up";
         }
         Account account = authenticationService.register(registration);
-        authenticationService.authenticate(account, registration.getPassword());
+        verificationService.sendVerificationEmail(account);
         return redirectService.getRedirectSpring(session);
     }
 

@@ -10,7 +10,7 @@
                     <span class="lowercase">kaze</span>
                 </div>
             </a>
-            <button @click="nextTheme()" class="btn btn-ghost btn-circle text-base-content">
+            <button @click="nextTheme()" class="btn btn-ghost btn-circle text-base-content" aria-label="Theme switcher">
                 <i :data-feather="themeIcon" aria-hidden="true"></i>
             </button>
         </div>
@@ -19,8 +19,10 @@
                 <label class="input-group">
                     <input class="input input-bordered input-accent" placeholder="Search" type="text" required/>
                     <button
+                        id="submit"
                         type="submit"
-                        class="btn btn-square btn-accent btn-outline stroke-accent hover:stroke-white dark:hover:stroke-black">
+                        class="btn btn-square btn-accent btn-outline stroke-accent hover:stroke-white dark:hover:stroke-black"
+                        aria-label="Search">
                         <i data-feather="search"></i>
                     </button>
                 </label>
@@ -44,7 +46,7 @@
                         </div>
                         <span class="hidden md:block" th:text="${profile.displayName}">Name</span>
                     </div>
-                    <ul class="dropdown-content menu menu-compact p-2 shadow-lg bg-base-300 rounded-box w-52" tabindex="0">
+                    <ul class="dropdown-content menu menu-compact p-2 shadow-lg bg-base-300 rounded-box w-52 focus:z-50" tabindex="0">
                         <li>
                             <a href="/profile"
                                th:href="@{/profile}">

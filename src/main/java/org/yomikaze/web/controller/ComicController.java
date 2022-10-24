@@ -1,9 +1,12 @@
 package org.yomikaze.web.controller;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.security.access.prepost.PostAuthorize;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
@@ -14,6 +17,7 @@ import org.yomikaze.persistence.entity.Comic;
 import org.yomikaze.persistence.repository.ComicRepository;
 import org.yomikaze.service.ComicService;
 import org.yomikaze.snowflake.Snowflake;
+import org.yomikaze.web.dto.ComicDto;
 
 import javax.persistence.EntityNotFoundException;
 import java.text.MessageFormat;
@@ -22,10 +26,13 @@ import java.util.Optional;
 @Controller
 @RequiredArgsConstructor
 @RequestMapping("/comic")
+@Slf4j
 public class ComicController {
 
     private final ComicRepository comicRepository;
     private final ComicService comicService;
+
+    private static final Pageable DEFAULT_PAGEABLE = PageRequest.of(0, 12, Sort.by("id").descending());
 
     @GetMapping({"", "/"})
     public String comic() {
@@ -33,11 +40,12 @@ public class ComicController {
     }
 
     @GetMapping("/listing")
-    public String listing(Optional<Integer> page, Optional<Integer> size, Model model) {
-        int pageNumber = Math.max(1, page.orElse(1)) - 1;
-        int pageSize = Math.max(12, size.orElse(12));
-        Pageable pageable = PageRequest.of(pageNumber, pageSize, Sort.by("id").descending());
-        model.addAttribute("comics", comicRepository.findAll(pageable));
+    public String listing(@PageableDefault(page = 1, size = 12, sort = {"updatedAt", "id"}, direction = Sort.Direction.DESC) Pageable pageable,
+                          Model model) {
+        Pageable realPageable = PageRequest.of(pageable.getPageNumber() - 1, pageable.getPageSize(), pageable.getSort());
+        log.info("Listing comics with pageable {}", realPageable);
+        Page<Comic> comics = comicRepository.findAll(realPageable);
+        model.addAttribute("comics", comics);
         return "views/comic/listing";
     }
 
@@ -46,10 +54,9 @@ public class ComicController {
         Snowflake snowflake = Snowflake.of(id);
         Comic comic = comicRepository.findById(snowflake)
             .orElseThrow(() -> new EntityNotFoundException("comic.not-found"));
-
-        String url = comicService.getUrlFriendlyName(comic);
-        if (!name.isPresent() || !name.get().equals(url)) {
-            return MessageFormat.format("redirect:/comic/detail/{0}.{1}", url, id);
+        String slug = comicService.getSlug(comic);
+        if (name.map(slug::equals).orElse(false)) {
+            return MessageFormat.format("redirect:/comic/detail/{0}.{1}", slug, id);
         }
         model.addAttribute("comic", comic);
         return "views/comic/detail";
@@ -73,7 +80,7 @@ public class ComicController {
     @GetMapping("/create")
     @PreAuthorize("authentication != null && authenticated")
     @PostAuthorize("hasAuthority('comic.create')")
-    public String create(@ModelAttribute Comic comic) {
+    public String create(@ModelAttribute ComicDto comic) {
         return "views/comic/create";
     }
 

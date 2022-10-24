@@ -1,3 +1,6 @@
+yomikaze:
+  base-url: ${DYNO_URL:https://yomikaze.herokuapp.com}
+
 spring:
   redis:
     url: ${REDIS_URL}

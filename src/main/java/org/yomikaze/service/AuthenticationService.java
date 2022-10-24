@@ -21,17 +21,25 @@ public class AuthenticationService {
     private final AuthenticationManager authenticationManager;
 
     public Account register(@Validated Registration registration) {
-        Account account = new Account();
-        account.setUsername(registration.getUsername());
-        String rawPassword = registration.getPassword();
-        String password = passwordEncoder.encode(rawPassword);
-        account.setPassword(password);
-        account.setEmail(registration.getEmail());
-        return accountRepository.save(account);
+        return register(registration, true);
     }
 
-    public void authenticate(Account account, String password) {
-        UsernamePasswordAuthenticationToken token = new UsernamePasswordAuthenticationToken(account.getUsername(), password);
+    public Account register(@Validated Registration registration, boolean autoLogin) {
+        final String username = registration.getUsername();
+        final String email = registration.getEmail();
+        final String rawPassword = registration.getPassword();
+        final String password = passwordEncoder.encode(rawPassword);
+        Account account = new Account();
+        account.setEmail(email);
+        account.setUsername(username);
+        account.setPassword(password);
+        account = accountRepository.save(account);
+        if (autoLogin) login(username, rawPassword);
+        return account;
+    }
+
+    public void login(String username, String password) {
+        UsernamePasswordAuthenticationToken token = new UsernamePasswordAuthenticationToken(username, password);
         Authentication authentication = authenticationManager.authenticate(token);
         SecurityContextHolder.getContext().setAuthentication(authentication);
     }

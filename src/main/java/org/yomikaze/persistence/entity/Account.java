@@ -79,6 +79,12 @@ public class Account implements UserDetails {
     @ToString.Exclude
     private Profile profile = new Profile(this);
 
+    @Column(name = "verified", nullable = false)
+    private boolean verified = false;
+
+    @Column(name = "locked", nullable = false)
+    private boolean locked = false;
+
     public void setId(long id) {
         this.id = Snowflake.of(id);
     }
@@ -143,7 +149,7 @@ public class Account implements UserDetails {
 
     @Override
     public boolean isAccountNonLocked() {
-        return true;
+        return !locked;
     }
 
     @Override
@@ -155,4 +161,5 @@ public class Account implements UserDetails {
     public boolean isEnabled() {
         return true;
     }
+
 }
