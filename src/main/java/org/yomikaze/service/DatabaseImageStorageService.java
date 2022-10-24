@@ -1,6 +1,7 @@
 package org.yomikaze.service;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.Validate;
 import org.hibernate.engine.jdbc.BlobProxy;
 import org.jetbrains.annotations.Nullable;
@@ -18,10 +19,12 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.sql.Blob;
 import java.sql.SQLException;
+import java.text.MessageFormat;
 import java.util.Optional;
 
 @RequiredArgsConstructor
 @Service
+@Slf4j
 public class DatabaseImageStorageService implements IFileStorageService<Snowflake, Resource, Account> {
 
     private final ImageRepository imageRepository;
@@ -49,15 +52,23 @@ public class DatabaseImageStorageService implements IFileStorageService<Snowflak
         }
         Blob data;
         String name = getName(file);
+        String type = "image/webp";
         if (mediaType.getSubtype().equalsIgnoreCase("webp")) {
             data = BlobProxy.generateProxy(file.getInputStream(), file.getSize());
         } else {
-            InputStream converted = webpImageProcessingService.convertToWebp(file.getInputStream());
-            data = BlobProxy.generateProxy(converted, converted.available());
+            try {
+                InputStream converted = webpImageProcessingService.convertToWebp(file.getInputStream());
+                data = BlobProxy.generateProxy(converted, converted.available());
+            } catch (Exception e) {
+                log.warn("Failed to convert image {} to webp", name);
+                data = BlobProxy.generateProxy(file.getInputStream(), file.getSize());
+                type = contentType;
+                name = Optional.ofNullable(file.getOriginalFilename()).orElse(MessageFormat.format("untitled.{0}", mediaType.getSubtype()));
+            }
         }
         Image image = new Image();
         image.setName(name);
-        image.setType("image/webp");
+        image.setType(type);
         image.setData(data);
         image.setOwner(owner);
         return imageRepository.save(image).getId();

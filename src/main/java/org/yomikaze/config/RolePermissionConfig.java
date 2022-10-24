@@ -10,18 +10,13 @@ import org.springframework.context.event.ContextRefreshedEvent;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
-import org.yomikaze.persistence.entity.Account;
-import org.yomikaze.persistence.entity.Permission;
-import org.yomikaze.persistence.entity.Profile;
-import org.yomikaze.persistence.entity.Role;
-import org.yomikaze.persistence.repository.AccountRepository;
-import org.yomikaze.persistence.repository.PermissionRepository;
-import org.yomikaze.persistence.repository.RoleRepository;
+import org.yomikaze.persistence.entity.*;
+import org.yomikaze.persistence.repository.*;
 
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
+import java.util.function.Function;
+import java.util.stream.Collectors;
+import java.util.stream.StreamSupport;
 
 @RequiredArgsConstructor
 @Component
@@ -29,6 +24,9 @@ public class RolePermissionConfig implements ApplicationListener<ContextRefreshe
 
     private final PermissionRepository permissionRepository;
     private final RoleRepository roleRepository;
+
+    private final ComicRepository comicRepository;
+    private final GenreRepository genreRepository;
 
     private final AccountRepository accountRepository;
 
@@ -143,6 +141,32 @@ public class RolePermissionConfig implements ApplicationListener<ContextRefreshe
             account.getProfile().setDisplayName("Administrator");
             accountRepository.save(account);
         }
+
+        Iterable<Genre> genres = genreRepository.saveAll(Arrays.asList(
+            new Genre("Action"),
+            new Genre("Adventure"),
+            new Genre("Comedy"),
+            new Genre("Drama"),
+            new Genre("Fantasy")
+        ));
+        Map<String, Genre> genresMap = StreamSupport.stream(genres.spliterator(), false)
+            .collect(Collectors.toMap(Genre::getName, Function.identity()));
+        Comic comic = new Comic();
+        comic.setName("Test 01");
+        comic.setGenres(Arrays.asList(genresMap.get("Action"), genresMap.get("Adventure"), genresMap.get("Comedy")));
+        comicRepository.save(comic);
+        comic = new Comic();
+        comic.setName("Test 02");
+        comic.setGenres(Arrays.asList(genresMap.get("Action"), genresMap.get("Adventure"), genresMap.get("Drama")));
+        comicRepository.save(comic);
+        comic = new Comic();
+        comic.setName("Test 03");
+        comic.setGenres(Arrays.asList(genresMap.get("Action"), genresMap.get("Fantasy")));
+        comicRepository.save(comic);
+        comic = new Comic();
+        comic.setName("Test 04");
+        comic.setGenres(Arrays.asList(genresMap.get("Adventure"), genresMap.get("Comedy")));
+        comicRepository.save(comic);
 
         setInitialized(true);
     }

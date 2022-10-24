@@ -36,6 +36,9 @@ public class Comic {
     @Column(name = "aliases")
     private String aliases;
 
+    @Column(name = "authors")
+    private String authors;
+
     @Column(name = "description", length = 1023)
     private String description = "";
 

@@ -80,8 +80,15 @@ public class ComicController {
     @GetMapping("/create")
     @PreAuthorize("authentication != null && authenticated")
     @PostAuthorize("hasAuthority('comic.create')")
-    public String create(@ModelAttribute ComicDto comic) {
+    public String create(@ModelAttribute("comic") ComicDto comic) {
         return "views/comic/create";
+    }
+
+    @GetMapping("/chapter/create")
+    @PreAuthorize("authentication != null && authenticated")
+    @PostAuthorize("hasAuthority('comic.create')")
+    public String createChapter(@ModelAttribute("comic") ComicDto comic) {
+        return "views/comic/chapter/create";
     }
 
     @PostMapping("/create")

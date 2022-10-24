@@ -25,6 +25,7 @@ import java.sql.Blob;
 import java.sql.SQLException;
 import java.text.MessageFormat;
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Slf4j
 @Controller
@@ -57,11 +58,11 @@ public class ImageController {
         if (images.isEmpty()) {
             return ResponseEntity.noContent().build();
         }
-        String[] ids = images.stream().map(Snowflake::toString).toArray(String[]::new);
-        if (ids.length == 1) {
-            return ResponseEntity.created(URI.create("/image/" + ids[0])).body(ids);
+        List<String> imageUrls = images.stream().map(id -> "/image/" + id).collect(Collectors.toList());
+        if (imageUrls.size() == 1) {
+            return ResponseEntity.created(URI.create(imageUrls.get(0))).body(imageUrls);
         }
-        return ResponseEntity.ok(ids);
+        return ResponseEntity.ok(imageUrls);
     }
 
     private ResponseEntity<Resource> getFile(String id, String name) throws SQLException {
