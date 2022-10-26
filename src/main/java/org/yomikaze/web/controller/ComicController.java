@@ -9,15 +9,20 @@ import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.security.access.prepost.PostAuthorize;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
+import org.yomikaze.persistence.entity.Account;
 import org.yomikaze.persistence.entity.Comic;
 import org.yomikaze.persistence.repository.ComicRepository;
 import org.yomikaze.service.ComicService;
 import org.yomikaze.snowflake.Snowflake;
-import org.yomikaze.web.dto.ComicDto;
+import org.yomikaze.web.dto.comic.ComicDetailModel;
+import org.yomikaze.web.dto.comic.ComicInputModel;
 
 import javax.persistence.EntityNotFoundException;
 import java.text.MessageFormat;
@@ -27,12 +32,11 @@ import java.util.Optional;
 @RequiredArgsConstructor
 @RequestMapping("/comic")
 @Slf4j
+@Validated
 public class ComicController {
 
     private final ComicRepository comicRepository;
     private final ComicService comicService;
-
-    private static final Pageable DEFAULT_PAGEABLE = PageRequest.of(0, 12, Sort.by("id").descending());
 
     @GetMapping({"", "/"})
     public String comic() {
@@ -49,16 +53,17 @@ public class ComicController {
         return "views/comic/listing";
     }
 
-    @GetMapping({"/detail/{id}", "/detail/{name}.{id}"})
-    public String detail(@PathVariable Optional<String> name, @PathVariable long id, Model model) {
+    @GetMapping({"/detail/{id}", "detail/{id}/{name}"})
+    public String detail(@PathVariable long id, @PathVariable Optional<String> name, Model model) {
         Snowflake snowflake = Snowflake.of(id);
         Comic comic = comicRepository.findById(snowflake)
             .orElseThrow(() -> new EntityNotFoundException("comic.not-found"));
         String slug = comicService.getSlug(comic);
-        if (name.map(slug::equals).orElse(false)) {
-            return MessageFormat.format("redirect:/comic/detail/{0}.{1}", slug, id);
+        if (!name.map(slug::equals).orElse(true)) {
+            return MessageFormat.format("redirect:/comic/detail/{0}/{1}", String.valueOf(id), slug);
         }
-        model.addAttribute("comic", comic);
+        ComicDetailModel detailModel = comicService.getComicDetail(comic);
+        model.addAttribute("comic", detailModel);
         return "views/comic/detail";
     }
 
@@ -80,26 +85,27 @@ public class ComicController {
     @GetMapping("/create")
     @PreAuthorize("authentication != null && authenticated")
     @PostAuthorize("hasAuthority('comic.create')")
-    public String create(@ModelAttribute("comic") ComicDto comic) {
+    public String create(@ModelAttribute("comic") ComicInputModel comic) {
         return "views/comic/create";
+    }
+
+    @PostMapping(path = "/create", consumes = {"multipart/form-data"})
+    @PreAuthorize("authentication != null && authenticated")
+    @PostAuthorize("hasAuthority('comic.create')")
+    public String create(@RequestPart MultipartFile thumbnail, @Validated @ModelAttribute("comic") ComicInputModel comic, BindingResult bindingResult, Authentication authentication) {
+        if (bindingResult.hasErrors()) {
+            return "views/comic/create";
+        }
+        Account account = (Account) authentication.getPrincipal();
+        Comic saved = comicService.createComic(comic, thumbnail, account);
+        return MessageFormat.format("redirect:/comic/detail/{0}/{1}", saved.getId(), comicService.getSlug(saved));
     }
 
     @GetMapping("/chapter/create")
     @PreAuthorize("authentication != null && authenticated")
     @PostAuthorize("hasAuthority('comic.create')")
-    public String createChapter(@ModelAttribute("comic") ComicDto comic) {
+    public String createChapter(@ModelAttribute("comic") ComicInputModel comic) {
         return "views/comic/chapter/create";
-    }
-
-    @PostMapping("/create")
-    @PreAuthorize("authentication != null && authenticated")
-    @PostAuthorize("hasAuthority('comic.create')")
-    public String create(@ModelAttribute Comic comic, BindingResult bindingResult) {
-        if (bindingResult.hasErrors()) {
-            return "views/comic/create";
-        }
-        comicRepository.save(comic);
-        return "redirect:/comic/listing";
     }
 
     @GetMapping("/edit/{id}")

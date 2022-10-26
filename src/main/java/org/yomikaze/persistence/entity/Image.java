@@ -38,7 +38,7 @@ public class Image {
     private Blob data;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "owner", referencedColumnName = "id", nullable = false)
+    @JoinColumn(name = "owner", referencedColumnName = "id")
     @ToString.Exclude
     private Account owner;
 

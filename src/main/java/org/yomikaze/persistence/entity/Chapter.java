@@ -5,9 +5,11 @@ import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 import org.hibernate.Hibernate;
+import org.hibernate.annotations.UpdateTimestamp;
 import org.yomikaze.snowflake.Snowflake;
 
 import javax.persistence.*;
+import java.time.Instant;
 import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
@@ -41,6 +43,10 @@ public class Chapter {
     @ToString.Exclude
     @OrderColumn(name = "index")
     private Set<Page> pages = new HashSet<>();
+
+    @UpdateTimestamp
+    @Column(name = "updated_at", nullable = false)
+    private Instant updatedAt;
 
     @Override
     public boolean equals(Object o) {

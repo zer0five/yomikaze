@@ -17,6 +17,8 @@ public interface LibraryRepository extends CrudRepository<Library, Snowflake> {
 
     Page<Library> findAllByAccountId(Snowflake accountId, Pageable pageable);
 
+    long countAllByComic(Comic comic);
+
     Optional<Library> findByAccountAndComic(Account account, Comic comic);
 
     Optional<Library> findByAccountAndComic_Id(Account account, Snowflake comic_id);

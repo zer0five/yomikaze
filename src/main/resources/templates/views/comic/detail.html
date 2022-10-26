@@ -4,7 +4,119 @@
     <title th:fragment="page-title">comic::detail</title>
 </head>
 <body>
-<div th:fragment="content">
-    <!-- TODO -->
+<div th:fragment="content" class="bg-base-200 py-10">
+    <div class="mx-20">
+        <div class="flex flex-col items-center gap-8 sm:gap-16">
+            <div class="w-full bg-base-100 rounded-box shadow-2xl p-10 border border-dashed border-neutral">
+                <div class="flex gap-4 flex-wrap justify-items-center">
+                    <div>
+                        <img
+                            alt="thumbnail"
+                            class="w-[190px] h-[280px] object-cover object-center rounded-box shadow-2xl"
+                            th:src="${#objects.nullSafe(comic.thumbnail, 'https://via.placeholder.com/190x280?text=No+image')}"
+                            src="https://via.placeholder.com/190x280?text=No+image"
+                        >
+                    </div>
+                    <div class="grow sm:w-2/3 w-full sm:pl-10 py-6 sm:py-0">
+                        <div class="indicator">
+                            <span class="indicator-item badge badge-secondary badge-sm" th:if="${comic.new}">New</span>
+                            <h2 class="text-3xl title-font font-medium pr-2" th:text="${comic.name}">${comic.name}</h2>
+                        </div>
+                        <div class="flex my-4">
+                            <div class="a2a_kit a2a_kit_size_24 a2a_default_style" data-a2a-icon-color="transparent,#55B4D4">
+                                <a class="a2a_button_copy_link"></a>
+                                <a class="a2a_button_twitter"></a>
+                                <a class="a2a_button_facebook"></a>
+                                <a class="a2a_dd" href="https://www.addtoany.com/share"></a>
+                            </div>
+                            <script async src="https://static.addtoany.com/menu/page.js"></script>
+                        </div>
+                        <div class="grid grid-cols-2">
+                            <span class="shrink gap-2">
+                                <i data-feather="user"></i>
+                                Authors
+                            </span>
+                            <span class="grow">
+                                <span th:each="author : ${comic.authors}">
+                                    <a th:href="@{/comic/search?author={author}(author=${author})}" th:text="${author}">${author}</a>
+                                </span>
+                            </span>
+                            <span class="shrink gap-2">
+                                <i data-feather="eye"></i>
+                                Views
+                            </span>
+                            <span class="grow" th:text="${#objects.nullSafe(views, 0)}">0</span>
+                            <span class="shrink gap-2">
+                                <i data-feather="bookmark"></i>
+                                In library
+                            </span>
+                            <span class="grow" th:text="${#objects.nullSafe(views, 0)}">0</span>
+                        </div>
+<!--                        <table class="table">-->
+<!--                            <tr>-->
+<!--                                <th>-->
+<!--                                <span class="gap-2">-->
+<!--                                    <i data-feather="user"></i>-->
+<!--                                    Authors-->
+<!--                                </span>-->
+<!--                                </th>-->
+<!--                                <td class="leading-relaxed">-->
+<!--                                <span th:if="${comic.authors != null}">-->
+<!--                                    [[${comic.authors}]]-->
+<!--                                </span>-->
+<!--                                    <span th:if="${comic.authors == null}">-->
+<!--                                    Unknown-->
+<!--                                </span>-->
+<!--                                </td>-->
+<!--                            </tr>-->
+<!--                            <tr>-->
+<!--                                <th>-->
+<!--                                <span class="gap-2">-->
+<!--                                    <i data-feather="eye"></i>-->
+<!--                                    Views-->
+<!--                                </span>-->
+<!--                                </th>-->
+<!--                                <td class="leading-relaxed">-->
+<!--                                <span>-->
+<!--                                    [[${views}]]-->
+<!--                                </span>-->
+<!--                                </td>-->
+<!--                            </tr>-->
+<!--                        </table>-->
+                        <p class="leading-relaxed text-justify">
+                            [[${comic.description}]]
+                            Lorem ipsum dolor sit amet, consectetur adipisicing elit. Voluptatibus quia, nulla! Maiores et
+                            perferendis eaque, exercitationem praesentium nihil.
+                            Lorem ipsum dolor sit amet, consectetur adipisicing elit. Voluptatibus quia, nulla! Maiores et
+                            perferendis eaque, exercitationem praesentium nihil.
+                            Lorem ipsum dolor sit amet, consectetur adipisicing elit. Voluptatibus quia, nulla! Maiores et
+                            perferendis eaque, exercitationem praesentium nihil.
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="w-full">
+                <div class="overflow-x-auto">
+                    <table class="table table-compact sm:table-normal w-full">
+                        <thead>
+                        <tr>
+                            <th>#</th>
+                            <th>Title</th>
+                            <th>Date</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr>
+                            <th>1</th>
+                            <td>Demo</td>
+                            <td>2022-01-01</td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
 </body>
