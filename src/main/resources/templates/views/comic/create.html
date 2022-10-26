@@ -1,153 +1,167 @@
 <!DOCTYPE html>
 <html lang="en" th:insert="layouts/default" xmlns="http://www.w3.org/1999/html">
-    <head>
-        <title th:fragment="page-title">comic::new</title>
-    </head>
-    <body>
-        <!--/*@thymesVar id="comic" type="org.yomikaze.web.dto.ComicDto"*/-->
-        <div class="bg-base-300 min-h-[calc(100vh-10rem)]" th:fragment="content">
-            <div class="card shadow-2xl bg-base-300 mx-auto my-10 w-10/12">
-                <form class="card-body gap-4" th:action="@{/comic/create}" th:object="${comic}" method="POST">
-                    <h2 class="card-title">Create comic</h2>1
-                    <fieldset>
-                        <legend class="text-center">Basic information</legend>
-                        <div class="grid grid-cols-2 gap-2 w-full">
-                            <div class="form-control" x-data="{files: null}">
-                                <label class="label">
-                                    <span class="label-text">Thumbnail</span>
-                                </label>
-                                <label class="input-group" for="thumbnail">
-                                    <input :value="(files && files[0].name) || 'Choose file'"
-                                           type="text"
-                                           class="input input-bordered grow" placeholder="Thumbnail" readonly>
-                                    <span class="btn btn-primary">Choose</span>
-                                </label>
-                                <input
-                                    id="thumbnail"
-                                    x-ref="thumbnail"
-                                       type="file"
-                                       accept="image/jpeg,image/jpg,image/png,image/webp"
-                                       th:field="*{thumbnailUrl}"
-                                       th:errorclass="input-error"
-                                       class="hidden"
-                                       @change="files = $event.target.files"
-                                />
-                                <div class="max-w-[220px] max-h-[300px] mx-auto my-10">
+<head>
+    <title th:fragment="page-title">comic::new</title>
+</head>
+<body>
+<!--/*@thymesVar id="comic" type="org.yomikaze.web.dto.comic.ComicInputModel"*/-->
+<div class="bg-base-300 min-h-[calc(100vh-10rem)]" th:fragment="content">
+    <div class="card shadow-2xl bg-base-300 mx-auto my-10 w-10/12">
+        <form class="card-body gap-4" th:action="@{/comic/create}" th:object="${comic}" method="POST" enctype="multipart/form-data">
+            <h2 class="card-title">Create comic</h2>
+            <div th:if="${#fields.hasAnyErrors()}">
+                <div class="alert alert-error">
+                    <ul>
+                        <li th:each="error : ${#fields.errors()}" th:text="${error}"></li>
+                    </ul>
+                </div>
+            </div>
+            <fieldset>
+                <legend class="text-center">Basic information</legend>
+                <div class="grid grid-cols-2 gap-4 w-full">
+                    <div class="form-control" x-data="{files: null}">
+                        <label class="label">
+                            <span class="label-text">Thumbnail</span>
+                        </label>
+                        <label class="input-group" for="thumbnail">
+                            <input :value="files && files[0]?.name || 'Choose file'"
+                                   type="text"
+                                   class="input input-bordered grow"
+                                   placeholder="Thumbnail" readonly>
+                            <span class="btn btn-primary">Choose</span>
+                        </label>
+                        <input
+                            id="thumbnail"
+                            x-ref="thumbnail"
+                            type="file"
+                            accept="image/jpeg,image/jpg,image/png,image/webp"
+                            class="hidden"
+                            name="thumbnail"
+                            @change="files = $event.target.files"
+                        />
+                        <div class="mx-auto my-10 p-2 border border-4 border-dashed border-gray-500 rounded-box">
+                            <div class="card w-[200px] h-[280px] rounded-box">
+                                <figure>
                                     <img
-                                        x-show="files && files.length"
-                                        :src="files ? URL.createObjectURL(files[0]) : ''"
-                                        class="h-full object-cover object-center"
+                                        :src="files && files[0] ? URL.createObjectURL(files[0]) : 'https://via.placeholder.com/200x280?text=No+image'"
+                                        class="object-cover object-center"
                                         alt="img"
                                     />
-                                </div>
+                                </figure>
                             </div>
+                        </div>
+                        <!--                                <button type="button" class="mx-auto btn btn-primary" :disabled="!(files && files[0])">-->
+                        <!--                                    Upload image-->
+                        <!--                                </button>-->
+                    </div>
 
-                            <div>
-                                <div class="form-control">
-                                    <label class="label" for="name">
-                                        <span class="label-text">Comic name</span>
-                                    </label>
-                                    <input
-                                        id="name"
-                                        type="text" class="input input-bordered" placeholder="Comic name"
-                                        th:field="*{name}" th:errorclass="input-error" required/>
-                                    <span class="label text-error"
-                                          th:if="${#fields.hasErrors('name')}"
-                                          th:text="${#messages.msgOrNull(#fields.errors('name'))}">
+                    <div>
+                        <div class="form-control">
+                            <label class="label" for="name">
+                                <span class="label-text">Comic name</span>
+                            </label>
+                            <input
+                                id="name"
+                                type="text" class="input input-bordered" placeholder="Comic name"
+                                th:field="*{name}" th:errorclass="input-error"/>
+                            <span class="label text-error"
+                                  th:if="${#fields.hasErrors('name')}"
+                                  th:text="${#messages.msgOrNull(#fields.errors('name'))}">
                                 Comic name is required.
                             </span>
-                                </div>
-                                <div class="form-control">
-                                    <label class="label" for="aliases">
-                                        <span class="label-text">Comic aliases</span>
-                                    </label>
-                                    <textarea id="aliases"
-                                              class="input h-24 input-bordered"
-                                              placeholder="Comic aliases, one per line"
-                                              th:field="*{aliases}" th:errorclass="input-error">
+                        </div>
+                        <div class="form-control">
+                            <label class="label" for="aliases">
+                                <span class="label-text">Comic aliases</span>
+                            </label>
+                            <textarea id="aliases"
+                                      class="input h-24 input-bordered"
+                                      placeholder="Comic aliases, one per line"
+                                      th:field="*{aliases}" th:errorclass="input-error">
                             </textarea>
-                                    <span class="label text-error"
-                                          th:if="${#fields.hasErrors('aliases')}"
-                                          th:text="${#messages.msgOrNull(#fields.errors('aliases'))}">
+                            <span class="label text-error"
+                                  th:if="${#fields.hasErrors('aliases')}"
+                                  th:text="${#messages.msgOrNull(#fields.errors('aliases'))}">
                                 Error in aliases.
                         </span>
-                                </div>
-                                <div class="form-control">
-                                    <label class="label" for="description">
-                                        <span class="label-text">Comic description</span>
-                                    </label>
-                                    <textarea id="description"
-                                              class="input h-24 input-bordered"
-                                              placeholder="Write description here"
-                                              th:field="*{description}" th:errorclass="input-error">
+                        </div>
+                        <div class="form-control">
+                            <label class="label" for="description">
+                                <span class="label-text">Comic description</span>
+                            </label>
+                            <textarea id="description"
+                                      class="input h-24 input-bordered"
+                                      placeholder="Write description here"
+                                      th:field="*{description}" th:errorclass="input-error">
                             </textarea>
-                                    <span class="label text-error"
-                                          th:if="${#fields.hasErrors('description')}"
-                                          th:text="${#messages.msgOrNull(#fields.errors('description'))}">
-                                Error in description.
-                        </span>
-                                </div>
-                            </div>
+                            <span class="label text-error"
+                                  th:if="${#fields.hasErrors('description')}"
+                                  th:text="${#messages.msgOrNull(#fields.errors('description'))}">
+                                            Error in description.
+                            </span>
                         </div>
-                    </fieldset>
-                    <hr/>
-                    <fieldset>
-                        <legend class="text-center">Genres</legend>
-                        <div class="grid grid-cols-4 gap-4">
-                            <div class="inline"
-                                 th:each="genre : ${@genreRepository.findAll()}"
-                                 th:object="${genre}">
-                                <label class="label cursor-pointer gap-2" for="genre" th:for="'genre-' + *{id}">
-                                    <input id="genre"
-                                           type="checkbox"
-                                           class="toggle shrink"
-                                           th:id="'genre-' + *{id}"
-                                           th:field="${comic.genres}"
-                                           th:value="*{id}"/>
-                                    <span class="label-text grow" th:text="*{name}"></span>
-                                </label>
-                            </div>
-                        </div>
-                    </fieldset>
-                    <hr/>
-                    <fieldset>
-                        <legend class="text-center">Additional Information</legend>
-                        <div class="flex flex-row justify-center gap-4">
-                            <div class="form-control">
-                                <label class="label" for="published">
-                                    <span class="label-text">Publish date</span>
-                                </label>
-                                <input
-                                    id="published"
-                                    type="date"
-                                    class="input input-bordered"
-                                    th:field="${comic.published}" th:errorclass="input-error" required/>
-                                <span class="label text-error"
-                                      th:if="${#fields.hasErrors('published')}"
-                                      th:text="${#messages.msgOrNull(#fields.errors('published'))}">
+                    </div>
+                </div>
+            </fieldset>
+            <hr/>
+            <fieldset>
+                <legend class="text-center">Genres</legend>
+                <div class="grid grid-cols-4 gap-4">
+                    <div class="inline"
+                         th:each="genre : ${@genreRepository.findAll()}"
+                         th:object="${genre}">
+                        <label class="label cursor-pointer gap-2" for="genre" th:for="'genre-' + *{id}">
+                            <input id="genre"
+                                   type="checkbox"
+                                   class="toggle shrink"
+                                   th:id="'genre-' + *{id}"
+                                   th:field="${comic.genres}"
+                                   th:value="*{id}"/>
+                            <span class="label-text grow" th:text="*{name}"></span>
+                        </label>
+                    </div>
+                </div>
+            </fieldset>
+            <hr/>
+            <fieldset>
+                <legend class="text-center">Additional Information</legend>
+                <div class="flex flex-row justify-center gap-4">
+                    <div class="form-control">
+                        <label class="label" for="published">
+                            <span class="label-text">Publish date</span>
+                        </label>
+                        <input
+                            id="published"
+                            type="date"
+                            class="input input-bordered"
+                            th:field="*{published}" th:errorclass="input-error"/>
+                        <span class="label text-error"
+                              th:if="${#fields.hasErrors('published')}"
+                              th:text="${#messages.msgOrNull(#fields.errors('published'))}">
                                     Error in publish date.
                                 </span>
-                            </div>
-                            <div class="form-control">
-                                <label class="label" for="finished">
-                                    <span class="label-text">Finish date</span>
-                                </label>
-                                <input
-                                    id="finished"
-                                    type="date"
-                                    class="input input-bordered"
-                                    th:field="${comic.published}" th:errorclass="input-error" required/>
-                                <span class="label text-error"
-                                      th:if="${#fields.hasErrors('finished')}"
-                                      th:text="${#messages.msgOrNull(#fields.errors('finished'))}">
+                    </div>
+                    <div class="form-control">
+                        <label class="label" for="finished">
+                            <span class="label-text">Finish date</span>
+                        </label>
+                        <input
+                            id="finished"
+                            type="date"
+                            class="input input-bordered"
+                            th:field="*{finished}" th:errorclass="input-error"/>
+                        <span class="label text-error"
+                              th:if="${#fields.hasErrors('finished')}"
+                              th:text="${#messages.msgOrNull(#fields.errors('finished'))}">
                                     Error in finish date.
                                 </span>
-                            </div>
-                        </div>
-                    </fieldset>
-                    <input type="hidden" th:field="*{thumbnailUrl}" :value="$store.thumbnail">
-                </form>
-            </div>
-        </div>
-    </body>
+                    </div>
+                </div>
+            </fieldset>
+            <hr/>
+            <button type="submit" class="btn btn-primary">Create</button>
+        </form>
+    </div>
+</div>
+</body>
 </html>

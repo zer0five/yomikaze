@@ -141,33 +141,6 @@ public class RolePermissionConfig implements ApplicationListener<ContextRefreshe
             account.getProfile().setDisplayName("Administrator");
             accountRepository.save(account);
         }
-
-        Iterable<Genre> genres = genreRepository.saveAll(Arrays.asList(
-            new Genre("Action"),
-            new Genre("Adventure"),
-            new Genre("Comedy"),
-            new Genre("Drama"),
-            new Genre("Fantasy")
-        ));
-        Map<String, Genre> genresMap = StreamSupport.stream(genres.spliterator(), false)
-            .collect(Collectors.toMap(Genre::getName, Function.identity()));
-        Comic comic = new Comic();
-        comic.setName("Test 01");
-        comic.setGenres(Arrays.asList(genresMap.get("Action"), genresMap.get("Adventure"), genresMap.get("Comedy")));
-        comicRepository.save(comic);
-        comic = new Comic();
-        comic.setName("Test 02");
-        comic.setGenres(Arrays.asList(genresMap.get("Action"), genresMap.get("Adventure"), genresMap.get("Drama")));
-        comicRepository.save(comic);
-        comic = new Comic();
-        comic.setName("Test 03");
-        comic.setGenres(Arrays.asList(genresMap.get("Action"), genresMap.get("Fantasy")));
-        comicRepository.save(comic);
-        comic = new Comic();
-        comic.setName("Test 04");
-        comic.setGenres(Arrays.asList(genresMap.get("Adventure"), genresMap.get("Comedy")));
-        comicRepository.save(comic);
-
         setInitialized(true);
     }
 }

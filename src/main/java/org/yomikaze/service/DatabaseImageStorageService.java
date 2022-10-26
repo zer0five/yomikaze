@@ -30,7 +30,6 @@ public class DatabaseImageStorageService implements IFileStorageService<Snowflak
 
     @Override
     public Snowflake store(MultipartFile file, Account owner) throws IOException {
-        Validate.notNull(owner, "Owner cannot be null");
         Validate.notNull(file, "File cannot be null");
         Validate.isTrue(!file.isEmpty(), "File cannot be empty");
         String contentType = file.getContentType();

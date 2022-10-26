@@ -1,7 +1,6 @@
 package org.yomikaze.service;
 
 import com.luciad.imageio.webp.WebPWriteParam;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.stereotype.Service;
 import org.yomikaze.snowflake.SnowflakeFactory;
 
@@ -15,7 +14,6 @@ import java.nio.file.Files;
 import java.util.NoSuchElementException;
 
 @Service
-@ConditionalOnMissingBean
 public class WebpImageProcessingService {
     private final ImageWriter writer;
     private final ImageWriteParam writeParam;

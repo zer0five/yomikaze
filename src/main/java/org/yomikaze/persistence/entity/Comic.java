@@ -13,9 +13,7 @@ import org.yomikaze.snowflake.json.SnowflakeJsonSerializer;
 import javax.persistence.*;
 import java.net.URI;
 import java.time.Instant;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Objects;
+import java.util.*;
 
 @Getter
 @Setter
@@ -34,10 +32,12 @@ public class Comic {
     private String name;
 
     @Column(name = "aliases")
-    private String aliases;
+    @ElementCollection
+    private Collection<String> aliases;
 
     @Column(name = "authors")
-    private String authors;
+    @ElementCollection
+    private Collection<String> authors;
 
     @Column(name = "description", length = 1023)
     private String description = "";
@@ -46,10 +46,10 @@ public class Comic {
     private URI thumbnail;
 
     @Column(name = "published")
-    private Instant published;
+    private Date published;
 
     @Column(name = "finished")
-    private Instant finished;
+    private Date finished;
 
     @UpdateTimestamp
     @Column(name = "updated_at", nullable = false)

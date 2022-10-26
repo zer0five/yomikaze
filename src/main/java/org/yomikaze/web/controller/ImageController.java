@@ -65,24 +65,38 @@ public class ImageController {
         return ResponseEntity.ok(imageUrls);
     }
 
-    private ResponseEntity<Resource> getFile(String id, String name) throws SQLException {
-        return getFile(null, id, name);
+    private ResponseEntity<Resource> getFile(String id, String name) {
+        Snowflake imageId = Snowflake.of(id);
+        Optional<Image> image = imageRepository.findById(imageId);
+        boolean matchName = image.map(Image::getName).map(n -> n.equals(name)).orElse(false);
+        if (!image.isPresent() || !matchName) {
+            return ResponseEntity.notFound().build();
+        }
+        return toResponse(image);
+
     }
 
     private ResponseEntity<Resource> getFile(String owner, String id, String name) {
         Snowflake snowflake = Snowflake.of(id);
         Snowflake ownerSnowflake = Snowflake.of(owner);
         Optional<Image> file = imageRepository.findByIdAndOwner_IdAndNameLikeIgnoreCase(snowflake, ownerSnowflake, name);
+        return toResponse(file);
+    }
+
+    private ResponseEntity<Resource> toResponse(Optional<Image> file) {
         if (!file.isPresent()) {
             return ResponseEntity.notFound().build();
         }
-        Image actualFile = file.get();
-        Blob data = actualFile.getData();
+        return toResponse(file.get());
+    }
+
+    private ResponseEntity<Resource> toResponse(Image file) {
+        Blob data = file.getData();
         try {
             if (data == null || data.length() == 0) {
                 return ResponseEntity.noContent().build();
             }
-            MediaType mediaType = actualFile.getMediaType();
+            MediaType mediaType = file.getMediaType();
             Resource resource = new InputStreamResource(data.getBinaryStream());
             return ResponseEntity.ok()
                 .contentType(mediaType)
@@ -103,16 +117,13 @@ public class ImageController {
     @GetMapping("/image/{id}")
     public String getAttachment(@PathVariable("id") String id) {
         Snowflake snowflake = Snowflake.of(id);
-        Image file = imageRepository.findById(snowflake).orElseThrow(() -> new EntityNotFoundException("File not found"));
-        Snowflake owner = file.getOwner().getId();
-        return MessageFormat.format("redirect:/image/{0}/{1}/{2}", owner, id, file.getName());
+        String name = imageRepository.findById(snowflake).map(Image::getName).orElse("unknown");
+        return MessageFormat.format("redirect:/image/{0}/{1}", id, name);
     }
 
-    @ExceptionHandler(EntityNotFoundException.class)
-    public ResponseEntity<Object> handleEntityNotFoundException(EntityNotFoundException e) {
-        Map<String, Object> result = new HashMap<>();
-        result.put("error", e.getMessage());
-        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(result);
+    @GetMapping("/image/{id}/{name}")
+    public ResponseEntity<Resource> getAttachment(@PathVariable("id") String id, @PathVariable("name") String name) {
+        return getFile(id, name);
     }
 
 }

@@ -3,11 +3,12 @@ package org.yomikaze.snowflake;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonGetter;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import org.jetbrains.annotations.NotNull;
 
 import java.io.Serializable;
 import java.util.Date;
 
-public class Snowflake implements Serializable {
+public class Snowflake implements Serializable, Comparable<Snowflake> {
     @JsonIgnore
     private final long id;
 
@@ -85,6 +86,11 @@ public class Snowflake implements Serializable {
     @Override
     public int hashCode() {
         return Long.hashCode(id);
+    }
+
+    @Override
+    public int compareTo(@NotNull Snowflake o) {
+        return Long.compareUnsigned(this.id, o.id);
     }
 
     public static class Builder {
