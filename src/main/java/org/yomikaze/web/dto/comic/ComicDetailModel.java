@@ -1,6 +1,7 @@
 package org.yomikaze.web.dto.comic;
 
 import lombok.Data;
+import org.yomikaze.persistence.entity.Account;
 import org.yomikaze.snowflake.Snowflake;
 import org.yomikaze.web.dto.comic.chapter.ChapterModel;
 
@@ -8,7 +9,6 @@ import java.net.URI;
 import java.time.Instant;
 import java.util.Collection;
 import java.util.Date;
-import java.util.List;
 
 @Data
 public class ComicDetailModel {
@@ -23,6 +23,7 @@ public class ComicDetailModel {
     private Date published;
     private Date finished;
     private Instant updatedAt;
+    private Account uploader;
 
     // extra info
     private Collection<ChapterModel> chapters;

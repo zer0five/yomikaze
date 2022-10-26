@@ -54,10 +54,12 @@ public class ComicController {
     }
 
     @GetMapping({"/detail/{id}", "detail/{id}/{name}"})
-    public String detail(@PathVariable long id, @PathVariable Optional<String> name, Model model) {
-        Snowflake snowflake = Snowflake.of(id);
-        Comic comic = comicRepository.findById(snowflake)
-            .orElseThrow(() -> new EntityNotFoundException("comic.not-found"));
+    public String detail(@PathVariable Snowflake id, @PathVariable Optional<String> name, Model model) {
+        Comic comic = comicRepository.findById(id).orElse(null);
+        if (comic == null) {
+            model.addAttribute("error", "comic.not-found");
+            return "forward:/error/404";
+        }
         String slug = comicService.getSlug(comic);
         if (!name.map(slug::equals).orElse(true)) {
             return MessageFormat.format("redirect:/comic/detail/{0}/{1}", String.valueOf(id), slug);
@@ -96,8 +98,8 @@ public class ComicController {
         if (bindingResult.hasErrors()) {
             return "views/comic/create";
         }
-        Account account = (Account) authentication.getPrincipal();
-        Comic saved = comicService.createComic(comic, thumbnail, account);
+        Account uploader = (Account) authentication.getPrincipal();
+        Comic saved = comicService.createComic(comic, thumbnail, uploader);
         return MessageFormat.format("redirect:/comic/detail/{0}/{1}", saved.getId(), comicService.getSlug(saved));
     }
 

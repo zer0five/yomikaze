@@ -62,7 +62,7 @@ public class ComicService {
             Snowflake id = imageStorageService.store(thumbnail);
             thumbnailUrl = URI.create("/image/" + id);
         } catch (IOException e) {
-            thumbnailUrl = URI.create("https://via.placeholder.com/200x280/000000/FFFFFF/?text=No+Thumbnail");
+            thumbnailUrl = URI.create("https://via.placeholder.com/190x280/?text=No+Thumbnail");
         }
         comicEntity.setThumbnail(thumbnailUrl);
         return comicRepository.save(comicEntity);
@@ -91,6 +91,7 @@ public class ComicService {
         model.setPublished(comic.getPublished());
         model.setFinished(comic.getFinished());
         model.setUpdatedAt(comic.getUpdatedAt());
+        model.setUploader(comic.getUploader());
         Collection<ChapterModel> chapters = new TreeSet<>();
         comic.getChapters().forEach(chapter -> {
             ChapterModel chapterModel = new ChapterModel();
