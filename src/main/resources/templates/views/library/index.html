@@ -7,8 +7,8 @@
 <div th:fragment="content">
     <!-- TODO -->
     <ul>
-        <li th:each="comic : ${comics}">
-            <span th:text="${comic.name}"></span>
+        <li th:each="comicInLibrary : ${comicsInLibrary}">
+            <span th:text="${comicInLibrary.comic.name}"></span>
         </li>
     </ul>
 </div>

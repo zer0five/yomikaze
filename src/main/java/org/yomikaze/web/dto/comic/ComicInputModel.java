@@ -10,6 +10,7 @@ import javax.validation.constraints.NotBlank;
 import java.io.BufferedReader;
 import java.io.StringReader;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
@@ -33,7 +34,7 @@ public class ComicInputModel {
     @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
     private Date finished;
 
-    private List<Snowflake> genres;
+    private List<Snowflake> genres = Collections.emptyList();
 
     public List<String> getListAliases() {
         return readLines(aliases);

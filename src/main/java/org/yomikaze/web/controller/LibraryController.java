@@ -38,7 +38,7 @@ public class LibraryController {
         int pageNumber = Math.max(1, page.orElse(1)) - 1;
         int pageSize = Math.max(12, size.orElse(12));
         Pageable pageable = PageRequest.of(pageNumber, pageSize, Sort.by("id").descending());
-        model.addAttribute("comics", libraryRepository.findAllByAccount(account, pageable));
+        model.addAttribute("comicsInLibrary", libraryRepository.findAllByAccount(account, pageable));
         return "views/library/index";
     }
 
