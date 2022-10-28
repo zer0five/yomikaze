@@ -4,195 +4,194 @@
     <title th:fragment="page-title">comic::detail</title>
 </head>
 <body>
-<div class="bg-base-200 py-10 px-20" th:fragment="content">
-
-    <div class="w-full bg-base-100 rounded-box shadow-2xl p-10 border border-dashed border-neutral">
-        <div class="flex flex-col gap-8 flex-wrap justify-items-center">
-            <div class="flex flex-row flex-wrap md:flex-nowrap gap-8">
-                <!-- Thumbnail -->
-                <div class="shrink-0 flex-grow-0 mx-auto">
-                    <img
-                        alt="thumbnail"
-                        class="w-[190px] h-[280px] object-cover object-center rounded-box shadow-2xl"
-                        src="https://via.placeholder.com/190x280?text=No+thumbnail"
-                        th:src="${#objects.nullSafe(comic.thumbnail, 'https://via.placeholder.com/190x280?text=No+thumbnail')}"
-                    />
-                </div>
-                <!-- Detail -->
-                <div class="flex-grow flex flex-col gap-4">
-                    <div class="flex gap-2">
-                        <div class="flex-grow">
-                            <div class="flex flex-col">
-                                <div class="indicator">
+<div class="bg-base-100 rounded-box shadow-2xl p-10 border border-dashed border-neutral" th:fragment="content">
+    <div class="flex flex-col gap-8 flex-wrap justify-items-center">
+        <div class="flex flex-row flex-wrap md:flex-nowrap gap-8">
+            <!-- Thumbnail -->
+            <div class="shrink-0 flex-grow-0 mx-auto">
+                <img
+                    alt="thumbnail"
+                    class="w-[190px] h-[280px] object-cover object-center rounded-box shadow-2xl"
+                    src="https://via.placeholder.com/190x280?text=No+thumbnail"
+                    th:src="${#objects.nullSafe(comic.thumbnail, 'https://via.placeholder.com/190x280?text=No+thumbnail')}"
+                />
+            </div>
+            <!-- Detail -->
+            <div class="flex-grow flex flex-col gap-4">
+                <div class="flex gap-2">
+                    <div class="flex-grow">
+                        <div class="flex flex-col">
+                            <div class="indicator">
                                     <span class="indicator-item badge badge-secondary badge-sm"
                                           th:if="${comic.new}">New</span>
-                                    <h2 class="text-3xl title-font font-medium" th:text="${comic.name}">
-                                        ${comic.name}</h2>
-                                </div>
-                                <span class="text-sm text-neutral italic"
-                                      th:text="${#strings.listJoin(comic.aliases, '; ')}">
+                                <h2 class="text-3xl title-font font-medium" th:text="${comic.name}">
+                                    ${comic.name}</h2>
+                            </div>
+                            <span class="text-sm text-neutral italic"
+                                  th:text="${#strings.listJoin(comic.aliases, '; ')}">
                                         ${comic.aliases}
                                     </span>
-                            </div>
-                        </div>
-                        <div class="flex-shrink">
-                            <div class="a2a_kit a2a_kit_size_24 a2a_default_style"
-                                 data-a2a-icon-color="transparent,#55B4D4">
-                                <a class="a2a_button_copy_link"></a>
-                                <a class="a2a_button_twitter"></a>
-                                <a class="a2a_button_facebook"></a>
-                                <a class="a2a_dd" href="https://www.addtoany.com/share"></a>
-                            </div>
-                            <script async src="https://static.addtoany.com/menu/page.js"></script>
                         </div>
                     </div>
-                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
-                        <dl class="grid grid-cols-5 gap-x-4 gap-y-2 flex-grow-0">
-                            <dt class="col-span-2 gap-2 font-bold">
-                                <i data-feather="user"></i>
-                                Authors
-                            </dt>
-                            <dd class="col-span-3">
-                                <a th:each="author : ${comic.authors}"
-                                   th:href="@{/search/?author={author}(author=${author})}"
-                                   th:text="${author}">${author}</a>
-                                <th:block th:if="${comic.authors.isEmpty()}">Unknown</th:block>
-                            </dd>
-                            <dt class="col-span-2 gap-2 font-bold">
-                                <i data-feather="upload-cloud"></i>
-                                Uploader
-                            </dt>
-                            <dd class="col-span-3">
-                                <a
-                                    class="link link-accent"
-                                    href="/profile/{id}"
-                                    th:href="@{/profile/{id}(id=${comic.uploader.id})}"
-                                    th:text="${comic.uploader.profile.displayName}"
-                                >
-                                    ${comic.uploader.profile.displayName}
-                                </a>
-                            </dd>
-                            <dt class="col-span-2 gap-2 font-bold">
-                                <i data-feather="activity"></i>
-                                Status
-                            </dt>
-                            <dd class="col-span-3">
-                                <span class="badge badge-accent" th:if="${comic.finished == null}">Ongoing</span>
-                                <span class="badge badge-success" th:if="${comic.finished != null}">Completed</span>
-                            </dd>
-                            <dt class="col-span-2 gap-2 font-bold">
-                                <i data-feather="clock"></i>
-                                Last updated
-                            </dt>
-                            <dd class="col-span-3">
-                                    <span th:text="${comic.updatedAt}"
-                                          x-init="$el.textContent = moment($el.textContent).fromNow()">
-                                        [[${comic.updatedAt}]]
-                                    </span>
-                            </dd>
-                        </dl>
-                        <dl class="grid grid-cols-5 gap-x-4 gap-y-2 flex-grow-0">
-                            <dt class="col-span-2 gap-2 font-bold">
-                                <i data-feather="eye"></i>
-                                Views
-                            </dt>
-                            <dd class="col-span-3">
+                    <div class="flex-shrink">
+                        <div class="a2a_kit a2a_kit_size_24 a2a_default_style"
+                             data-a2a-icon-color="transparent,#55B4D4">
+                            <a class="a2a_button_copy_link"></a>
+                            <a class="a2a_button_twitter"></a>
+                            <a class="a2a_button_facebook"></a>
+                            <a class="a2a_dd" href="https://www.addtoany.com/share"></a>
+                        </div>
+                        <script async src="https://static.addtoany.com/menu/page.js"></script>
+                    </div>
+                </div>
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                    <dl class="grid grid-cols-5 gap-x-4 gap-y-2 flex-grow-0">
+                        <dt class="col-span-2 gap-2 font-bold">
+                            <i data-feather="user"></i>
+                            Authors
+                        </dt>
+                        <dd class="col-span-3">
+                            <a th:each="author : ${comic.authors}"
+                               th:href="@{/search/(author=${author})}"
+                               th:text="${author}">${author}</a>
+                            <th:block th:if="${comic.authors.isEmpty()}">Unknown</th:block>
+                        </dd>
+                        <dt class="col-span-2 gap-2 font-bold">
+                            <i data-feather="upload-cloud"></i>
+                            Uploader
+                        </dt>
+                        <dd class="col-span-3">
+                            <a
+                                class="link link-accent"
+                                href="/profile/{id}"
+                                th:href="@{/profile/{id}(id=${comic.uploader.id})}"
+                                th:text="${comic.uploader.profile.displayName}"
+                            >
+                                ${comic.uploader.profile.displayName}
+                            </a>
+                        </dd>
+                        <dt class="col-span-2 gap-2 font-bold">
+                            <i data-feather="activity"></i>
+                            Status
+                        </dt>
+                        <dd class="col-span-3">
+                            <span class="badge badge-accent" th:if="${comic.finished == null}">Ongoing</span>
+                            <span class="badge badge-success" th:if="${comic.finished != null}">Completed</span>
+                        </dd>
+                        <dt class="col-span-2 gap-2 font-bold">
+                            <i data-feather="clock"></i>
+                            Last updated
+                        </dt>
+                        <dd class="col-span-3">
+                            <span th:text="${comic.updatedAt}"
+                                  th:x-text="| moment('${comic.updatedAt}').fromNow() |">
+                                [[${comic.updatedAt}]]
+                            </span>
+                        </dd>
+                    </dl>
+                    <dl class="grid grid-cols-5 gap-x-4 gap-y-2 flex-grow-0">
+                        <dt class="col-span-2 gap-2 font-bold">
+                            <i data-feather="eye"></i>
+                            Views
+                        </dt>
+                        <dd class="col-span-3">
                                     <span th:text="${comic.views}"
-                                          x-init="$el.textContent = formatNumber($el.textContent)">
+                                          th:x-text="| formatNumber(${comic.inLibraries}) |">
                                         [[${comic.views}]]
                                     </span>
-                            </dd>
-                            <dt class="col-span-2 gap-2 font-bold">
-                                <i data-feather="bookmark"></i>
-                                In libraries
-                            </dt>
-                            <dd class="col-span-3">
-                                    <span th:text="${comic.inLibraries}"
-                                          x-init="$el.textContent = formatNumber($el.textContent)">
-                                        [[${comic.inLibraries}]]
-                                    </span>
-                            </dd>
-                            <dt class="col-span-2 gap-2 font-bold">
-                                <i data-feather="calendar"></i>
-                                Published
-                            </dt>
-                            <dd class="col-span-3" th:switch="${comic.published != null}">
-                                <span th:case="false">Unknown</span>
-                                <span th:case="true"
-                                      th:text="${comic.published}"
-                                      x-init="$el.textContent = moment($el.textContent).fromNow()">
+                        </dd>
+                        <dt class="col-span-2 gap-2 font-bold">
+                            <i data-feather="bookmark"></i>
+                            In libraries
+                        </dt>
+                        <dd class="col-span-3">
+                                <span th:text="${comic.inLibraries}"
+                                      th:x-text="| formatNumber(${comic.inLibraries}) |">
+                                    [[${comic.inLibraries}]]
+                                </span>
+                        </dd>
+                        <dt class="col-span-2 gap-2 font-bold">
+                            <i data-feather="calendar"></i>
+                            Published
+                        </dt>
+                        <dd class="col-span-3" th:switch="${comic.published != null}">
+                            <span th:case="false">Unknown</span>
+                            <span th:case="true"
+                                  th:text="${comic.published}"
+                                  x-init="$el.textContent = moment($el.textContent).fromNow()">
                                         [[${comic.published}]]
                                     </span>
-                            </dd>
-                            <dt class="col-span-2 gap-2 font-bold">
-                                <i data-feather="calendar"></i>
-                                Finished
-                            </dt>
-                            <dd class="col-span-3" th:switch="${comic.finished != null}">
-                                <span th:case="false">Unknown</span>
-                                <span th:case="true"
-                                      th:text="${comic.finished}"
-                                      x-init="$el.textContent = moment($el.textContent).fromNow()">
+                        </dd>
+                        <dt class="col-span-2 gap-2 font-bold">
+                            <i data-feather="calendar"></i>
+                            Finished
+                        </dt>
+                        <dd class="col-span-3" th:switch="${comic.finished != null}">
+                            <span th:case="false">Unknown</span>
+                            <span th:case="true"
+                                  th:text="${comic.finished}"
+                                  x-init="$el.textContent = moment($el.textContent).fromNow()">
                                         [[${comic.finished}]]
                                     </span>
-                            </dd>
-                        </dl>
-                    </div>
-                    <div class="grid grid-cols-5 gap-2">
-                        <div class="col-span-1">
+                        </dd>
+                    </dl>
+                </div>
+                <div class="grid grid-cols-5 gap-2">
+                    <div class="col-span-1">
                                 <span class="font-bold gap-2">
                                     <i data-feather="tag"></i>
                                     Genres
                                 </span>
-                        </div>
-                        <div class="col-span-4 grow flex flex-wrap flex-row gap-2">
-                            <div class="tooltip"
-                                 th:data-tip="${genre.description ?: genre.name}"
-                                 th:each="genre : ${comic.genres}">
-                                <a class="badge badge-outline badge-accent p-2"
-                                   th:href="@{/search/?genre={id}(id=${genre.id})}"
-                                   th:text="${genre.name}"
-                                >
-                                    [[${genre}]]
-                                </a>
-                            </div>
-                        </div>
                     </div>
-                    <div class="flex flex-row flex-wrap gap-2">
-                        <a class="btn btn-primary gap-2">
-                            <i data-feather="book-open"></i>
-                            Read
-                        </a>
-                        <a class="btn btn-secondary gap-2">
-                            <i data-feather="fast-forward"></i>
-                            Read latest
-                        </a>
-                        <a class="btn btn-accent gap-2">
-                            <i data-feather="navigation"></i>
-                            Continue reading
-                        </a>
-                        <a class="btn btn-error gap-2">
-                            <i data-feather="bookmark"></i>
-                            Add to library
-                        </a>
+                    <div class="col-span-4 grow flex flex-wrap flex-row gap-2">
+                        <div class="tooltip"
+                             th:data-tip="${genre.description ?: genre.name}"
+                             th:each="genre : ${comic.genres}">
+                            <a class="badge badge-outline badge-accent p-2"
+                               th:href="@{/search/?genre={id}(id=${genre.id})}"
+                               th:text="${genre.name}"
+                            >
+                                [[${genre}]]
+                            </a>
+                        </div>
                     </div>
                 </div>
+                <div class="flex flex-row flex-wrap gap-2">
+                    <a class="btn btn-primary gap-2">
+                        <i data-feather="book-open"></i>
+                        Read
+                    </a>
+                    <a class="btn btn-secondary gap-2">
+                        <i data-feather="fast-forward"></i>
+                        Read latest
+                    </a>
+                    <a class="btn btn-accent gap-2">
+                        <i data-feather="navigation"></i>
+                        Continue reading
+                    </a>
+                    <a class="btn btn-error gap-2">
+                        <i data-feather="bookmark"></i>
+                        Add to library
+                    </a>
+                </div>
             </div>
-            <!-- Description -->
-            <label class="collapse collapse-plus bg-base-300 shadow-xl rounded-box">
-                <input class="peer" type="checkbox"/>
-                <span class="collapse-title gap-2">
+        </div>
+        <!-- Description -->
+        <label class="collapse collapse-plus bg-base-300 shadow-xl rounded-box"  x-data="{open: true}">
+            <input class="peer" type="checkbox" x-model="open"/>
+            <span class="collapse-title gap-2">
                     <i data-feather="info"></i>
                     <span class="font-bold">
                         Description
                     </span>
-                    <span class="text-sm text-neutral italic">
+                    <span class="text-sm text-neutral italic"
+                          x-text="open ? '(click to collapse)' : '(click to expand)'">
                         (click to expand)
                     </span>
                 </span>
-                <span class="collapse-content">
+            <span class="collapse-content">
                     <span class="leading-relaxed text-justify"
-                          th:switch='${#objects.nullSafe(comic.description, "").isEmpty()}'>
+                          th:switch="${#objects.nullSafe(comic.description, '').isEmpty()}">
                         <span class="italic" th:case='true'>
                             No description provided
                         </span>
@@ -201,26 +200,27 @@
                         </span>
                     </span>
                 </span>
-            </label>
-            <!-- Chapters -->
-            <label class="collapse collapse-plus bg-base-300 shadow-xl rounded-box" x-data="{open: true}">
-                <input class="peer" type="checkbox" :checked="open" x-model="open"/>
-                <span class="collapse-title gap-2">
+        </label>
+        <!-- Chapters -->
+        <label class="collapse collapse-plus bg-base-300 shadow-xl rounded-box" x-data="{open: true}">
+            <input :checked="open" class="peer" type="checkbox" x-model="open"/>
+            <span class="collapse-title gap-2">
                     <i data-feather="list"></i>
                     <span class="font-bold">
                         Chapter
                     </span>
-                    <span class="text-sm text-neutral italic" x-text="open ? '(click to collapse)' : '(click to expand)'">
+                    <span class="text-sm text-neutral italic"
+                          x-text="open ? '(click to collapse)' : '(click to expand)'">
                         (click to expand)
                     </span>
                 </span>
-                <span class="collapse-content" th:switch="${comic.chapters.isEmpty()}">
-                    <span th:case="true" class="italic">
+            <span class="collapse-content" th:switch="${comic.chapters.isEmpty()}">
+                    <span class="italic" th:case="true">
                         No chapters available
                     </span>
-                    <span th:case="false" class="max-h-[500px] divide-y divide-dashed overflow-y-auto pr-4">
+                    <span class="max-h-[500px] divide-y divide-dashed overflow-y-auto pr-4" th:case="false">
                         <span class="flex flex-nowrap items-center gap-4 p-2 hover:bg-accent hover:bg-opacity-30"
-                            th:each="chapter : ${comic.chapters}" th:x-ref="${chapter.id}">
+                              th:each="chapter : ${comic.chapters}" th:x-ref="${chapter.id}">
                         >
                             <a class="flex-grow flex flex-nowrap items-center gap-4" href="">
                                 <span class="flex-grow"
@@ -229,8 +229,8 @@
                                 <span>[[${chapter.id.timestamp}}]]</span>
                             </a>
                             <span class="gap-2">
-                                <button class="btn btn-ghost btn-circle btn-sm"
-                                        @click="toggleReadStatus(chapter.id)">
+                                <button @click="toggleReadStatus(chapter.id)"
+                                        class="btn btn-ghost btn-circle btn-sm">
                                 >
                                     <i data-feather="eye"></i>
                                 </button>
@@ -244,25 +244,25 @@
                         </span>
                     </span>
                 </span>
-            </label>
-        </div>
+        </label>
     </div>
-</div>
-<script th:inline="javascript">
-    const API_URL = /*[[@{/history/toggle}]]*/ '/history/toggle/';
-    async function toggleReadStatus(chapterId) {
-        let response = await fetch(API_URL + chapterId, {credentials: 'include'});
-        let status = response.status;
-        switch (status) {
-            case 200:
-                console.log('Chapter marked as read');
-                break;
-            case 204:
-                console.log('Chapter marked as unread');
-                break;
-            default:
-                console.log('Unknown status code: ' + status);
+    <script th:inline="javascript">
+        const API_URL = /*[[@{/history/toggle}]]*/ '/history/toggle/';
+
+        async function toggleReadStatus(chapterId) {
+            let response = await fetch(API_URL + chapterId, {credentials: 'include'});
+            let status = response.status;
+            switch (status) {
+                case 200:
+                    console.log('Chapter marked as read');
+                    break;
+                case 204:
+                    console.log('Chapter marked as unread');
+                    break;
+                default:
+                    console.log('Unknown status code: ' + status);
+            }
         }
-    }
-</script>
+    </script>
+</div>
 </body>

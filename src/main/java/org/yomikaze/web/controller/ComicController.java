@@ -44,10 +44,10 @@ public class ComicController {
     }
 
     @RequestMapping("/listing")
-    public String listing(@PageableDefault(size = 12, sort = {"updatedAt", "id"}, direction = Sort.Direction.DESC) Pageable pageable,
+    public String listing(@PageableDefault(size = 12) Pageable pageable,
                           Model model) {
-        log.info("Listing comics with pageable {}", pageable);
-        Page<Comic> comics = comicRepository.findAll(pageable);
+        Pageable withSort = PageRequest.of(pageable.getPageNumber(), pageable.getPageSize(), Comic.DEFAULT_SORT);
+        Page<Comic> comics = comicRepository.findAll(withSort);
         model.addAttribute("comics", comics);
         return "views/comic/listing";
     }

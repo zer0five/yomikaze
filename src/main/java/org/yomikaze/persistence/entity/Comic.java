@@ -7,6 +7,7 @@ import lombok.Setter;
 import lombok.ToString;
 import org.hibernate.Hibernate;
 import org.hibernate.annotations.UpdateTimestamp;
+import org.springframework.data.domain.Sort;
 import org.yomikaze.snowflake.Snowflake;
 import org.yomikaze.snowflake.json.SnowflakeJsonSerializer;
 
@@ -22,6 +23,10 @@ import java.util.*;
 @Entity(name = "comic")
 @Table(name = "comic")
 public class Comic {
+    public static final Sort SORT_BY_UPDATED_AT = Sort.sort(Comic.class).by(Comic::getUpdatedAt).descending();
+    public static final Sort SORT_BY_ID = Sort.sort(Comic.class).by(Comic::getId).descending();
+    public static final Sort SORT_BY_NAME = Sort.sort(Comic.class).by(Comic::getName).ascending();
+    public static final Sort DEFAULT_SORT = SORT_BY_UPDATED_AT.and(SORT_BY_ID).and(SORT_BY_NAME);
     @Id
     @GeneratedValue(generator = "comic-snowflake")
     @Column(name = "id", nullable = false)

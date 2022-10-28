@@ -12,6 +12,6 @@ public class ChapterModel implements Comparable<ChapterModel> {
 
     @Override
     public int compareTo(@NotNull ChapterModel o) {
-        return Long.compare(index, o.index);
+        return -Long.compare(index, o.index);
     }
 }

@@ -1,27 +1,42 @@
 <!DOCTYPE html>
-<html lang="en"
-      xmlns:th="http://www.thymeleaf.org"
+<html :data-theme="theme"
+      lang="en"
       th:lang="${#locale.language}"
       x-data="theme"
-      :data-theme="theme"
+      xmlns:th="http://www.thymeleaf.org"
 >
 <head>
     <meta charset="UTF-8">
     <meta content="width=device-width, initial-scale=1.0" name="viewport">
     <meta name="description" th:content="#{site.description.generic}">
     <title th:text="#{site.name} + '::' + ~{this :: page-title/text()}">name::title</title>
-    <link rel="shortcut icon" type="image/svg" href="/asset/image/logo.svg"
-          th:href="@{/asset/image/logo.svg}"/>
-    <link rel="stylesheet" type="text/css" href="/asset/css/tailwind.min.css"
-          th:href="@{/asset/css/tailwind.min.css}"/>
-    <link rel="stylesheet" type="text/css" href="/asset/css/feather.min.css"
-          th:href="@{/asset/css/feather.min.css}"/>
+    <link href="/asset/image/logo.svg" rel="shortcut icon" th:href="@{/asset/image/logo.svg}"
+          type="image/svg"/>
+    <link href="/asset/css/tailwind.min.css" rel="stylesheet" th:href="@{/asset/css/tailwind.min.css}"
+          type="text/css"/>
+    <link href="/asset/css/feather.min.css" rel="stylesheet" th:href="@{/asset/css/feather.min.css}"
+          type="text/css"/>
 </head>
 <body class="bg-base-100 text-base-content overflow-x-hidden" th:fragment="body">
 <th:block th:replace="fragments/header"></th:block>
-<th:block th:replace="this :: content">
-    <!--  Main content here  -->
-</th:block>
+<div class="max-w-screen w-full min-h-[calc(100vh-10rem)]">
+    <div class="w-10/12 mx-auto py-10" th:insert="this :: content">
+        <!-- Main content here -->
+    </div>
+    <button id="btn-back-to-top"
+            type="button"
+            class="fixed bottom-10 right-10 btn btn-circle bg-neutral shadow-md hover:bg-accent hover:shadow-lg focus:bg-accent focus:shadow-lg active:bg-accent active:shadow-lg"
+            x-cloak
+            x-data="{scroll : document.documentElement.scrollTop > 20}"
+            x-show="scroll"
+            x-transition.opacity
+            @click="window.scrollTo({top: 0, behavior: 'smooth'})"
+            @scroll.window="document.documentElement.scrollTop > 20 ? scroll = true : scroll = false"
+    >
+        <i data-feather="arrow-up"></i>
+    </button>
+</div>
+
 <th:block th:replace="fragments/footer"></th:block>
 <th:block th:replace="fragments/scripts"></th:block>
 </body>
