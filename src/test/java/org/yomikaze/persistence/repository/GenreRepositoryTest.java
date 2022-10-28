@@ -15,8 +15,7 @@ import static org.junit.jupiter.api.Assertions.*;
 @SpringBootTest
 public class GenreRepositoryTest {
 
-    @Autowired
-    ComicRepository comicRepository;
+    
     @Autowired
     GenreRepository genreRepository;
 
