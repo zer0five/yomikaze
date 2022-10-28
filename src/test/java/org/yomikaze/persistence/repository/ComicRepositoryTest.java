@@ -59,6 +59,15 @@ class ComicRepositoryTest {
         comic.setName("Test 04");
         comic.setGenres(Arrays.asList(genresMap.get("Adventure"), genresMap.get("Comedy")));
         comicRepository.save(comic);
+        comic = new Comic();
+        comic.setName("One Piece");
+        comicRepository.save(comic);
+        comic = new Comic();
+        comic.setName("ONE PUNCH MAN");
+        comicRepository.save(comic);
+        comic = new Comic();
+        comic.setName("one one");
+        comicRepository.save(comic);
         pageable = Pageable.ofSize(10);
         initialized = true;
     }
@@ -76,12 +85,15 @@ class ComicRepositoryTest {
     void testComicNotHasGenres() {
         Genre genre = genresMap.get("Fantasy");
         Page<Comic> comics = comicRepository.findByGenresContainingNone(singletonList(genre), pageable);
-        assertEquals(3, comics.getTotalElements());
+        assertEquals(6, comics.getTotalElements());
         Collection<String> comicList = comics.stream().map(Comic::getName).collect(Collectors.toList());
         assertTrue(comicList.contains("Test 01"));
         assertTrue(comicList.contains("Test 02"));
         assertFalse(comicList.contains("Test 03"));
         assertTrue(comicList.contains("Test 04"));
+        assertTrue(comicList.contains("One Piece"));
+        assertTrue(comicList.contains("ONE PUNCH MAN"));
+        assertTrue(comicList.contains("one one"));
     }
 
     @Test
@@ -96,4 +108,29 @@ class ComicRepositoryTest {
         assertTrue(comicList.contains("Test 01"));
         assertTrue(comicList.contains("Test 02"));
     }
+    @Test
+    void testfindByNameContainingIgnoreCase(){
+        Page<Comic> comics = comicRepository.findByNameContainingIgnoreCase("One", pageable );
+        assertEquals(3,comics.getTotalElements());
+        Collection<String> comicList = comics.stream().map(Comic::getName).collect(Collectors.toList());
+        assertTrue(comicList.contains("One Piece"));
+        assertTrue(comicList.contains("ONE PUNCH MAN"));
+        assertTrue(comicList.contains("one one"));
+    }
+    @Test
+    void testFindByNameContainingIgnoreCase1(){
+        Page<Comic> comics = comicRepository.findByNameContainingIgnoreCase("PUNCH", pageable);
+        assertEquals(1,comics.getTotalElements());
+        Collection<String> comicList = comics.stream().map(Comic::getName).collect(Collectors.toList());
+        assertTrue(comicList.contains("ONE PUNCH MAN"));
+
+    }
+    @Test
+    void testfindByNameStartingWithIgnoreCase(){
+        Page<Comic> comics = comicRepository.findByNameStartingWithIgnoreCase("p",pageable);
+        assertEquals(0,comics.getTotalElements());
+    }
+
+
+
 }
