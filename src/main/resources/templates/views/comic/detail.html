@@ -203,9 +203,9 @@
                 </span>
             </label>
             <!-- Chapters -->
-            <div class="collapse collapse-plus bg-base-300 shadow-xl rounded-box" x-data="{open: true}">
+            <label class="collapse collapse-plus bg-base-300 shadow-xl rounded-box" x-data="{open: true}">
                 <input class="peer" type="checkbox" :checked="open" x-model="open"/>
-                <div class="collapse-title gap-2">
+                <span class="collapse-title gap-2">
                     <i data-feather="list"></i>
                     <span class="font-bold">
                         Chapter
@@ -213,14 +213,14 @@
                     <span class="text-sm text-neutral italic" x-text="open ? '(click to collapse)' : '(click to expand)'">
                         (click to expand)
                     </span>
-                </div>
-                <div class="collapse-content" th:switch="${comic.chapters.isEmpty()}">
+                </span>
+                <span class="collapse-content" th:switch="${comic.chapters.isEmpty()}">
                     <span th:case="true" class="italic">
                         No chapters available
                     </span>
-                    <ul th:case="false" class="max-h-[500px] divide-y divide-dashed overflow-y-auto pr-4">
-                        <li class="flex flex-nowrap items-center gap-4 p-2 hover:bg-accent hover:bg-opacity-30"
-                            th:each="chapter : ${comic.chapters}"
+                    <span th:case="false" class="max-h-[500px] divide-y divide-dashed overflow-y-auto pr-4">
+                        <span class="flex flex-nowrap items-center gap-4 p-2 hover:bg-accent hover:bg-opacity-30"
+                            th:each="chapter : ${comic.chapters}" th:x-ref="${chapter.id}">
                         >
                             <a class="flex-grow flex flex-nowrap items-center gap-4" href="">
                                 <span class="flex-grow"
@@ -228,7 +228,7 @@
                                 >Chapter [[${chapter.index}]] - [[${chapter.title}]]</span>
                                 <span>[[${chapter.id.timestamp}}]]</span>
                             </a>
-                            <div class="gap-2">
+                            <span class="gap-2">
                                 <button class="btn btn-ghost btn-circle btn-sm"
                                         @click="toggleReadStatus(chapter.id)">
                                 >
@@ -240,11 +240,11 @@
                                 <button class="btn btn-ghost btn-circle btn-sm">
                                     <i data-feather="delete"></i>
                                 </button>
-                            </div>
-                        </li>
-                    </ul>
-                </div>
-            </div>
+                            </span>
+                        </span>
+                    </span>
+                </span>
+            </label>
         </div>
     </div>
 </div>

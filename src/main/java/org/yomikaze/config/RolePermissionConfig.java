@@ -10,13 +10,18 @@ import org.springframework.context.event.ContextRefreshedEvent;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
-import org.yomikaze.persistence.entity.*;
-import org.yomikaze.persistence.repository.*;
+import org.yomikaze.persistence.entity.Account;
+import org.yomikaze.persistence.entity.Permission;
+import org.yomikaze.persistence.entity.Profile;
+import org.yomikaze.persistence.entity.Role;
+import org.yomikaze.persistence.repository.AccountRepository;
+import org.yomikaze.persistence.repository.PermissionRepository;
+import org.yomikaze.persistence.repository.RoleRepository;
 
-import java.util.*;
-import java.util.function.Function;
-import java.util.stream.Collectors;
-import java.util.stream.StreamSupport;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.List;
+import java.util.Optional;
 
 @RequiredArgsConstructor
 @Component
@@ -24,9 +29,6 @@ public class RolePermissionConfig implements ApplicationListener<ContextRefreshe
 
     private final PermissionRepository permissionRepository;
     private final RoleRepository roleRepository;
-
-    private final ComicRepository comicRepository;
-    private final GenreRepository genreRepository;
 
     private final AccountRepository accountRepository;
 

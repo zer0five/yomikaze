@@ -2,10 +2,7 @@ package org.yomikaze.web.controller;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.core.io.InputStreamResource;
 import org.springframework.core.io.Resource;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PostAuthorize;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -21,7 +18,6 @@ import org.yomikaze.snowflake.Snowflake;
 
 import javax.persistence.EntityNotFoundException;
 import java.net.URI;
-import java.sql.Blob;
 import java.sql.SQLException;
 import java.text.MessageFormat;
 import java.util.*;
@@ -91,21 +87,14 @@ public class ImageController {
     }
 
     private ResponseEntity<Resource> toResponse(Image file) {
-        Blob data = file.getData();
-        try {
-            if (data == null || data.length() == 0) {
-                return ResponseEntity.noContent().build();
-            }
-            MediaType mediaType = file.getMediaType();
-            Resource resource = new InputStreamResource(data.getBinaryStream());
-            return ResponseEntity.ok()
-                .contentType(mediaType)
-                .contentLength(data.length())
-                .body(resource);
-        } catch (SQLException e) {
-            log.error("Error while reading file", e);
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        if (file.isEmpty()) {
+            return ResponseEntity.noContent().build();
         }
+        return ResponseEntity.ok()
+            .contentType(file.getMediaType())
+            .contentLength(file.size())
+            .body(file.toResource());
+
     }
 
     @GetMapping("/image/{owner}/{id}/{name}")

@@ -15,6 +15,7 @@ import org.yomikaze.persistence.entity.Image;
 import org.yomikaze.persistence.repository.ImageRepository;
 import org.yomikaze.snowflake.Snowflake;
 
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.sql.Blob;
 import java.sql.SQLException;
@@ -38,7 +39,7 @@ public class DatabaseImageStorageService implements IFileStorageService<Snowflak
         if (!mediaType.getType().equalsIgnoreCase("image")) {
             throw new IllegalArgumentException("File is not an image");
         }
-        Blob data = BlobProxy.generateProxy(file.getInputStream(), file.getSize());
+        byte[] data = file.getBytes();
         String name = Optional.ofNullable(file.getOriginalFilename())
             .orElse(MessageFormat.format("untitled.{0}", mediaType.getSubtype()));
         Image image = new Image();
@@ -58,11 +59,8 @@ public class DatabaseImageStorageService implements IFileStorageService<Snowflak
         if (owner != null && !image.getOwner().equals(owner)) {
             return null;
         }
-        try {
-            return new InputStreamResource(image.getData().getBinaryStream());
-        } catch (SQLException e) {
-            throw new IOException(e);
-        }
+        ByteArrayInputStream inputStream = new ByteArrayInputStream(image.getData());
+        return new InputStreamResource(inputStream);
     }
 
     @Override

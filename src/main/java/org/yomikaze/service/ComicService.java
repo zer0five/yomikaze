@@ -57,14 +57,15 @@ public class ComicService {
         comicEntity.setFinished(comic.getFinished());
         comicEntity.setGenres(genreRepository.findAllByIdIn(comic.getGenres()));
         comicEntity.setUploader(uploader);
-        URI thumbnailUrl;
-        try {
-            Snowflake id = imageStorageService.store(thumbnail);
-            thumbnailUrl = URI.create("/image/" + id);
-        } catch (IOException e) {
-            thumbnailUrl = URI.create("https://via.placeholder.com/190x280/?text=No+Thumbnail");
+        if (!thumbnail.isEmpty()) {
+            try {
+                Snowflake id = imageStorageService.store(thumbnail);
+                URI thumbnailUrl = URI.create("/image/" + id);
+                comicEntity.setThumbnail(thumbnailUrl);
+            } catch (IOException ignore) {
+                // IGNORED
+            }
         }
-        comicEntity.setThumbnail(thumbnailUrl);
         return comicRepository.save(comicEntity);
     }
 

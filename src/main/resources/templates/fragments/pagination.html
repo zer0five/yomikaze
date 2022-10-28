@@ -1,0 +1,90 @@
+
+<div class="flex flex-row gap-4"
+     th:fragment="pagination(page)"
+     th:with="urlBuilder = ${T(org.springframework.web.servlet.support.ServletUriComponentsBuilder).fromCurrentRequest()},
+     current = ${page.getNumber()},
+     total = ${page.getTotalPages()},
+     hasPrev = ${page.hasPrevious()},
+     hasNext = ${page.hasNext()}"
+>
+    <!--/*@thymesVar id="current" type="int"*/-->
+    <!--/*@thymesVar id="total" type="int"*/-->
+    <!--/*@thymesVar id="hasPrev" type="boolean"*/-->
+    <!--/*@thymesVar id="hasNext" type="boolean"*/-->
+    <!--/*@thymesVar id="urlBuilder" type="org.springframework.web.servlet.support.ServletUriComponentsBuilder"*/-->
+    <!--/*@thymesVar id="page" type="org.springframework.data.domain.Page"*/-->
+
+    <div class="btn-group">
+        <a class="btn"
+           th:href="@{${urlBuilder.replaceQueryParam('page', 0).build()}}"
+           th:if="${current != 0}"
+        >
+            <i data-feather="chevrons-left"></i>
+        </a>
+        <a class="btn btn-disabled"
+           th:if="${current == 0}"
+        >
+            <i data-feather="chevrons-left"></i>
+        </a>
+
+        <a class="btn"
+           th:href="@{${urlBuilder.replaceQueryParam('page', current - 1).build()}}"
+           th:if="${hasPrev}">
+            <i data-feather="chevron-left"></i>
+        </a>
+        <a class="btn btn-disabled" th:if="${not hasPrev}">
+            <i data-feather="chevron-left"></i>
+        </a>
+
+
+        <!--/*@thymesVar id="i" type="int"*/-->
+        <a class="btn"
+           th:each="i : ${#numbers.sequence(-3, 3)}"
+           th:classappend="${current + i == current} ? 'btn-active' : ''"
+           th:href="@{${urlBuilder.replaceQueryParam('page', current + i).build()}}"
+           th:if="${current + i >= 0 and current + i < total}"
+        >
+            [[${current + i + 1}]]
+        </a>
+
+        <a class="btn" th:href="@{${urlBuilder.replaceQueryParam('page', current + 1).build()}}"
+           th:if="${hasNext}">
+            <i data-feather="chevron-right"></i>
+        </a>
+        <a class="btn btn-disabled" th:if="${not hasNext}">
+            <i data-feather="chevron-right"></i>
+        </a>
+
+        <a class="btn"
+           th:href="@{${urlBuilder.replaceQueryParam('page', total - 1).build()}}"
+           th:if="${current != total - 1}">
+            <i data-feather="chevrons-right"></i>
+        </a>
+        <a class="btn btn-disabled" th:if="${current == total - 1}">
+            <i data-feather="chevrons-right"></i>
+        </a>
+    </div>
+    <form
+        @submit.prevent="goPage(value - 1)"
+        th:x-data="'{value:' + ${current + 1} + '}'"
+    >
+        <label aria-label="Go to page" class="hidden label" for="go-page">
+        </label>
+        <div class="input-group">
+            <input class="input input-bordered w-fit" id="go-page" min="1" th:max="${total}"
+                   type="number"
+                   x-model="value"
+            />
+            <button aria-label="Go" class="btn btn-primary" type="submit">
+                <i data-feather="navigation"></i>
+            </button>
+        </div>
+    </form>
+    <script>
+        function goPage(page) {
+            let search = new URLSearchParams(window.location.search);
+            search.set('page', page);
+            window.location.search = search.toString();
+        }
+    </script>
+</div>

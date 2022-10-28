@@ -5,6 +5,14 @@
 </head>
 <body>
 <div th:fragment="content">
-    <!-- TODO -->
+    <div th:fragment="content" class="w-10/12 mx-auto p-10 flex flex-col align-middle gap-8">
+        <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
+            <th:block th:each="c : ${comics}" th:with="comic = ${@comicService.getComicDetail(c)}" th:insert="fragments/comic::card(comic)"></th:block>
+        </div>
+        <div class="self-center">
+            <th:block th:insert="fragments/pagination::pagination(${comics})"></th:block>
+        </div>
+    </div>
 </div>
 </body>
+</html>

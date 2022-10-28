@@ -1,0 +1,58 @@
+<a class="mx-auto" th:fragment="card(comic)" th:href="@{/comic/detail/{id}/(id=${comic.id})}">
+    <!--@thymesVar id="comic" type="org.yomikaze.web.dto.comic.ComicDetailModel"-->
+    <div class="dropdown dropdown-hover dropdown-right">
+        <label class="w-[190px] h-[280px]" tabindex="0">
+            <img alt="Comic"
+                 class="w-[190px] h-[280px] object-cover object-center rounded-box shadow-2xl cursor-pointer"
+                 th:alt="${comic.name}"
+                 th:src="${#objects.nullSafe(comic.thumbnail, 'https://via.placeholder.com/190x280?text=No+thumbnail')}">
+        </label>
+
+        <div
+            class="dropdown-content inline-block absolute invisible z-10 w-64 text-sm font-light text-gray-500 bg-white rounded-lg border border-gray-200 shadow-sm opacity-0 transition-opacity duration-300 dark:text-gray-400 dark:border-gray-600 dark:bg-gray-800"
+            tabindex="0">
+            <!--* card comic -->
+            <div class="card w-96 bg-base-100 shadow-xl">
+                <div class="card-body">
+                    <!--* card title -->
+                    <h4 class="text-accent font-bold text-base" th:text="${comic.name}">${comic.name}</h4>
+                    <p class="font-semibold" th:switch="${comic.finished == null}">
+                        Status:
+                        <span class="badge badge-accent badge-sm" th:case="true">Ongoing</span>
+                        <span class="badge badge-success badge-sm" th:if="false">Completed</span>
+                    </p>
+                    <p class="font-semibold">View:
+                        <span th:text="${comic.views}">${comic.views}</span>
+                    </p>
+                    <p class="font-semibold">Following: 124</p>
+                    <div class="card-actions capitalize text-center">
+                        <p class="inline px-1 my-2 mx-auto badge badge-primary  badge-outline">
+                            Action
+                        </p>
+                        <p class="inline px-1 my-2 mx-auto badge badge-primary  badge-outline">
+                            Adventure</p>
+                        <p class="inline px-1 my-2 mx-auto badge badge-primary badge-outline">
+                            Comedy
+                        </p>
+                    </div>
+                    <br>
+                    <!--* card description -->
+                    <hr class="w-1/2 mx-auto -mt-6 border-gray-500">
+                    <p class="text-sm font-normal leading-relaxed"
+                       th:text="${comic.description}">
+                        Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been
+                        the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley
+                        of type and scrambled it to make a type specimen book.
+                    </p>
+                </div>
+            </div>
+        </div>
+        <div class="mt-4">
+            <h3
+                class="title-font mb-1 tracking-widest text-gray-500 hover:text-cyan-600 font-bold text-base text-center"
+                th:text="${comic.name}">
+                ${comic.name}
+            </h3>
+        </div>
+    </div>
+</a>
