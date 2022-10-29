@@ -4,6 +4,10 @@ import org.junit.platform.suite.api.SelectClasses;
 import org.junit.platform.suite.api.Suite;
 
 @Suite
-@SelectClasses({AccountRepositoryTest.class, ComicRepositoryTest.class, GenreRepositoryTest.class})
+@SelectClasses({
+    AccountRepositoryTest.class,
+    GenreRepositoryTest.class,
+    ComicRepositoryTest.class
+})
 public class RepositoryTestSuite {
 }

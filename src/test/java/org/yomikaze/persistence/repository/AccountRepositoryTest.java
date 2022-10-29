@@ -4,12 +4,12 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-
 import org.yomikaze.persistence.entity.Account;
 import org.yomikaze.persistence.entity.Profile;
 
-import static org.junit.jupiter.api.Assertions.*;
 import java.util.Optional;
+
+import static org.junit.jupiter.api.Assertions.*;
 
 
 
@@ -34,7 +34,7 @@ class AccountRepositoryTest {
     }
 
     @Test
-    void testfindByUsername(){
+     void testfindByUsername(){
         Optional<Account> accountOptional = accountRepository.findByUsername("hunterx");
         assertTrue(accountOptional.isPresent());
         Account account = accountOptional.get();
@@ -48,7 +48,7 @@ class AccountRepositoryTest {
     }
 
     @Test
-    void testFindByEmail(){
+     void testFindByEmail(){
         Optional<Account> accountOptional = accountRepository.findByEmail("hunterx@gmail.com");
         assertTrue(accountOptional.isPresent());
         Account account = accountOptional.get();
