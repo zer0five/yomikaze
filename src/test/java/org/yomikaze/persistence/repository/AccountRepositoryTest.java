@@ -14,11 +14,12 @@ import java.util.Optional;
 
 
 @SpringBootTest
-public class AccountRepositoryTest {
+class AccountRepositoryTest {
 
     @Autowired
     AccountRepository accountRepository;
 
+    // use for create account 1 time;
     static boolean isInitialized = false;
 
     @BeforeEach
@@ -34,8 +35,10 @@ public class AccountRepositoryTest {
 
     @Test
     void testfindByUsername(){
-        Optional<Account> accounts = accountRepository.findByUsername("hunterx");
-        assertEquals("hunterx",accounts.get().getUsername());
+        Optional<Account> accountOptional = accountRepository.findByUsername("hunterx");
+        assertTrue(accountOptional.isPresent());
+        Account account = accountOptional.get();
+        assertEquals("hunterx",account.getUsername());
     }
 
     @Test
@@ -68,5 +71,10 @@ public class AccountRepositoryTest {
         assertEquals(account.getId(), profile.getId());
         assertNotNull(profile.getDisplayName());
         assertFalse(profile.getDisplayName().isEmpty());
+    }
+    @Test
+    void testExistsByUsernameOrEmail() {
+        assertTrue(accountRepository.existsByUsernameOrEmail("hunterx", "hunterx@gmail.com"));
+        assertFalse(accountRepository.existsByUsernameOrEmail("hunterx1", "hunterx1@gmail.com"));
     }
 }
