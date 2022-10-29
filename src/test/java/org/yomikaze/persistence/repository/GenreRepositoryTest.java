@@ -21,18 +21,16 @@ public class GenreRepositoryTest {
    @Test
     void testfindByName() {
        Iterable<Genre> genres = genreRepository.saveAll(Arrays.asList(
-           new Genre("Action"),
-           new Genre("Adventure"),
-           new Genre("Comedy"),
-           new Genre("Drama"),
-           new Genre("Fantasy")
+           new Genre("Action1"),
+           new Genre("Adventure1")
+
        ));
 
-       Optional<Genre> genreOptional = genreRepository.findByName("Action");
+       Optional<Genre> genreOptional = genreRepository.findByName("Action1");
        assertTrue(genreOptional.isPresent());
        Genre genre = genreOptional.get();
 
-       assertEquals("Action",genre.getName());
+       assertEquals("Action1",genre.getName());
 
    }
 }
