@@ -1,6 +1,5 @@
 package org.yomikaze.persistence.repository;
 
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -29,9 +28,11 @@ public class GenreRepositoryTest {
            new Genre("Fantasy")
        ));
 
-       Optional<Genre> genre = genreRepository.findByName("Action");
+       Optional<Genre> genreOptional = genreRepository.findByName("Action");
+       assertTrue(genreOptional.isPresent());
+       Genre genre = genreOptional.get();
 
-       assertEquals("Action",genre.get().getName());
+       assertEquals("Action",genre.getName());
 
    }
 }
