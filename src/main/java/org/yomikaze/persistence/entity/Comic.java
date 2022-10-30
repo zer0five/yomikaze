@@ -73,11 +73,10 @@ public class Comic {
     @ToString.Exclude
     private Account uploader = null;
 
-    @OneToMany(fetch = FetchType.LAZY)
-    @JoinColumn(name = "comic")
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "comic", cascade = CascadeType.ALL, orphanRemoval = true)
     @ToString.Exclude
     @OrderColumn(name = "index")
-    private Collection<Chapter> chapters = new ArrayList<>();
+    private List<Chapter> chapters = new ArrayList<>();
 
     @Override
     public boolean equals(Object o) {

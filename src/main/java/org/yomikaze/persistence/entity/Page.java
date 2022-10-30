@@ -23,11 +23,18 @@ public class Page {
     @Column(name = "id", nullable = false, updatable = false)
     private Snowflake id;
 
-    @Column(name = "index", nullable = false)
-    private Long index;
+    @Column(name = "uri", nullable = false)
+    private String uri;
 
-    @Column(name = "url", nullable = false)
-    private String url;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "chapter", nullable = false)
+    @ToString.Exclude
+    private Chapter chapter;
+
+    public Page(Chapter chapter) {
+        this();
+        this.chapter = chapter;
+    }
 
     @Override
     public boolean equals(Object o) {
@@ -41,4 +48,5 @@ public class Page {
     public int hashCode() {
         return Objects.hashCode(id);
     }
+
 }

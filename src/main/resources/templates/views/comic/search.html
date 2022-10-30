@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en" th:insert="layouts/default">
+<head>
+    <title th:fragment="page-title">comic::search</title>
+</head>
+<body>
+<div class="flex flex-col align-middle gap-8" th:fragment="content"
+     th:switch="${comics == null || #lists.isEmpty(comics.getContent())}">
+    <div th:case="true">
+        <div class="flex flex-col items-center gap-4">
+            <div class="flex flex-col items-center gap-2">
+                <i class="text-5xl text-neutral-content" data-feather="search"></i>
+                <h1 class="text-3xl font-bold text-neutral-content">No results found</h1>
+            </div>
+            <p class="text-xl text-neutral-content">Try searching for something else</p>
+        </div>
+    </div>
+    <th:block th:case="false">
+        <div class="w-full mx-auto rounded-box p-8 shadow-xl" th:if="${genre != null}">
+            <h2 class="text-2xl font-bold">[[${genre.name}]]</h2>
+            <p class="text-xl" th:if="${genre.description}">[[${genre.description}]]</p>
+        </div>
+        <div class="w-full mx-auto rounded-box p-8 shadow-xl" th:if="${search != null}">
+            <h2 class="text-2xl font-bold">Showing results for: "[[${search}]]"</h2>
+            <p class="text-xl">Found [[${comics.totalElements}]] results</p>
+        </div>
+        <th:block th:replace="views/comic/listing :: listing(${comics})"></th:block>
+    </th:block>
+    <div class="self-center">
+        <th:block th:insert="fragments/pagination::pagination(${comics})"></th:block>
+    </div>
+</div>
+</body>
+</html>

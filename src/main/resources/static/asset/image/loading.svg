@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="128" height="128" viewBox="0 0 100 100" preserveAspectRatio="xMidYMid">
+    <circle cx="50" cy="50" r="25" stroke-width="5" stroke="#FFAA33" stroke-dasharray="40 40" fill="none"
+            stroke-linecap="round" transform="rotate(211.122 50 50)">
+        <animateTransform attributeName="transform" type="rotate" dur="1.25s" repeatCount="indefinite" keyTimes="0;1"
+                          values="0 50 50;360 50 50"/>
+    </circle>
+    <circle cx="50" cy="50" r="18" stroke-width="5" stroke="#8A9199" stroke-dasharray="28 28" stroke-dashoffset="28"
+            fill="none" stroke-linecap="round" transform="rotate(-211.122 50 50)">
+        <animateTransform attributeName="transform" type="rotate" dur="1.25s" repeatCount="indefinite" keyTimes="0;1"
+                          values="0 50 50;-360 50 50"/>
+    </circle>
+</svg>

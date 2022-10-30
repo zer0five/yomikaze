@@ -59,10 +59,10 @@
 
         <a class="btn"
            th:href="@{${urlBuilder.replaceQueryParam('page', total - 1).build()}}"
-           th:if="${current != total - 1}">
+           th:if="${current < total - 1}">
             <i data-feather="chevrons-right"></i>
         </a>
-        <a class="btn btn-disabled" th:if="${current == total - 1}">
+        <a class="btn btn-disabled" th:if="${current >= total - 1}">
             <i data-feather="chevrons-right"></i>
         </a>
     </div>

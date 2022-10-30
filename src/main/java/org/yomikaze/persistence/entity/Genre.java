@@ -9,7 +9,6 @@ import org.yomikaze.snowflake.Snowflake;
 
 import javax.persistence.*;
 import java.util.Objects;
-import java.util.Set;
 
 @Getter
 @Setter
@@ -28,10 +27,6 @@ public class Genre {
 
     @Column(name = "description", length = 1023)
     private String description = "";
-
-    @ManyToMany(mappedBy = "genres", fetch = FetchType.LAZY)
-    @ToString.Exclude
-    private Set<Comic> comics;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "creator_id")

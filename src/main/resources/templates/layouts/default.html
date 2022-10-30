@@ -18,6 +18,7 @@
           type="text/css"/>
 </head>
 <body class="bg-base-100 text-base-content overflow-x-hidden" th:fragment="body">
+<th:block th:replace="fragments/scripts"></th:block>
 <th:block th:replace="fragments/header"></th:block>
 <div class="max-w-screen w-full min-h-[calc(100vh-10rem)]">
     <div class="w-10/12 mx-auto py-10" th:insert="this :: content">
@@ -38,6 +39,5 @@
 </div>
 
 <th:block th:replace="fragments/footer"></th:block>
-<th:block th:replace="fragments/scripts"></th:block>
 </body>
 </html>

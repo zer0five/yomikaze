@@ -3,9 +3,9 @@ package org.yomikaze.web.controller;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.security.access.prepost.PostAuthorize;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -17,15 +17,22 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import org.yomikaze.persistence.entity.Account;
+import org.yomikaze.persistence.entity.Chapter;
 import org.yomikaze.persistence.entity.Comic;
+import org.yomikaze.persistence.entity.Genre;
 import org.yomikaze.persistence.repository.ComicRepository;
+import org.yomikaze.persistence.repository.GenreRepository;
 import org.yomikaze.service.ComicService;
 import org.yomikaze.snowflake.Snowflake;
 import org.yomikaze.web.dto.comic.ComicDetailModel;
 import org.yomikaze.web.dto.comic.ComicInputModel;
+import org.yomikaze.web.dto.comic.chapter.ChapterInputModel;
 
 import javax.persistence.EntityNotFoundException;
 import java.text.MessageFormat;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 import java.util.Optional;
 
 @Controller
@@ -36,6 +43,7 @@ import java.util.Optional;
 public class ComicController {
 
     private final ComicRepository comicRepository;
+    private final GenreRepository genreRepository;
     private final ComicService comicService;
 
     @GetMapping({"", "/"})
@@ -69,17 +77,30 @@ public class ComicController {
     }
 
     @GetMapping("/search")
-    public String search(Optional<String> q, Optional<String> cq, Optional<Integer> page, Optional<Integer> size, Model model) {
-        int pageNumber = Math.max(1, page.orElse(1)) - 1;
-        int pageSize = Math.max(12, size.orElse(12));
-        Pageable pageable = PageRequest.of(pageNumber, pageSize, Sort.by("id").descending());
-        if (q.isPresent()) {
-            model.addAttribute("comics", comicRepository.findByNameStartingWithIgnoreCase(q.get(), pageable));
+    public String search(
+        @PageableDefault(size = 12) Pageable pageable,
+        Model model,
+        Optional<Long> genre,
+        Optional<String> q, Optional<String> cq
+    ) {
+        Pageable withSort = PageRequest.of(pageable.getPageNumber(), pageable.getPageSize(), Comic.DEFAULT_SORT);
+        Page<Comic> result = new PageImpl<>(Collections.emptyList());
+        if (genre.isPresent()) {
+            Genre genreEntity = genreRepository.findById(Snowflake.of(genre.get())).orElse(null);
+            if (genreEntity != null) {
+                result = comicRepository.findByGenresContaining(genreEntity, withSort);
+            }
+            model.addAttribute("genre", genreEntity);
+        } else if (q.isPresent()) {
+            result = comicRepository.findByNameStartingWithIgnoreCase(q.get(), withSort);
+            model.addAttribute("search", q.get());
         } else if (cq.isPresent()) {
-            model.addAttribute("comics", comicRepository.findByNameContainingIgnoreCase(cq.get(), pageable));
+            result = comicRepository.findByNameContainingIgnoreCase(cq.get(), withSort);
+            model.addAttribute("search", cq.get());
         } else {
-            model.addAttribute("comics", comicRepository.findAll(pageable));
+            result = comicRepository.findAll(withSort);
         }
+        model.addAttribute("comics", result);
         return "views/comic/search";
     }
 
@@ -102,19 +123,47 @@ public class ComicController {
         return MessageFormat.format("redirect:/comic/detail/{0}/{1}", saved.getId(), comicService.getSlug(saved));
     }
 
-    @GetMapping("/chapter/create")
-    @PreAuthorize("authentication != null && authenticated")
-    @PostAuthorize("hasAuthority('comic.create')")
-    public String createChapter(@ModelAttribute("comic") ComicInputModel comic) {
-        return "views/comic/chapter/create";
+    @GetMapping("/{id}/chapter/add")
+    @PreAuthorize("authentication != null && !anonymous")
+    @PostAuthorize("hasAuthority('chapter.add')")
+    public String createChapter(@ModelAttribute("chapter") ChapterInputModel chapter, @PathVariable Snowflake id, Model model) {
+        Comic comic = comicRepository.findById(id).orElseThrow(EntityNotFoundException::new);
+        model.addAttribute("comic", comicService.getComicDetail(comic));
+        return "views/comic/chapter/add";
+    }
+
+    @PostMapping("/{id}/chapter/add")
+    @PreAuthorize("authentication != null && !anonymous")
+    @PostAuthorize("hasAuthority('chapter.add')")
+    public String createChapter(@ModelAttribute("chapter") ChapterInputModel chapter, @ModelAttribute("comic") ComicDetailModel comic, BindingResult bindingResult, Model model) {
+        if (bindingResult.hasErrors()) {
+            return "views/comic/chapter/add";
+        }
+        comicService.addChapter(comic, chapter);
+        return MessageFormat.format("redirect:/comic/detail/{0}", comic.getId());
+    }
+
+    @GetMapping("/{id}/chapter/{index}")
+    public String readChapter(@PathVariable Snowflake id, @PathVariable int index, Model model) {
+        Comic comic = comicRepository.findById(id).orElseThrow(EntityNotFoundException::new);
+        List<Chapter> chapterList = new ArrayList<>(comic.getChapters());
+        if (index < 0 || index >= comic.getChapters().size()) {
+            return "forward:/error/404";
+        }
+        model.addAttribute("comic", comicService.getComicDetail(comic));
+        PageImpl<Chapter> chapters = new PageImpl<>(chapterList, PageRequest.of(index, 1), chapterList.size());
+        Chapter chapter = chapterList.get(index);
+        model.addAttribute("index", index);
+        model.addAttribute("chapters", chapters);
+        model.addAttribute("chapter", chapter);
+        return "views/comic/chapter/read";
     }
 
     @GetMapping("/edit/{id}")
     @PreAuthorize("authentication != null && authenticated")
     @PostAuthorize("hasAuthority('comic.edit')")
-    public String edit(@PathVariable long id, Model model) {
-        Snowflake snowflake = Snowflake.of(id);
-        Comic comic = comicRepository.findById(snowflake)
+    public String edit(@PathVariable Snowflake id, Model model) {
+        Comic comic = comicRepository.findById(id)
             .orElseThrow(() -> new EntityNotFoundException("comic.not-found"));
         model.addAttribute("comic", comic);
         return "views/comic/edit";
@@ -122,8 +171,9 @@ public class ComicController {
 
     @ExceptionHandler(EntityNotFoundException.class)
     public String handleEntityNotFoundException(EntityNotFoundException e, Model model) {
-        model.addAttribute("message", e.getMessage());
-        return "redirect:/error/404";
+        model.addAttribute("exception", e);
+        model.addAttribute("message", "comic.not-found");
+        return "forward:/error/404";
     }
 
 }

@@ -12,8 +12,24 @@ public class Snowflake implements Serializable, Comparable<Snowflake> {
     @JsonIgnore
     private final long id;
 
-    private Snowflake(long id) {
+    public Snowflake(long id) {
         this.id = id;
+    }
+
+    public Snowflake(Long id) {
+        this.id = id == null ? 0 : id;
+    }
+
+    public Snowflake(String id) {
+        if (id == null || id.isEmpty()) {
+            this.id = 0;
+            return;
+        }
+        if (id.startsWith("-")) {
+            this.id = Long.parseLong(id);
+        } else {
+            this.id = Long.parseUnsignedLong(id);
+        }
     }
 
     public static Snowflake of(long id) {
@@ -21,23 +37,11 @@ public class Snowflake implements Serializable, Comparable<Snowflake> {
     }
 
     public static Snowflake of(Long id) {
-        if (id == null) {
-            id = 0L;
-        }
         return new Snowflake(id);
     }
 
     public static Snowflake of(String id) {
-        if (id == null || id.isEmpty()) {
-            return new Snowflake(0L);
-        }
-        long idLong;
-        if (id.startsWith("-")) {
-            idLong = Long.parseLong(id);
-        } else {
-            idLong = Long.parseUnsignedLong(id);
-        }
-        return new Snowflake(idLong);
+        return new Snowflake(id);
     }
 
     public static Builder builder() {

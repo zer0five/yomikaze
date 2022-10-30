@@ -20,7 +20,7 @@ public class MvcConfig implements WebMvcConfigurer {
 
     @Override
     public void addViewControllers(ViewControllerRegistry registry) {
-        // ignore
+        registry.addViewController("/layouts/dashboard").setViewName("layouts/dashboard");
     }
 
     @Override

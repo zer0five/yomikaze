@@ -6,6 +6,7 @@
 <body>
 <div class="flex flex-col align-middle gap-8" th:fragment="content">
     <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4"
+         th:if="${comics != null && not #lists.isEmpty(comics.getContent())}"
          th:fragment="listing(comics)"
          th:with="list = ${comics.getContent()}"
     >

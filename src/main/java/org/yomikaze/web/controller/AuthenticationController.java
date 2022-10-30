@@ -22,7 +22,7 @@ import java.util.Optional;
 @Log
 @Controller
 @RequiredArgsConstructor
-@PreAuthorize("authentication == null || isAnonymous()")
+@PreAuthorize("authentication == null || anonymous")
 @Validated
 public class AuthenticationController {
     private final AuthenticationService authenticationService;

@@ -38,7 +38,8 @@
                     </p>
                     <p class="font-semibold">
                         Last chapter:
-                        <span th:text="${#objects.listNullSafe(comic.chapters, T(java.util.Collections).emptyList()).isEmpty() ? 'No chapter' : 'Chapter ' + comic.chapters.get(0).index}">
+                        <span
+                            th:text="${#objects.setNullSafe(comic.chapters, T(java.util.Collections).emptySet()).isEmpty() ? 'No chapter' : 'Chapter ' + comic.chapters.iterator().next()}">
                               [[${comic.lastChapter}]]
                         </span>
                     </p>
