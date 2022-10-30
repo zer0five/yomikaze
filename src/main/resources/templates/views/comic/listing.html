@@ -4,7 +4,21 @@
     <title th:fragment="page-title">comic::listing</title>
 </head>
 <body>
-<div th:fragment="content">
-    <!-- TODO -->
+<div class="flex flex-col align-middle gap-8" th:fragment="content">
+    <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4"
+         th:fragment="listing(comics)"
+         th:with="list = ${comics.getContent()}"
+    >
+        <!--/*@thymesVar id="comic" type="org.yomikaze.persistence.entity.Comic"*/-->
+        <th:block th:each="i : ${#numbers.sequence(0, list.size() - 1)}"
+                  th:with="comic = ${list.get(i)}, detail = ${@comicService.getComicDetail(comic)}">
+            <!--/*@thymesVar id="detail" type="org.yomikaze.web.dto.comic.ComicDetailModel"*/-->
+            <th:block th:insert="fragments/comic::card(${detail}, ${(i + 1) % 2 == 0})"></th:block>
+        </th:block>
+    </div>
+    <div class="self-center">
+        <th:block th:insert="fragments/pagination::pagination(${comics})"></th:block>
+    </div>
 </div>
 </body>
+</html>

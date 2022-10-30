@@ -1,0 +1,61 @@
+<a class="mx-auto" th:fragment="card(comic, isLast)" th:href="@{/comic/detail/{id}/(id=${comic.id})}">
+    <!--@thymesVar id="comic" type="org.yomikaze.web.dto.comic.ComicDetailModel"-->
+    <div class="dropdown dropdown-hover" th:classappend="${isLast ? 'dropdown-left' : 'dropdown-right'}">
+        <label class="w-[190px] h-[280px]" tabindex="0">
+            <img alt="Comic"
+                 class="w-[190px] h-[280px] object-cover object-center rounded-box shadow-2xl cursor-pointer"
+                 th:alt="${comic.name}"
+                 th:src="${#objects.nullSafe(comic.thumbnail, 'https://via.placeholder.com/190x280?text=No+thumbnail')}">
+        </label>
+
+        <div class="dropdown-content" tabindex="0">
+            <!--* card comic -->
+            <div class="card w-64 bg-base-100 shadow-xl">
+                <div class="card-body">
+                    <!--* card title -->
+                    <h4 class="card-title text-accent font-bold text-base" th:text="${comic.name}">${comic.name}</h4>
+                    <p class="font-semibold" th:switch="${comic.finished == null}">
+                        Status:
+                        <span class="badge badge-accent badge-sm" th:case="true">Ongoing</span>
+                        <span class="badge badge-success badge-sm" th:if="false">Completed</span>
+                    </p>
+                    <p class="font-semibold">View:
+                        <span th:text="${comic.views}">${comic.views}</span>
+                    </p>
+                    <p class="font-semibold">
+                        In libraries:
+                        <span th:text="${comic.inLibraries}"
+                              th:x-text="| formatNumber(${comic.inLibraries}) |">
+                            [[${comic.inLibraries}]]
+                        </span>
+                    </p>
+                    <p class="font-semibold">
+                        Last updated:
+                        <span th:text="${comic.updatedAt}"
+                              th:x-text="| moment('${comic.updatedAt}').fromNow() |">
+                              [[${comic.updatedAt}]]
+                        </span>
+                    </p>
+                    <p class="font-semibold">
+                        Last chapter:
+                        <span th:text="${#objects.listNullSafe(comic.chapters, T(java.util.Collections).emptyList()).isEmpty() ? 'No chapter' : 'Chapter ' + comic.chapters.get(0).index}">
+                              [[${comic.lastChapter}]]
+                        </span>
+                    </p>
+
+                    <p class="text-sm font-normal leading-relaxed"
+                       th:text="${comic.description}">
+                        Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been
+                        the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley
+                        of type and scrambled it to make a type specimen book.
+                    </p>
+                </div>
+            </div>
+        </div>
+        <div class="mt-4">
+            <h3 class="title-font mb-1 tracking-widest text-gray-500 hover:text-cyan-600 font-bold text-base text-center">
+                [[${comic.name}]]
+            </h3>
+        </div>
+    </div>
+</a>

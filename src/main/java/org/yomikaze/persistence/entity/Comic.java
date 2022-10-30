@@ -7,15 +7,14 @@ import lombok.Setter;
 import lombok.ToString;
 import org.hibernate.Hibernate;
 import org.hibernate.annotations.UpdateTimestamp;
+import org.springframework.data.domain.Sort;
 import org.yomikaze.snowflake.Snowflake;
 import org.yomikaze.snowflake.json.SnowflakeJsonSerializer;
 
 import javax.persistence.*;
 import java.net.URI;
 import java.time.Instant;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Objects;
+import java.util.*;
 
 @Getter
 @Setter
@@ -24,6 +23,10 @@ import java.util.Objects;
 @Entity(name = "comic")
 @Table(name = "comic")
 public class Comic {
+    public static final Sort SORT_BY_UPDATED_AT = Sort.sort(Comic.class).by(Comic::getUpdatedAt).descending();
+    public static final Sort SORT_BY_ID = Sort.sort(Comic.class).by(Comic::getId).descending();
+    public static final Sort SORT_BY_NAME = Sort.sort(Comic.class).by(Comic::getName).ascending();
+    public static final Sort DEFAULT_SORT = SORT_BY_UPDATED_AT.and(SORT_BY_ID).and(SORT_BY_NAME);
     @Id
     @GeneratedValue(generator = "comic-snowflake")
     @Column(name = "id", nullable = false)
@@ -34,7 +37,12 @@ public class Comic {
     private String name;
 
     @Column(name = "aliases")
-    private String aliases;
+    @ElementCollection
+    private Collection<String> aliases;
+
+    @Column(name = "authors")
+    @ElementCollection
+    private Collection<String> authors;
 
     @Column(name = "description", length = 1023)
     private String description = "";
@@ -43,10 +51,10 @@ public class Comic {
     private URI thumbnail;
 
     @Column(name = "published")
-    private Instant published;
+    private Date published;
 
     @Column(name = "finished")
-    private Instant finished;
+    private Date finished;
 
     @UpdateTimestamp
     @Column(name = "updated_at", nullable = false)

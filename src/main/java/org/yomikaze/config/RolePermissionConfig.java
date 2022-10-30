@@ -143,7 +143,6 @@ public class RolePermissionConfig implements ApplicationListener<ContextRefreshe
             account.getProfile().setDisplayName("Administrator");
             accountRepository.save(account);
         }
-
         setInitialized(true);
     }
 }

@@ -5,11 +5,16 @@ import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 import org.hibernate.Hibernate;
+import org.hibernate.annotations.Type;
+import org.springframework.core.io.InputStreamResource;
+import org.springframework.core.io.Resource;
+import org.springframework.http.InvalidMediaTypeException;
 import org.springframework.http.MediaType;
 import org.yomikaze.snowflake.Snowflake;
 
 import javax.persistence.*;
-import java.sql.Blob;
+import java.io.ByteArrayInputStream;
+import java.io.InputStream;
 import java.util.Objects;
 
 @Entity(name = "image")
@@ -35,10 +40,11 @@ public class Image {
     @Lob
     @Basic(fetch = FetchType.LAZY)
     @ToString.Exclude
-    private Blob data;
+    @Type(type = "org.hibernate.type.ImageType")
+    private byte[] data;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "owner", referencedColumnName = "id", nullable = false)
+    @JoinColumn(name = "owner", referencedColumnName = "id")
     @ToString.Exclude
     private Account owner;
 
@@ -47,9 +53,25 @@ public class Image {
 
     public MediaType getMediaType() {
         if (mediaType == null) {
-            mediaType = MediaType.parseMediaType(type);
+            try {
+                mediaType = MediaType.parseMediaType(type);
+            } catch (InvalidMediaTypeException e) {
+                mediaType = MediaType.APPLICATION_OCTET_STREAM;
+            }
         }
         return mediaType;
+    }
+
+    public InputStream toInputStream() {
+        return new ByteArrayInputStream(data);
+    }
+
+    public Resource toResource() {
+        return new InputStreamResource(toInputStream());
+    }
+
+    public int size() {
+        return data.length;
     }
 
     @Override
@@ -63,5 +85,9 @@ public class Image {
     @Override
     public int hashCode() {
         return id.hashCode();
+    }
+
+    public boolean isEmpty() {
+        return data == null || data.length == 0;
     }
 }

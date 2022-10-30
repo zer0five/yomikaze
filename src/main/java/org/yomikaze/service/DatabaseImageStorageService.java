@@ -1,6 +1,7 @@
 package org.yomikaze.service;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.Validate;
 import org.hibernate.engine.jdbc.BlobProxy;
 import org.jetbrains.annotations.Nullable;
@@ -14,31 +15,22 @@ import org.yomikaze.persistence.entity.Image;
 import org.yomikaze.persistence.repository.ImageRepository;
 import org.yomikaze.snowflake.Snowflake;
 
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.sql.Blob;
 import java.sql.SQLException;
+import java.text.MessageFormat;
 import java.util.Optional;
 
 @RequiredArgsConstructor
 @Service
+@Slf4j
 public class DatabaseImageStorageService implements IFileStorageService<Snowflake, Resource, Account> {
 
     private final ImageRepository imageRepository;
 
-    private final WebpImageProcessingService webpImageProcessingService;
-
-    private String getName(MultipartFile file) {
-        return Optional.ofNullable(file.getOriginalFilename())
-            .map(name -> {
-                int index = name.lastIndexOf('.');
-                return index == -1 ? name : name.substring(0, index);
-            }).orElse("untitled") + ".webp";
-    }
-
     @Override
     public Snowflake store(MultipartFile file, Account owner) throws IOException {
-        Validate.notNull(owner, "Owner cannot be null");
         Validate.notNull(file, "File cannot be null");
         Validate.isTrue(!file.isEmpty(), "File cannot be empty");
         String contentType = file.getContentType();
@@ -47,17 +39,12 @@ public class DatabaseImageStorageService implements IFileStorageService<Snowflak
         if (!mediaType.getType().equalsIgnoreCase("image")) {
             throw new IllegalArgumentException("File is not an image");
         }
-        Blob data;
-        String name = getName(file);
-        if (mediaType.getSubtype().equalsIgnoreCase("webp")) {
-            data = BlobProxy.generateProxy(file.getInputStream(), file.getSize());
-        } else {
-            InputStream converted = webpImageProcessingService.convertToWebp(file.getInputStream());
-            data = BlobProxy.generateProxy(converted, converted.available());
-        }
+        byte[] data = file.getBytes();
+        String name = Optional.ofNullable(file.getOriginalFilename())
+            .orElse(MessageFormat.format("untitled.{0}", mediaType.getSubtype()));
         Image image = new Image();
         image.setName(name);
-        image.setType("image/webp");
+        image.setType(contentType);
         image.setData(data);
         image.setOwner(owner);
         return imageRepository.save(image).getId();
@@ -72,11 +59,8 @@ public class DatabaseImageStorageService implements IFileStorageService<Snowflak
         if (owner != null && !image.getOwner().equals(owner)) {
             return null;
         }
-        try {
-            return new InputStreamResource(image.getData().getBinaryStream());
-        } catch (SQLException e) {
-            throw new IOException(e);
-        }
+        ByteArrayInputStream inputStream = new ByteArrayInputStream(image.getData());
+        return new InputStreamResource(inputStream);
     }
 
     @Override

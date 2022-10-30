@@ -2,10 +2,7 @@ package org.yomikaze.web.controller;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.core.io.InputStreamResource;
 import org.springframework.core.io.Resource;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PostAuthorize;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -21,10 +18,10 @@ import org.yomikaze.snowflake.Snowflake;
 
 import javax.persistence.EntityNotFoundException;
 import java.net.URI;
-import java.sql.Blob;
 import java.sql.SQLException;
 import java.text.MessageFormat;
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Slf4j
 @Controller
@@ -57,40 +54,47 @@ public class ImageController {
         if (images.isEmpty()) {
             return ResponseEntity.noContent().build();
         }
-        String[] ids = images.stream().map(Snowflake::toString).toArray(String[]::new);
-        if (ids.length == 1) {
-            return ResponseEntity.created(URI.create("/image/" + ids[0])).body(ids);
+        List<String> imageUrls = images.stream().map(id -> "/image/" + id).collect(Collectors.toList());
+        if (imageUrls.size() == 1) {
+            return ResponseEntity.created(URI.create(imageUrls.get(0))).body(imageUrls);
         }
-        return ResponseEntity.ok(ids);
+        return ResponseEntity.ok(imageUrls);
     }
 
-    private ResponseEntity<Resource> getFile(String id, String name) throws SQLException {
-        return getFile(null, id, name);
+    private ResponseEntity<Resource> getFile(String id, String name) {
+        Snowflake imageId = Snowflake.of(id);
+        Optional<Image> image = imageRepository.findById(imageId);
+        boolean matchName = image.map(Image::getName).map(n -> n.equals(name)).orElse(false);
+        if (!image.isPresent() || !matchName) {
+            return ResponseEntity.notFound().build();
+        }
+        return toResponse(image);
+
     }
 
     private ResponseEntity<Resource> getFile(String owner, String id, String name) {
         Snowflake snowflake = Snowflake.of(id);
         Snowflake ownerSnowflake = Snowflake.of(owner);
         Optional<Image> file = imageRepository.findByIdAndOwner_IdAndNameLikeIgnoreCase(snowflake, ownerSnowflake, name);
+        return toResponse(file);
+    }
+
+    private ResponseEntity<Resource> toResponse(Optional<Image> file) {
         if (!file.isPresent()) {
             return ResponseEntity.notFound().build();
         }
-        Image actualFile = file.get();
-        Blob data = actualFile.getData();
-        try {
-            if (data == null || data.length() == 0) {
-                return ResponseEntity.noContent().build();
-            }
-            MediaType mediaType = actualFile.getMediaType();
-            Resource resource = new InputStreamResource(data.getBinaryStream());
-            return ResponseEntity.ok()
-                .contentType(mediaType)
-                .contentLength(data.length())
-                .body(resource);
-        } catch (SQLException e) {
-            log.error("Error while reading file", e);
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        return toResponse(file.get());
+    }
+
+    private ResponseEntity<Resource> toResponse(Image file) {
+        if (file.isEmpty()) {
+            return ResponseEntity.noContent().build();
         }
+        return ResponseEntity.ok()
+            .contentType(file.getMediaType())
+            .contentLength(file.size())
+            .body(file.toResource());
+
     }
 
     @GetMapping("/image/{owner}/{id}/{name}")
@@ -102,16 +106,13 @@ public class ImageController {
     @GetMapping("/image/{id}")
     public String getAttachment(@PathVariable("id") String id) {
         Snowflake snowflake = Snowflake.of(id);
-        Image file = imageRepository.findById(snowflake).orElseThrow(() -> new EntityNotFoundException("File not found"));
-        Snowflake owner = file.getOwner().getId();
-        return MessageFormat.format("redirect:/image/{0}/{1}/{2}", owner, id, file.getName());
+        String name = imageRepository.findById(snowflake).map(Image::getName).orElse("unknown");
+        return MessageFormat.format("redirect:/image/{0}/{1}", id, name);
     }
 
-    @ExceptionHandler(EntityNotFoundException.class)
-    public ResponseEntity<Object> handleEntityNotFoundException(EntityNotFoundException e) {
-        Map<String, Object> result = new HashMap<>();
-        result.put("error", e.getMessage());
-        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(result);
+    @GetMapping("/image/{id}/{name}")
+    public ResponseEntity<Resource> getAttachment(@PathVariable("id") String id, @PathVariable("name") String name) {
+        return getFile(id, name);
     }
 
 }

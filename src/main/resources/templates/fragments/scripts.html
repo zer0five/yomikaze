@@ -1,5 +1,6 @@
 <th:block th:fragment="scripts">
     <script defer src="/asset/js/alpine.min.js" th:src="@{/asset/js/alpine.min.js}"></script>
+    <script src="/asset/js/moment.min.js" th:src="@{/asset/js/moment.min.js}"></script>
     <script>
         document.addEventListener('alpine:init', () => {
             Alpine.data('theme', () => ({
@@ -44,5 +45,11 @@
                 }
             }))
         })
+    </script>
+    <script>
+        const numberFormatter = new Intl.NumberFormat('en-GB', { notation: "compact", compactDisplay: "short" });
+        function formatNumber(number) {
+            return numberFormatter.format(number);
+        }
     </script>
 </th:block>
