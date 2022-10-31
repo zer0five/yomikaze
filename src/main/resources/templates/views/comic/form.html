@@ -5,8 +5,8 @@
 </head>
 <body>
 <!--/*@thymesVar id="comic" type="org.yomikaze.web.dto.comic.ComicInputModel"*/-->
-<div class="bg-base-300 min-h-[calc(100vh-10rem)]" th:fragment="content">
-    <div class="card shadow-2xl bg-base-300 mx-auto my-10 w-10/12">
+<div class="min-h-[calc(100vh-10rem)]" th:fragment="content">
+    <div class="card shadow-2xl bg-base-300 mx-auto my-10 w-10/12 rounded-box">
         <form class="card-body gap-4" enctype="multipart/form-data" method="POST" th:action="@{/comic/create}"
               th:object="${comic}">
             <h2 class="card-title">Create comic</h2>
@@ -66,6 +66,24 @@
                                   th:if="${#fields.hasErrors('name')}"
                                   th:text="${#messages.msgOrNull(#fields.errors('name'))}">
                                 Comic name is required.
+                            </span>
+                        </div>
+                        <div class="form-control">
+                            <label class="label" for="authors">
+                                <span class="label-text">
+                                    Authors
+                                    <span class="text-error">*</span>
+                                </span>
+                            </label>
+                            <textarea class="input h-24 input-bordered"
+                                      id="authors"
+                                      placeholder="Authors, one per line"
+                                      th:errorclass="input-error" th:field="*{authors}">
+                            </textarea>
+                            <span class="label text-error"
+                                  th:if="${#fields.hasErrors('name')}"
+                                  th:text="${#messages.msgOrNull(#fields.errors('name'))}">
+                                Error in authors.
                             </span>
                         </div>
                         <div class="form-control">
@@ -157,7 +175,7 @@
                 </div>
             </fieldset>
             <hr/>
-            <button class="btn btn-primary" type="submit">Create</button>
+            <button class="btn btn-primary" type="submit">Save</button>
         </form>
     </div>
 </div>

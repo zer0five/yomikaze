@@ -7,6 +7,7 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.access.prepost.PostAuthorize;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
@@ -60,16 +61,11 @@ public class ComicController {
         return "views/comic/listing";
     }
 
-    @GetMapping({"/detail/{id}", "detail/{id}/{name}"})
-    public String detail(@PathVariable Snowflake id, @PathVariable Optional<String> name, Model model) {
+    @GetMapping("{id}/detail")
+    public String detail(@PathVariable Snowflake id, Model model) {
         Comic comic = comicRepository.findById(id).orElse(null);
         if (comic == null) {
-            model.addAttribute("error", "comic.not-found");
-            return "forward:/error/404";
-        }
-        String slug = comicService.getSlug(comic);
-        if (!name.map(slug::equals).orElse(true)) {
-            return MessageFormat.format("redirect:/comic/detail/{0}/{1}", String.valueOf(id), slug);
+            throw new EntityNotFoundException("Comic with id not found");
         }
         ComicDetailModel detailModel = comicService.getComicDetail(comic);
         model.addAttribute("comic", detailModel);
@@ -108,7 +104,7 @@ public class ComicController {
     @PreAuthorize("authentication != null && authenticated")
     @PostAuthorize("hasAuthority('comic.create')")
     public String create(@ModelAttribute("comic") ComicInputModel comic) {
-        return "views/comic/create";
+        return "views/comic/form";
     }
 
     @PostMapping(path = "/create", consumes = {"multipart/form-data"})
@@ -116,11 +112,11 @@ public class ComicController {
     @PostAuthorize("hasAuthority('comic.create')")
     public String create(@RequestPart MultipartFile thumbnail, @Validated @ModelAttribute("comic") ComicInputModel comic, BindingResult bindingResult, Authentication authentication) {
         if (bindingResult.hasErrors()) {
-            return "views/comic/create";
+            return "views/comic/form";
         }
         Account uploader = (Account) authentication.getPrincipal();
         Comic saved = comicService.createComic(comic, thumbnail, uploader);
-        return MessageFormat.format("redirect:/comic/detail/{0}/{1}", saved.getId(), comicService.getSlug(saved));
+        return MessageFormat.format("redirect:/comic/{0}/detail", saved.getId());
     }
 
     @GetMapping("/{id}/chapter/add")
@@ -140,7 +136,7 @@ public class ComicController {
             return "views/comic/chapter/add";
         }
         comicService.addChapter(comic, chapter);
-        return MessageFormat.format("redirect:/comic/detail/{0}", comic.getId());
+        return MessageFormat.format("redirect:/comic/{0}/detail", comic.getId());
     }
 
     @GetMapping("/{id}/chapter/{index}")
@@ -151,22 +147,41 @@ public class ComicController {
             return "forward:/error/404";
         }
         model.addAttribute("comic", comicService.getComicDetail(comic));
-        PageImpl<Chapter> chapters = new PageImpl<>(chapterList, PageRequest.of(index, 1), chapterList.size());
+        boolean hasPrev = index > 0;
+        boolean hasNext = index < chapterList.size() - 1;
         Chapter chapter = chapterList.get(index);
         model.addAttribute("index", index);
-        model.addAttribute("chapters", chapters);
+        model.addAttribute("chapters", chapterList);
         model.addAttribute("chapter", chapter);
+        model.addAttribute("hasPrev", hasPrev);
+        model.addAttribute("hasNext", hasNext);
         return "views/comic/chapter/read";
     }
 
-    @GetMapping("/edit/{id}")
+    @GetMapping("/{id}/edit")
     @PreAuthorize("authentication != null && authenticated")
     @PostAuthorize("hasAuthority('comic.edit')")
     public String edit(@PathVariable Snowflake id, Model model) {
         Comic comic = comicRepository.findById(id)
             .orElseThrow(() -> new EntityNotFoundException("comic.not-found"));
         model.addAttribute("comic", comic);
-        return "views/comic/edit";
+        return "views/comic/form";
+    }
+
+    @PostMapping(path = "/{id}/edit", consumes = {"multipart/form-data"})
+    @PreAuthorize("authentication != null && authenticated")
+    @PostAuthorize("hasAuthority('comic.edit')")
+    public String edit(@PathVariable Snowflake id, @RequestPart MultipartFile thumbnail, @Validated @ModelAttribute("comic") ComicInputModel comic, BindingResult bindingResult, Authentication authentication) {
+        if (bindingResult.hasErrors()) {
+            return "views/comic/form";
+        }
+        Account uploader = (Account) authentication.getPrincipal();
+        Comic db = comicRepository.findById(id).orElseThrow(EntityNotFoundException::new);
+        if (!db.getUploader().equals(uploader)) {
+            throw new AccessDeniedException("comic.edit.access-denied");
+        }
+        Comic saved = comicService.updateComic(id, comic, thumbnail);
+        return MessageFormat.format("redirect:/comic/{0}/detail", saved.getId());
     }
 
     @ExceptionHandler(EntityNotFoundException.class)

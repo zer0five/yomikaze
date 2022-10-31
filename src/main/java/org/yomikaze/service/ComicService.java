@@ -129,4 +129,25 @@ public class ComicService {
         comicEntity.getChapters().add(chapterEntity);
         comicRepository.save(comicEntity);
     }
+
+    public Comic updateComic(Snowflake id, ComicInputModel comic, MultipartFile thumbnail) {
+        Comic comicEntity = comicRepository.findById(id).orElseThrow(EntityNotFoundException::new);
+        comicEntity.setName(comic.getName());
+        comicEntity.setAliases(comic.getListAliases());
+        comicEntity.setDescription(comic.getDescription());
+        comicEntity.setAuthors(comic.getListAuthors());
+        comicEntity.setPublished(comic.getPublished());
+        comicEntity.setFinished(comic.getFinished());
+        comicEntity.setGenres(genreRepository.findAllByIdIn(comic.getGenres()));
+        if (!thumbnail.isEmpty()) {
+            try {
+                Snowflake imageId = imageStorageService.store(thumbnail);
+                URI thumbnailUrl = URI.create("/image/" + imageId);
+                comicEntity.setThumbnail(thumbnailUrl);
+            } catch (IOException ignore) {
+                // IGNORED
+            }
+        }
+        return comicRepository.save(comicEntity);
+    }
 }
