@@ -28,8 +28,8 @@ spring:
   mail:
     host: ${MAIL_HOST:smtp.gmail.com}
     port: ${MAIL_PORT:587}
-    username: ${EMAIL_USERNAME}
-    password: ${EMAIL_PASSWORD}
+    username: ${EMAIL_USERNAME:noreply@yomikaze.org}
+    password: ${EMAIL_PASSWORD:SuperSecurePassword}
     properties:
       mail:
         smtp:

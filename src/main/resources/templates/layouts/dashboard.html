@@ -1,24 +1,163 @@
 <!DOCTYPE html>
-<html lang="en"
-      xmlns:th="http://www.thymeleaf.org"
-      th:lang="${#locale.language}"
-      x-data="theme"
-      :data-theme="theme"
->
+<html :data-theme="theme" lang="en" th:lang="${#locale.language}" x-data="theme" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
     <meta content="width=device-width, initial-scale=1.0" name="viewport">
     <meta name="description" th:content="#{site.description.generic}">
     <title th:text="#{site.name} + '::' + ~{this :: page-title/text()}">name::title</title>
-    <link rel="shortcut icon" type="image/svg" href="/asset/image/logo.svg"
-          th:href="@{/asset/image/logo.svg}"/>
-    <link rel="stylesheet" type="text/css" href="/asset/css/tailwind.min.css"
-          th:href="@{/asset/css/tailwind.min.css}"/>
-    <link rel="stylesheet" type="text/css" href="/asset/css/feather.min.css"
-          th:href="@{/asset/css/feather.min.css}"/>
+    <link href="/asset/image/logo.svg" rel="shortcut icon" th:href="@{/asset/image/logo.svg}"
+          type="image/svg"/>
+    <link href="/asset/css/tailwind.min.css" rel="stylesheet" th:href="@{/asset/css/tailwind.min.css}"
+          type="text/css"/>
+    <link href="/asset/css/feather.min.css" rel="stylesheet" th:href="@{/asset/css/feather.min.css}"
+          type="text/css"/>
 </head>
 <body class="bg-base-100 text-base-content overflow-x-hidden" th:fragment="body">
-    <!-- TODO -->
-    <th:block th:replace="fragments/scripts"></th:block>
+<th:block th:replace="fragments/scripts"></th:block>
+<div class="drawer drawer-mobile">
+    <input class="drawer-toggle" id="sidebar" type="checkbox"/>
+    <div class="drawer-content">
+        <div class="navbar bg-base-100">
+            <div class="navbar-start gap-2">
+                <label class="btn btn-circle btn-ghost drawer-button md:hidden" for="sidebar">
+                    <i data-feather="menu"></i>
+                </label>
+                <a class="btn btn-ghost gap-2 text-xl text-white hover:bg-transparent md:hidden" href="/"
+                   th:href="@{/}">
+                    <img alt="logo" class="w-12 h-12" src="/asset/image/logo.svg" th:src="@{/asset/image/logo.svg}"/>
+                    <div class="font-title text-primary inline-flex text-lg transition-all duration-200 md:text-3xl">
+                        <span class="text-base-content lowercase">yomi</span>
+                        <span class="lowercase">kaze</span>
+                    </div>
+                </a>
+                <button @click="nextTheme()" aria-label="Theme switcher" class="btn btn-ghost btn-circle"
+                        th:fragment="switcher">
+                    <i :data-feather="themeIcon" aria-hidden="true" class="text-xl text-base-content"></i>
+                </button>
+            </div>
+            <div class="navbar-center">
+                <form action="/comic/search" class="form-control" th:action="@{/comic/search}">
+                    <label class="rounded-full">
+                        <input class="input input-bordered input-accent rounded-l-full" name="cq" placeholder="Search"
+                               required type="text"/>
+                        <button
+                            aria-label="Search"
+                            class="btn btn-accent btn-outline rounded-r-full stroke-accent hover:stroke-white dark:hover:stroke-black"
+                            id="submit"
+                            type="submit">
+                            <i data-feather="search"></i>
+                        </button>
+                    </label>
+                </form>
+            </div>
+            <div class="navbar-end">
+                <th:block sec:authorize="!anonymous">
+                    <!--/*@thymesVar id="account" type="org.yomikaze.persistence.entity.Account"*/-->
+                    <div class="dropdown dropdown-end" th:with="account = ${#authentication.principal}">
+                        <div class="btn btn-ghost m-1 gap-2" tabindex="0" th:with="profile = ${account.profile}">
+                            <div class="avatar" th:if="${profile.picture != null}">
+                                <div class="w-8 h-8 rounded-full">
+                                    <img alt="Profile picture"
+                                         th:src="${profile.picture}"/>
+                                </div>
+                            </div>
+                            <div class="avatar placeholder" th:if="${profile.picture == null}">
+                                <div class="bg-neutral-focus text-neutral-content rounded-full w-8">
+                                    <span class="text-xl" th:text="${profile.displayName.substring(0, 1)}"></span>
+                                </div>
+                            </div>
+                            <span class="hidden md:block" th:text="${profile.displayName}">Name</span>
+                        </div>
+                        <ul class="dropdown-content menu menu-compact p-2 shadow-lg bg-base-300 rounded-box w-52 focus:z-50"
+                            tabindex="0">
+                            <li>
+                                <a href="/profile"
+                                   th:href="@{/profile}">
+                                    <i aria-hidden="true" data-feather="user"></i>
+                                    Profile
+                                </a>
+                            </li>
+                            <li>
+                                <a href="/library"
+                                   th:href="@{/library}">
+                                    <i aria-hidden="true" data-feather="bookmark"></i>
+                                    Library
+                                </a>
+                            </li>
+                            <li>
+                                <a href="/history"
+                                   th:href="@{/history}">
+                                    <i aria-hidden="true" data-feather="rotate-ccw"></i>
+                                    History
+                                </a>
+                            </li>
+                            <li>
+                                <a href="/settings"
+                                   th:href="@{/settings}">
+                                    <i aria-hidden="true" data-feather="settings"></i>
+                                    Settings
+                                </a>
+                            </li>
+                            <li></li>
+                            <li>
+                                <a class="text-error hover:bg-error hover:text-error-content"
+                                   href="/logout"
+                                   th:href="@{/logout}">
+                                    <i aria-hidden="true" data-feather="log-out"></i>
+                                    Logout
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
+                </th:block>
+                <div class="gap-2" sec:authorize="anonymous">
+                    <a class="btn btn-sm btn-info btn-outline rounded-full" href="#" th:href="@{/sign-in}">Sign In</a>
+                    <a class="btn btn-sm btn-success btn-outline rounded-full" href="#" th:href="@{/sign-up}">Sign
+                        Up</a>
+                </div>
+            </div>
+        </div>
+        <div class="max-w-screen w-full min-h-[calc(100vh-10rem)]">
+            <div class="w-10/12 mx-auto py-10" th:insert="this :: content">
+                <!-- Main content here -->
+            </div>
+            <button @click="window.scrollTo({top: 0, behavior: 'smooth'})"
+                    @scroll.window="scroll = document.documentElement.scrollTop > 20"
+                    class="fixed bottom-10 right-10 btn btn-circle bg-neutral shadow-md hover:bg-accent hover:shadow-lg focus:bg-accent focus:shadow-lg active:bg-accent active:shadow-lg"
+                    id="btn-back-to-top"
+                    type="button"
+                    x-cloak
+                    x-data="{scroll : document.documentElement.scrollTop > 20}"
+                    x-show="scroll"
+                    x-transition.opacity
+            >
+                <i data-feather="arrow-up"></i>
+            </button>
+        </div>
+    </div>
+    <div class="drawer-side">
+        <label class="drawer-overlay" for="sidebar"></label>
+        <aside class="bg-base-300 w-fit overflow-y-auto">
+            <div
+                class="z-20 bg-base-200 bg-opacity-90 backdrop-blur sticky top-0 items-center gap-2 px-4 py-2 hidden lg:flex ">
+                <a
+                    class="btn btn-ghost gap-2 text-xl text-white hover:bg-transparent" href="/" th:href="@{/}">
+                    <img alt="logo" class="w-10 h-10" src="/asset/image/logo.svg" th:src="@{/asset/image/logo.svg}"/>
+                    <div class="font-title text-primary inline-flex text-lg transition-all duration-200 md:text-3xl">
+                        <span class="text-base-content lowercase">yomi</span>
+                        <span class="lowercase">kaze</span>
+                    </div>
+                </a>
+            </div>
+            <ul class="menu p-4 text-base-content">
+                <!-- Sidebar content here -->
+                <li><a>Sidebar Item 1</a></li>
+            </ul>
+        </aside>
+    </div>
+</div>
+<div th:fragment="content">
+    <!-- Main content here -->
+</div>
 </body>
 </html>

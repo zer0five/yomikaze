@@ -15,9 +15,10 @@
             </button>
         </div>
         <div class="navbar-center">
-            <form class="form-control" action="/search" th:action="@{/search}">
+            <form action="/comic/search" class="form-control" th:action="@{/comic/search}">
                 <label class="input-group">
-                    <input class="input input-bordered input-accent" placeholder="Search" type="text" required/>
+                    <input class="input input-bordered input-accent" name="cq" placeholder="Search" required
+                           type="text"/>
                     <button
                         id="submit"
                         type="submit"

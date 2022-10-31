@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en" th:insert="layouts/default">
+<head>
+    <title th:fragment="page-title">comic::chapter::read</title>
+</head>
+<body @keydown.left="if (hasPrev) window.location.href = prevChapter"
+      @keydown.right="if (hasNext) window.location.href = nextChapter"
+      th:data-hasNext="${hasNext}"
+      th:data-hasPrev="${hasPrev}"
+      th:data-next="@{/comic/{id}/chapter/{i}(id=${comic.id}, i=${hasNext ? index + 1 : 0})}"
+      th:data-prev="@{/comic/{id}/chapter/{i}(id=${comic.id}, i=${hasPrev ? index - 1 : 0})}"
+      th:fragment="content"
+      x-data="{ nextChapter: '{{nextChapter}}', prevChapter: '{{prevChapter}}', hasPrev: false, hasNext: false }"
+      x-init="nextChapter = $el.dataset.next; prevChapter = $el.dataset.prev; hasNext = $el.dataset.hasnext === 'true'; hasPrev = $el.dataset.hasprev === 'true'">
+<!--preload-->
+<link as="image" rel="preload" th:href="@{/asset/image/loading.svg}" type="image/svg+xml"/>
+<p class="p-8 text-center">
+    <a class="link text-lg font-bold" th:href="@{/comic/{id}/detail(id=${comic.id})}" th:text="${comic.name}"></a>
+    <span class="text-gray-500">::</span>
+    <span class="text-gray-500" th:text="${chapter.title}"></span>
+</p>
+
+<div class="mb-12 pb-8 flex flex-col items-center"
+     th:with="pages = ${chapter.pages}">
+    <!--/*@thymesVar id="page" type="org.yomikaze.persistence.entity.Page"*/-->
+    <!--/*@thymesVar id="pages" type="java.util.List"*/-->
+    <!--/*@thymesVar id="i" type="java.lang.Integer"*/-->
+    <div class="w-full max-w-xl"
+         th:each="page : ${pages}"
+         x-data="{loaded: false}"
+    >
+        <img @load="loaded = true"
+             alt="${page.index}"
+             class="object-contain object-center mx-auto"
+             th:alt="${page.id}"
+             th:src="${page.uri}"
+             x-init="loaded = $el.complete"
+             x-show="loaded"
+        >
+        <img alt="${page.index}"
+             class="object-contain object-center mx-auto my-12"
+             th:alt="${index}"
+             th:src="@{/asset/image/loading.svg}"
+             x-show="!loaded">
+    </div>
+</div>
+
+<div class="bottom-2 sticky btm-nav btm-nav-sm rounded-box shadow-2xl bg-base-300 border border-dashed border-neutral">
+    <div class="px-2 flex flex-row gap-4">
+        <button @click="window.location.href = prevChapter"
+                class="btn btn-sm btn-circle btn-neutral hover:btn-accent focus:btn-accent active:btn-accent"
+                th:disabled="${not hasPrev}">
+            <i data-feather="chevron-left"></i>
+        </button>
+        <label>
+            <select @change="window.location.href = $el.dataset.path + $el.value"
+                    class="select select-sm select-accent grow sm:w-full sm:max-w-sm"
+                    th:data-path="@{/comic/{id}/chapter/(id=${comic.id})}"
+            >
+                <!--/*@thymesVar id="i" type="java.lang.Integer"*/-->
+                <option
+                    th:disabled="${i == index}"
+                    th:each="i : ${#numbers.sequence(0, chapters.size() - 1)}"
+                    th:selected="${i == index}"
+                    th:value="${i}"
+                >
+                    Chapter [[${i}]] [[${not #strings.isEmpty(chapters.get(i).title) ? ' - ' + chapters.get(i).title :
+                    ''}]]
+                </option>
+            </select>
+        </label>
+        <button @click="window.location.href = nextChapter"
+                class="btn btn-sm btn-circle btn-neutral hover:btn-accent focus:btn-accent active:btn-accent"
+                th:disabled="${not hasNext}">
+            <i data-feather="chevron-right"></i>
+        </button>
+    </div>
+</div>
+
+</body>
+</html>

@@ -72,4 +72,5 @@ public interface ComicRepository extends CrudRepository<Comic, Snowflake> {
 
     Page<Comic> findByNameStartingWithIgnoreCase(String name, Pageable pageable);
 
+    Page<Comic> findByGenresContaining(Genre genre, Pageable pageable);
 }

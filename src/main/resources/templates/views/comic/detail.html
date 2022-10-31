@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en" th:insert="layouts/default">
+<html lang="en" th:insert="layouts/default" xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity5">
 <head>
     <title th:fragment="page-title">comic::detail</title>
 </head>
@@ -42,6 +42,38 @@
                             <a class="a2a_dd" href="https://www.addtoany.com/share"></a>
                         </div>
                         <script async src="https://static.addtoany.com/menu/page.js"></script>
+                    </div>
+                    <div class="flex-shrink" sec:authorize="!anonymous">
+                        <div class="dropdown dropdown-end">
+                            <label class="btn btn-ghost btn-sm btn-circle" tabindex="0">
+                                <i data-feather="more-vertical"></i>
+                            </label>
+                            <ul class="dropdown-content menu menu-compact p-2 shadow bg-base-300 rounded-box w-52"
+                                tabindex="0">
+                                <li class="dropdown-item gap-2">
+                                    <a href="/comic/report">
+                                        <i data-feather="alert-triangle"></i>
+                                        Report
+                                    </a>
+                                </li>
+                                <li class="dropdown-item gap-2"
+                                    sec:authorize="hasAuthority('comic.edit')"
+                                    th:if="${comic.uploader.id == #authentication.principal.id}">
+                                    <a href="/comic/edit/">
+                                        <i data-feather="edit"></i>
+                                        Edit
+                                    </a>
+                                </li>
+                                <li class="dropdown-item gap-2"
+                                    sec:authorize="hasAuthority('comic.delete')"
+                                    th:if="${comic.uploader.id == #authentication.principal.id}">
+                                    <a href="/comic/delete/">
+                                        <i data-feather="trash"></i>
+                                        Delete
+                                    </a>
+                                </li>
+                            </ul>
+                        </div>
                     </div>
                 </div>
                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
@@ -118,7 +150,7 @@
                             <span th:case="false">Unknown</span>
                             <span th:case="true"
                                   th:text="${comic.published}"
-                                  x-init="$el.textContent = moment($el.textContent).fromNow()">
+                                  th:x-text="| moment(${comic.published}).fromNow() |">
                                         [[${comic.published}]]
                                     </span>
                         </dd>
@@ -130,9 +162,9 @@
                             <span th:case="false">Unknown</span>
                             <span th:case="true"
                                   th:text="${comic.finished}"
-                                  x-init="$el.textContent = moment($el.textContent).fromNow()">
-                                        [[${comic.finished}]]
-                                    </span>
+                                  th:x-text="| moment(${comic.finished}).fromNow() |">
+                                  [[${comic.finished}]]
+                            </span>
                         </dd>
                     </dl>
                 </div>
@@ -148,9 +180,8 @@
                              th:data-tip="${genre.description ?: genre.name}"
                              th:each="genre : ${comic.genres}">
                             <a class="badge badge-outline badge-accent p-2"
-                               th:href="@{/search/?genre={id}(id=${genre.id})}"
-                               th:text="${genre.name}"
-                            >
+                               th:href="@{/comic/search/(genre=${genre.id})}"
+                               th:text="${genre.name}">
                                 [[${genre}]]
                             </a>
                         </div>
@@ -165,19 +196,36 @@
                         <i data-feather="fast-forward"></i>
                         Read latest
                     </a>
-                    <a class="btn btn-accent gap-2">
+                    <a class="btn btn-accent gap-2" sec:authorize="!anonymous">
                         <i data-feather="navigation"></i>
                         Continue reading
                     </a>
-                    <a class="btn btn-error gap-2">
+                    <div class="tooltip"
+                         data-tip="You must be logged in to continue reading"
+                         sec:authorize="anonymous">
+                        <button class="btn btn-accent btn-disabled gap-2" disabled>
+                            <i data-feather="navigation"></i>
+                            Continue reading
+                        </button>
+                    </div>
+                    <a class="btn btn-error gap-2"
+                       sec:authorize="!anonymous">
                         <i data-feather="bookmark"></i>
                         Add to library
                     </a>
+                    <div class="tooltip"
+                         data-tip="You must be logged in to add this comic to your library"
+                         sec:authorize="anonymous">
+                        <button class="btn btn-error btn-disabled gap-2" disabled>
+                            <i data-feather="bookmark"></i>
+                            Add to library
+                        </button>
+                    </div>
                 </div>
             </div>
         </div>
         <!-- Description -->
-        <label class="collapse collapse-plus bg-base-300 shadow-xl rounded-box"  x-data="{open: true}">
+        <label class="collapse collapse-plus bg-base-300 shadow-xl rounded-box" x-data="{open: true}">
             <input class="peer" type="checkbox" x-model="open"/>
             <span class="collapse-title gap-2">
                     <i data-feather="info"></i>
@@ -215,23 +263,28 @@
                     </span>
                 </span>
             <span class="collapse-content" th:switch="${comic.chapters.isEmpty()}">
+                    <a class="btn btn-ghost w-full border-dashed rounded-box border border-dashed border-2"
+                       sec:authorize="!anonymous && hasAuthority('chapter.add')"
+                       th:href="@{/comic/{id}/chapter/add(id=${comic.id})}">
+                        <i data-feather="plus"></i>
+                        Add chapter
+                    </a>
                     <span class="italic" th:case="true">
                         No chapters available
                     </span>
                     <span class="max-h-[500px] divide-y divide-dashed overflow-y-auto pr-4" th:case="false">
                         <span class="flex flex-nowrap items-center gap-4 p-2 hover:bg-accent hover:bg-opacity-30"
                               th:each="chapter : ${comic.chapters}" th:x-ref="${chapter.id}">
-                        >
-                            <a class="flex-grow flex flex-nowrap items-center gap-4" href="">
+                            <a class="flex-grow flex flex-nowrap items-center gap-4"
+                               th:href="@{/comic/{id}/chapter/{i}(id=${comic.id}, i=${chapter.index})}">
                                 <span class="flex-grow"
-                                      th:text="'Chapter ' + ${chapter.index} + ' - ' + ${chapter.title}"
-                                >Chapter [[${chapter.index}]] - [[${chapter.title}]]</span>
-                                <span>[[${chapter.id.timestamp}}]]</span>
+                                      th:text="'Chapter ' + ${chapter.index + 1} + ' - ' + ${chapter.title}">
+                                Chapter [[${chapter.index}]] - [[${chapter.title}]]</span>
+                                <span>[[${chapter.id.timestamp}]]</span>
                             </a>
                             <span class="gap-2">
-                                <button @click="toggleReadStatus(chapter.id)"
+                                <button th:@click="| toggleReadStatus('${chapter.id}') |"
                                         class="btn btn-ghost btn-circle btn-sm">
-                                >
                                     <i data-feather="eye"></i>
                                 </button>
                                 <button class="btn btn-ghost btn-circle btn-sm">

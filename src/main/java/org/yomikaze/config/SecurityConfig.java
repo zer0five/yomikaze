@@ -36,10 +36,9 @@ public class SecurityConfig {
             )
             .httpBasic(basic -> basic.realmName("yomikaze"))
             .sessionManagement(session -> session
-                .sessionAuthenticationErrorUrl("/login")
+                .sessionAuthenticationErrorUrl("/logout")
                 .sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED)
                 .sessionFixation().migrateSession()
-                .maximumSessions(1)
             )
             .formLogin(form -> form
                 .loginPage("/login")

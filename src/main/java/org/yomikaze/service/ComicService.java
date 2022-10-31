@@ -4,17 +4,18 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import org.yomikaze.persistence.entity.Account;
+import org.yomikaze.persistence.entity.Chapter;
 import org.yomikaze.persistence.entity.Comic;
-import org.yomikaze.persistence.repository.ComicRepository;
-import org.yomikaze.persistence.repository.GenreRepository;
-import org.yomikaze.persistence.repository.HistoryRepository;
-import org.yomikaze.persistence.repository.LibraryRepository;
+import org.yomikaze.persistence.entity.Page;
+import org.yomikaze.persistence.repository.*;
 import org.yomikaze.snowflake.Snowflake;
 import org.yomikaze.web.dto.comic.ComicDetailModel;
 import org.yomikaze.web.dto.comic.ComicInputModel;
 import org.yomikaze.web.dto.comic.GenreModel;
+import org.yomikaze.web.dto.comic.chapter.ChapterInputModel;
 import org.yomikaze.web.dto.comic.chapter.ChapterModel;
 
+import javax.persistence.EntityNotFoundException;
 import java.io.IOException;
 import java.net.URI;
 import java.text.Normalizer;
@@ -31,10 +32,11 @@ public class ComicService {
 
     private final GenreRepository genreRepository;
     private final ComicRepository comicRepository;
-    private final DatabaseImageStorageService imageStorageService;
-
+    private final ChapterRepository chapterRepository;
+    private final PageRepository pageRepository;
     private final LibraryRepository libraryRepository;
     private final HistoryRepository historyRepository;
+    private final DatabaseImageStorageService imageStorageService;
 
     private static final Pattern NON_LATIN = Pattern.compile("[^\\w-]");
     private static final Pattern WHITESPACE = Pattern.compile("\\s");
@@ -98,7 +100,6 @@ public class ComicService {
             ChapterModel chapterModel = new ChapterModel();
             chapterModel.setId(chapter.getId());
             chapterModel.setTitle(chapter.getTitle());
-            chapterModel.setIndex(chapter.getIndex());
             chapters.add(chapterModel);
         });
         model.setChapters(chapters);
@@ -114,5 +115,39 @@ public class ComicService {
         model.setViews(countViews(comic));
         model.setInLibraries(countInLibraries(comic));
         return model;
+    }
+
+    public void addChapter(ComicDetailModel comic, ChapterInputModel chapter) {
+        Comic comicEntity = comicRepository.findById(comic.getId()).orElseThrow(EntityNotFoundException::new);
+        Chapter chapterEntity = new Chapter(comicEntity);
+        chapterEntity.setTitle(chapter.getTitle());
+        for (URI pageUri : chapter.getPagesUri()) {
+            Page page = new Page(chapterEntity);
+            page.setUri(pageUri.toString());
+            chapterEntity.getPages().add(page);
+        }
+        comicEntity.getChapters().add(chapterEntity);
+        comicRepository.save(comicEntity);
+    }
+
+    public Comic updateComic(Snowflake id, ComicInputModel comic, MultipartFile thumbnail) {
+        Comic comicEntity = comicRepository.findById(id).orElseThrow(EntityNotFoundException::new);
+        comicEntity.setName(comic.getName());
+        comicEntity.setAliases(comic.getListAliases());
+        comicEntity.setDescription(comic.getDescription());
+        comicEntity.setAuthors(comic.getListAuthors());
+        comicEntity.setPublished(comic.getPublished());
+        comicEntity.setFinished(comic.getFinished());
+        comicEntity.setGenres(genreRepository.findAllByIdIn(comic.getGenres()));
+        if (!thumbnail.isEmpty()) {
+            try {
+                Snowflake imageId = imageStorageService.store(thumbnail);
+                URI thumbnailUrl = URI.create("/image/" + imageId);
+                comicEntity.setThumbnail(thumbnailUrl);
+            } catch (IOException ignore) {
+                // IGNORED
+            }
+        }
+        return comicRepository.save(comicEntity);
     }
 }

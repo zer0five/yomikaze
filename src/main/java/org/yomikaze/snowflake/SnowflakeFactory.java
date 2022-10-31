@@ -1,5 +1,7 @@
 package org.yomikaze.snowflake;
 
+import lombok.extern.slf4j.Slf4j;
+
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
@@ -12,6 +14,7 @@ import java.util.concurrent.atomic.AtomicLong;
  *
  * @see <a href="https://github.com/twitter/snowflake">snowflake</a>
  */
+@Slf4j
 public class SnowflakeFactory {
 
 
@@ -106,6 +109,7 @@ public class SnowflakeFactory {
 
         this.datacenterId = datacenterId;
         this.workerId = workerId;
+        log.info("SnowflakeFactory initialized with datacenterId: {}, workerId: {}", datacenterId, workerId);
     }
 
     /**

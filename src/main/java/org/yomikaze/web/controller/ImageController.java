@@ -69,7 +69,11 @@ public class ImageController {
             return ResponseEntity.notFound().build();
         }
         return toResponse(image);
+    }
 
+    private ResponseEntity<Resource> getFile(Snowflake id) {
+        Optional<Image> image = imageRepository.findById(id);
+        return toResponse(image);
     }
 
     private ResponseEntity<Resource> getFile(String owner, String id, String name) {
@@ -104,10 +108,8 @@ public class ImageController {
     }
 
     @GetMapping("/image/{id}")
-    public String getAttachment(@PathVariable("id") String id) {
-        Snowflake snowflake = Snowflake.of(id);
-        String name = imageRepository.findById(snowflake).map(Image::getName).orElse("unknown");
-        return MessageFormat.format("redirect:/image/{0}/{1}", id, name);
+    public ResponseEntity<Resource> getAttachment(@PathVariable("id") Snowflake id) {
+        return getFile(id);
     }
 
     @GetMapping("/image/{id}/{name}")

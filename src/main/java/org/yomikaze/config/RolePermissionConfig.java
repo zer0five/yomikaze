@@ -56,15 +56,17 @@ public class RolePermissionConfig implements ApplicationListener<ContextRefreshe
 
     @Transactional
     public Role createRoleIfNotFound(String name, Collection<Permission> privileges, boolean defaultRole) {
-        return roleRepository
-            .findByName(name)
-            .orElseGet(() -> {
-                Role role = new Role();
-                role.setName(name);
-                role.setPermissions(privileges);
-                role.setDefaultRole(defaultRole);
-                return roleRepository.save(role);
-            });
+        Optional<Role> optionalRole = roleRepository.findByName(name);
+        if (optionalRole.isPresent()) {
+            Role role = optionalRole.get();
+            role.getPermissions().addAll(privileges);
+            return roleRepository.save(role);
+        }
+        Role role = new Role();
+        role.setName(name);
+        role.setPermissions(privileges);
+        role.setDefaultRole(defaultRole);
+        return roleRepository.save(role);
     }
 
 
@@ -95,10 +97,10 @@ public class RolePermissionConfig implements ApplicationListener<ContextRefreshe
         String uploader = "Uploader";
         List<Permission> uploaderPermissions = Arrays.asList(
             createPermissionIfNotFound("comic.create"),
-            createPermissionIfNotFound("comic.update"),
+            createPermissionIfNotFound("comic.edit"),
             createPermissionIfNotFound("comic.delete"),
-            createPermissionIfNotFound("chapter.create"),
-            createPermissionIfNotFound("chapter.update"),
+            createPermissionIfNotFound("chapter.add"),
+            createPermissionIfNotFound("chapter.edit"),
             createPermissionIfNotFound("chapter.delete"),
             createPermissionIfNotFound("page.create"),
             createPermissionIfNotFound("page.delete")

@@ -1,4 +1,4 @@
-<a class="mx-auto" th:fragment="card(comic, isLast)" th:href="@{/comic/detail/{id}/(id=${comic.id})}">
+<a class="mx-auto" th:fragment="card(comic, isLast)" th:href="@{/comic/{id}/detail/(id=${comic.id})}">
     <!--@thymesVar id="comic" type="org.yomikaze.web.dto.comic.ComicDetailModel"-->
     <div class="dropdown dropdown-hover" th:classappend="${isLast ? 'dropdown-left' : 'dropdown-right'}">
         <label class="w-[190px] h-[280px]" tabindex="0">
@@ -17,7 +17,7 @@
                     <p class="font-semibold" th:switch="${comic.finished == null}">
                         Status:
                         <span class="badge badge-accent badge-sm" th:case="true">Ongoing</span>
-                        <span class="badge badge-success badge-sm" th:if="false">Completed</span>
+                        <span class="badge badge-success badge-sm" th:case="false">Completed</span>
                     </p>
                     <p class="font-semibold">View:
                         <span th:text="${comic.views}">${comic.views}</span>
@@ -36,13 +36,6 @@
                               [[${comic.updatedAt}]]
                         </span>
                     </p>
-                    <p class="font-semibold">
-                        Last chapter:
-                        <span th:text="${#objects.listNullSafe(comic.chapters, T(java.util.Collections).emptyList()).isEmpty() ? 'No chapter' : 'Chapter ' + comic.chapters.get(0).index}">
-                              [[${comic.lastChapter}]]
-                        </span>
-                    </p>
-
                     <p class="text-sm font-normal leading-relaxed"
                        th:text="${comic.description}">
                         Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been

@@ -6,13 +6,14 @@ import lombok.Setter;
 import lombok.ToString;
 import org.hibernate.Hibernate;
 import org.hibernate.annotations.UpdateTimestamp;
+import org.jetbrains.annotations.NotNull;
 import org.yomikaze.snowflake.Snowflake;
 
 import javax.persistence.*;
 import java.time.Instant;
-import java.util.HashSet;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
-import java.util.Set;
 
 @Getter
 @Setter
@@ -20,7 +21,7 @@ import java.util.Set;
 @RequiredArgsConstructor
 @Entity(name = "chapter")
 @Table(name = "chapter")
-public class Chapter {
+public class Chapter implements Comparable<Chapter> {
 
     @Id
     @GeneratedValue(generator = "chapter-snowflake")
@@ -30,23 +31,24 @@ public class Chapter {
     @Column(name = "title", nullable = false)
     private String title = "";
 
-    @Column(name = "index", nullable = false)
-    private Long index;
-
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "comic", nullable = false)
     @ToString.Exclude
     private Comic comic;
 
-    @OneToMany(fetch = FetchType.LAZY)
-    @JoinColumn(name = "chapter", nullable = false)
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "chapter", cascade = CascadeType.ALL, orphanRemoval = true)
     @ToString.Exclude
     @OrderColumn(name = "index")
-    private Set<Page> pages = new HashSet<>();
+    private List<Page> pages = new ArrayList<>();
 
     @UpdateTimestamp
     @Column(name = "updated_at", nullable = false)
     private Instant updatedAt;
+
+    public Chapter(Comic comic) {
+        this();
+        this.comic = comic;
+    }
 
     @Override
     public boolean equals(Object o) {
@@ -59,5 +61,10 @@ public class Chapter {
     @Override
     public int hashCode() {
         return Objects.hashCode(id);
+    }
+
+    @Override
+    public int compareTo(@NotNull Chapter o) {
+        return id.compareTo(o.id);
     }
 }

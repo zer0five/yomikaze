@@ -4,7 +4,9 @@
     <title th:fragment="page-title">comic::new</title>
 </head>
 <body th:fragment="content">
-<div class="min-h-screen flex flex-col items-stretch p-8 gap-8" x-data="{ current_step: 1}">
+<form class="hidden" id="chapter-form" method="post" th:action="@{/comic/{id}/chapter/add(id=${comic.id})}">
+</form>
+<div class="min-h-screen flex flex-col items-stretch p-8 gap-8" x-data="{ current_step: 1 }">
     <ul class="steps w-full max-w-lg self-center">
         <li @click="current_step = 1" class="step" :class="{'step-primary': current_step >= 1}">Fill in infos</li>
         <li @click="current_step = 2" class="step" :class="{'step-primary': current_step >= 2}">Upload images</li>
@@ -14,23 +16,29 @@
         <div class="flex justify-center gap-4" x-show="current_step === 1">
             <div>
                 <label class="label" for="chapter-no">
-                    <span class="label-text">Chapter Number</span>
+                    <span class="label-text">Chapter Index</span>
                 </label>
-                <input id="chapter-no"
-                       name="chapterNo"
-                       class="input input-bordered w-24"
-                       type="number"
-                       value="0"/>
+                <input
+                    disabled
+                    form="chapter-form"
+                    id="chapter-no"
+                    class="input input-bordered w-24"
+                    type="number"
+                    name="index"
+                    th:value="${comic.chapters.size() + 1}"
+                />
             </div>
             <div>
                 <label class="label" for="chapter-title">
                     <span class="label-text">Chapter Title</span>
                 </label>
-                <input  id="chapter-title"
-                        name="chapterTitle"
-                        class="input input-bordered w-48 sm:w-64"
-                        type="text"
-                        placeholder="Chapter's title"
+                <input
+                    class="input input-bordered w-48 sm:w-64"
+                    form="chapter-form"
+                    id="chapter-title"
+                    name="title"
+                    placeholder="Chapter's title"
+                    type="text"
                 />
             </div>
         </div>
@@ -123,6 +131,8 @@
                 <div class="form-control h-full">
                     <label for="image-order" class="label"><span class="label-text">Images order</span></label>
                     <textarea id="image-order"
+                              form="chapter-form"
+                              th:field="${chapter.pages}"
                               class="input input-bordered input-primary max-h-screen min-h-screen"
                               placeholder="Paste here the image urls, one per line"
                               x-data="{focus: false, lastKeyUp: 0}"
@@ -130,7 +140,7 @@
                               @blur="focus = false"
                               @change="if (focus) { $store.data.urls = $el.value.split('\n') || [] }"
                               @keyup="if (focus && lastKeyUp + 500 >= Date.now()) { lastKeyUp = Date.now(); $store.data.urls = $el.value.split('\n') || [] }"
-                              x-init="$watch('$store.data.urls', value => { if (focus) $el.value = value.join('\n').trim() })"></textarea>
+                              x-init="$watch('$store.data.urls', value => { if (!focus) $el.value = value.join('\n').trim() })"></textarea>
                 </div>
             </div>
             <div x-show="$store?.data?.urls?.length" class="divider divider-horizontal"></div>
@@ -153,8 +163,8 @@
                                 let images = sortable.el.children;
                                 let urls = Array.from(images)
                                     .filter(img => img.tagName === 'IMG')
-                                    .filter(img => img.src && img.src !== '')
-                                    .map(img => img.src);
+                                    .map(img => img.getAttribute('src'))
+                                    .filter(src => !!src);
                                 textarea.value = urls.join('\n');
                             }
                         }
@@ -181,10 +191,12 @@
             @click="current_step = 3"
         >Next</button>
         <button
+            form="chapter-form"
+            type="submit"
             x-show="current_step === 3"
             class="btn btn-primary"
-            @click="console.log('#TODO')"
-        >Submit</button>
+        >Submit
+        </button>
     </div>
 </div>
 <script>
@@ -270,7 +282,7 @@
                         this.$el.reset();
                         this.$store.data.urls.push(...data);
                         this.submitting = false
-                        alert('Images uploaded successfully');
+                        alert('Images uploaded successfully, you can now go to the next step');
                     })
                     .catch(error => console.error('Error:', error));
             },
