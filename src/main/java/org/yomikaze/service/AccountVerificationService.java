@@ -89,6 +89,7 @@ public class AccountVerificationService {
             throw new IllegalArgumentException("Invalid token", e);
         }
         Snowflake id = Snowflake.of(jwt.getId());
+        log.info("Verifying account with id {}", id);
         Account account = accountRepository.findById(id).orElseThrow(EntityNotFoundException::new);
         log.info("Verifying account {}", account);
         if (account.isVerified()) {

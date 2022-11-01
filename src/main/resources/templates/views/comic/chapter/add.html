@@ -275,13 +275,14 @@
                     .then(data => {
                         console.log(data);
                         if (data.error) {
+                            this.submitting = false;
                             alert(data.error);
                             return;
                         }
                         this.files = [];
                         this.$el.reset();
                         this.$store.data.urls.push(...data);
-                        this.submitting = false
+                        this.submitting = false;
                         alert('Images uploaded successfully, you can now go to the next step');
                     })
                     .catch(error => console.error('Error:', error));
