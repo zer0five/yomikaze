@@ -12,6 +12,6 @@ public class UsernameExistsConstraintValidator implements ConstraintValidator<Us
         private final AccountRepository accountRepository;
         @Override
         public boolean isValid(String value, ConstraintValidatorContext context) {
-            return false;
+            return accountRepository.findByUsername(value).isPresent();
         }
 }

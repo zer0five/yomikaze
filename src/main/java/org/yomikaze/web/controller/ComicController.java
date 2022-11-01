@@ -69,6 +69,7 @@ public class ComicController {
         }
         ComicDetailModel detailModel = comicService.getComicDetail(comic);
         model.addAttribute("comic", detailModel);
+        model.addAttribute("chapters", comic.getChapters());
         return "views/comic/detail";
     }
 
@@ -182,6 +183,40 @@ public class ComicController {
         }
         Comic saved = comicService.updateComic(id, comic, thumbnail);
         return MessageFormat.format("redirect:/comic/{0}/detail", saved.getId());
+    }
+
+    @GetMapping("/{id}/delete")
+    @PreAuthorize("authentication != null && authenticated")
+    @PostAuthorize("hasAuthority('comic.delete')")
+    public String delete(@PathVariable Snowflake id, Model model) {
+        Comic comic = comicRepository.findById(id)
+            .orElseThrow(() -> new EntityNotFoundException("comic.not-found"));
+        model.addAttribute("comic", comic);
+        return "views/comic/delete";
+    }
+
+    @PostMapping("/{id}/delete")
+    @PreAuthorize("authentication != null && authenticated")
+    @PostAuthorize("hasAuthority('comic.delete')")
+    public String delete(@PathVariable Snowflake id, Authentication authentication) {
+        Account uploader = (Account) authentication.getPrincipal();
+        Comic db = comicRepository.findById(id).orElseThrow(EntityNotFoundException::new);
+        if (!db.getUploader().equals(uploader)) {
+            throw new AccessDeniedException("comic.delete.access-denied");
+        }
+        comicRepository.deleteById(id);
+        return "redirect:/comic";
+    }
+
+    @GetMapping("/manage")
+    @PreAuthorize("authentication != null && !anonymous")
+    @PostAuthorize("hasAuthority('comic.manage')")
+    public String manage(@PageableDefault(size = 12) Pageable pageable,
+                         Authentication authentication, Model model) {
+        Account uploader = (Account) authentication.getPrincipal();
+        Page<Comic> comics = comicRepository.findByUploader(uploader, pageable);
+        model.addAttribute("comics", comics);
+        return "views/comic/manage";
     }
 
     @ExceptionHandler(EntityNotFoundException.class)

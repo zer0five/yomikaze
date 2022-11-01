@@ -39,6 +39,7 @@
                             <a class="a2a_button_copy_link"></a>
                             <a class="a2a_button_twitter"></a>
                             <a class="a2a_button_facebook"></a>
+                            <a class="a2a_button_reddit"></a>
                             <a class="a2a_dd" href="https://www.addtoany.com/share"></a>
                         </div>
                         <script async src="https://static.addtoany.com/menu/page.js"></script>
@@ -51,7 +52,7 @@
                             <ul class="dropdown-content menu menu-compact p-2 shadow bg-base-300 rounded-box w-52"
                                 tabindex="0">
                                 <li class="dropdown-item gap-2">
-                                    <a href="/comic/report">
+                                    <a href="#report">
                                         <i data-feather="alert-triangle"></i>
                                         Report
                                     </a>
@@ -59,7 +60,10 @@
                                 <li class="dropdown-item gap-2"
                                     sec:authorize="hasAuthority('comic.edit')"
                                     th:if="${comic.uploader.id == #authentication.principal.id}">
-                                    <a href="/comic/edit/">
+                                    <a
+                                        href="/comic/edit/"
+                                        th:href="@{/comic/{id}/edit(id=${comic.id})}"
+                                    >
                                         <i data-feather="edit"></i>
                                         Edit
                                     </a>
@@ -67,7 +71,10 @@
                                 <li class="dropdown-item gap-2"
                                     sec:authorize="hasAuthority('comic.delete')"
                                     th:if="${comic.uploader.id == #authentication.principal.id}">
-                                    <a href="/comic/delete/">
+                                    <a
+                                        href="/comic/delete/"
+                                        th:href="@{/comic/{id}/delete(id=${comic.id})}"
+                                    >
                                         <i data-feather="trash"></i>
                                         Delete
                                     </a>
@@ -150,7 +157,7 @@
                             <span th:case="false">Unknown</span>
                             <span th:case="true"
                                   th:text="${comic.published}"
-                                  th:x-text="| moment(${comic.published}).fromNow() |">
+                                  th:x-text="| moment('${comic.published}').fromNow() |">
                                         [[${comic.published}]]
                                     </span>
                         </dd>
@@ -162,7 +169,7 @@
                             <span th:case="false">Unknown</span>
                             <span th:case="true"
                                   th:text="${comic.finished}"
-                                  th:x-text="| moment(${comic.finished}).fromNow() |">
+                                  th:x-text="| moment('${comic.finished}').fromNow() |">
                                   [[${comic.finished}]]
                             </span>
                         </dd>
@@ -262,7 +269,7 @@
                         (click to expand)
                     </span>
                 </span>
-            <span class="collapse-content" th:switch="${comic.chapters.isEmpty()}">
+            <span class="collapse-content" th:switch="${chapters.isEmpty()}">
                     <a class="btn btn-ghost w-full border-dashed rounded-box border border-dashed border-2"
                        sec:authorize="!anonymous && hasAuthority('chapter.add')"
                        th:href="@{/comic/{id}/chapter/add(id=${comic.id})}">
@@ -274,12 +281,14 @@
                     </span>
                     <span class="max-h-[500px] divide-y divide-dashed overflow-y-auto pr-4" th:case="false">
                         <span class="flex flex-nowrap items-center gap-4 p-2 hover:bg-accent hover:bg-opacity-30"
-                              th:each="chapter : ${comic.chapters}" th:x-ref="${chapter.id}">
+                              th:each="i : ${#numbers.sequence(0, chapters.size() - 1)}"
+                              th:with="chapter = ${chapters.get(i)}"
+                              th:x-ref="${chapter.id}">
                             <a class="flex-grow flex flex-nowrap items-center gap-4"
-                               th:href="@{/comic/{id}/chapter/{i}(id=${comic.id}, i=${chapter.index})}">
-                                <span class="flex-grow"
-                                      th:text="'Chapter ' + ${chapter.index + 1} + ' - ' + ${chapter.title}">
-                                Chapter [[${chapter.index}]] - [[${chapter.title}]]</span>
+                               th:href="@{/comic/{id}/chapter/{i}(id=${comic.id}, i=${i})}">
+                                <span class="flex-grow">
+                                    Chapter [[${i}]] [[${not #strings.isEmpty(chapters.get(i).title) ? ' - ' + chapters.get(i).title : ''}]]
+                                </span>
                                 <span>[[${chapter.id.timestamp}]]</span>
                             </a>
                             <span class="gap-2">
@@ -300,10 +309,10 @@
         </label>
     </div>
     <script th:inline="javascript">
-        const API_URL = /*[[@{/history/toggle}]]*/ '/history/toggle/';
+        const API_URL = /*[[@{/history/toggle}]]*/ '/history/toggle';
 
         async function toggleReadStatus(chapterId) {
-            let response = await fetch(API_URL + chapterId, {credentials: 'include'});
+            let response = await fetch(API_URL + '/' + chapterId, {credentials: 'include'});
             let status = response.status;
             switch (status) {
                 case 200:

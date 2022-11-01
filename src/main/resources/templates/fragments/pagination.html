@@ -1,6 +1,7 @@
 
 <div class="flex flex-row gap-4"
      th:fragment="pagination(page)"
+     th:if="${page.totalPages > 1}"
      th:with="
      urlBuilder = ${T(org.springframework.web.servlet.support.ServletUriComponentsBuilder).fromCurrentRequest()},
      current = ${page.getNumber()},

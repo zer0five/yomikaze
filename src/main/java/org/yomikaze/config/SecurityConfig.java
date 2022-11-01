@@ -40,11 +40,6 @@ public class SecurityConfig {
                 .sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED)
                 .sessionFixation().migrateSession()
             )
-            .formLogin(form -> form
-                .loginPage("/login")
-                .failureUrl("/login?failure")
-                .defaultSuccessUrl("/")
-            )
             .rememberMe(rememberMe -> rememberMe
                 .tokenValiditySeconds(60 * 3600 * 24 * 7)
                 .userDetailsService(userDetailsService)

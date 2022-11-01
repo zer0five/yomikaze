@@ -26,10 +26,10 @@ spring:
     mode: HTML
     encoding: UTF-8
   mail:
-    host: ${MAIL_HOST:smtp.gmail.com}
+    host: ${MAIL_HOST:smtp.yomikaze.org}
     port: ${MAIL_PORT:587}
-    username: ${EMAIL_USERNAME:noreply@yomikaze.org}
-    password: ${EMAIL_PASSWORD:SuperSecurePassword}
+    username: ${MAIL_USERNAME:noreply@yomikaze.org}
+    password: ${MAIL_PASSWORD:yomikaze}
     properties:
       mail:
         smtp:

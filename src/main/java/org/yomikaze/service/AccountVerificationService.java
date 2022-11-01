@@ -16,6 +16,7 @@ import org.yomikaze.persistence.repository.AccountRepository;
 import org.yomikaze.snowflake.Snowflake;
 
 import javax.mail.MessagingException;
+import javax.persistence.EntityNotFoundException;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.Locale;
@@ -78,19 +79,24 @@ public class AccountVerificationService {
         }
     }
 
-    public boolean verifyAccount(String token) {
+    public void verifyAccount(String token) {
         Jwt jwt;
         try {
             jwt = jwtDecoder.decode(token);
+        } catch (JwtValidationException e) {
+            throw new IllegalArgumentException("Expired token", e);
         } catch (JwtException e) {
-            return false;
+            throw new IllegalArgumentException("Invalid token", e);
         }
         Snowflake id = Snowflake.of(jwt.getId());
-        Account account = accountRepository.findById(id).orElse(null);
-        if (account == null) return false;
-        if (account.isVerified()) return false;
+        Account account = accountRepository.findById(id).orElseThrow(EntityNotFoundException::new);
+        log.info("Verifying account {}", account);
+        if (account.isVerified()) {
+            log.info("Account {} already verified", account);
+            return;
+        }
         account.setVerified(true);
         accountRepository.save(account);
-        return true;
+        log.info("Account {} verified", account);
     }
 }

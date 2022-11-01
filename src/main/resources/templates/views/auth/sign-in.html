@@ -4,9 +4,9 @@
 <head>
     <title th:fragment="page-title">sign-in</title>
 </head>
-<body>
+<body th:fragment="content">
 
-<div class="hero text-base-content min-h-screen bg-base-200" th:fragment="content">
+<div class="hero text-base-content min-h-screen">
     <div class="hero-content flex-col lg:flex-row-reverse">
         <div class="text-center lg:text-left lg:px-16">
             <h1 class="text-5xl font-bold">Sign In</h1>
@@ -14,29 +14,61 @@
                 Get signed-in to access member only features
             </p>
         </div>
-        <div class="card flex-shrink-0 w-full max-w-sm shadow-2xl bg-base-100">
-            <div class="bg-red-100 rounded-box border border-red-500 text-red-700 px-4 py-3 card-title relative"
-                 role="alert"
-                 th:if="${param.failure != null}">
-                <span class="block sm:inline" th:utext="#{authentication.login.unknown}"></span>
-            </div>
-            <form class="card-body" method="POST"
-                  x-data="{submit: false}" @submit="submit = true"
-                  th:action="@{/login}"
+        <!--/*@thymesVar id="signInForm" type="org.yomikaze.web.dto.SignInForm"*/-->
+        <form
+            @submit="submit = true"
+            class="card flex-shrink-0 w-full max-w-sm shadow-2xl bg-base-300" method="POST"
+            th:action="@{/login}"
+            th:object="${signInForm}"
+            x-data="{submit: false}">
+            <div
+                class="alert alert-error shadow-lg"
+                role="alert"
+                th:each="error : ${#fields.globalErrors()}"
+                th:if="${#fields.hasGlobalErrors()}"
+                x-data="{el: null}"
+                x-init="el = $el"
             >
+
+                <i aria-hidden="true" data-feather="alert-circle"></i>
+                <!--/*@thymesVar id="error" type="java.lang.String"*/-->
+                <span class="text-sm" th:text="${error}"></span>
+                <div class="flex-none">
+                    <button @click="el.remove()" aria-label="dismiss" class="btn btn-sm btn-ghost"
+                            type="button">
+                        <i aria-hidden="true" data-feather="x"></i>
+                    </button>
+                </div>
+
+            </div>
+            <div class="card-body">
                 <div class="form-control">
                     <label class="label" for="username">
-                        <span class="label-text">Username or Email</span>
+                        <span class="label-text">Username</span>
                     </label>
-                    <input class="input input-bordered" id="username" name="username" placeholder="Username or Email"
-                           required type="text"/>
+                    <input class="input input-bordered" id="username" placeholder="Username"
+                           required
+                           th:errorclass="input-error" th:field="*{username}" type="text"/>
+                    <span class="label text-sm text-error"
+                          th:if="${#fields.hasErrors('username')}"
+                          th:text="${#messages.msgOrNull(#fields.errors('username'))}">
+                        Account with this username already exists.
+                    </span>
                 </div>
                 <div class="form-control">
                     <label class="label" for="password">
                         <span class="label-text">Password</span>
                     </label>
-                    <input class="input input-bordered" id="password" name="password" placeholder="Password"
-                           required type="password"/>
+                    <input class="input input-bordered" id="password" placeholder="Password"
+                           required
+                           th:errorclass="input-error" th:field="*{password}" type="password"/>
+                    <!--/*@thymesVar id="error" type="java.lang.String"*/-->
+                    <span class="label text-sm text-error"
+                          th:each="error : ${#fields.errors('password')}"
+                          th:if="${#fields.hasErrors('password')}"
+                          th:text="${error}">
+                        Password mismatch.
+                    </span>
                 </div>
                 <div class="form-control">
                     <label class="label cursor-pointer">
@@ -50,8 +82,24 @@
                         <span x-text="submit ? 'Signing In...' : 'Sign In'">Sign In</span>
                     </button>
                 </div>
-            </form>
-        </div>
+
+                <div class="w-full text-sm py-2 gap-2">
+                    <p class="float-right">
+                        Don't have an account?
+                        <a class="link link-accent" href="/sign-up" th:href="@{/sign-up}">
+                            Sign Up
+                        </a>
+                    </p>
+                    <p class="float-right">
+                        Don't remember your password?
+                        <a class="link link-accent" href="/forgot-password"
+                           th:href="@{/account/password/reset}">
+                            Reset Password
+                        </a>
+                    </p>
+                </div>
+            </div>
+        </form>
     </div>
 </div>
 

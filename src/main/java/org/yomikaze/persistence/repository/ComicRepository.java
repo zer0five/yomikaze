@@ -5,6 +5,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.stereotype.Repository;
+import org.yomikaze.persistence.entity.Account;
 import org.yomikaze.persistence.entity.Comic;
 import org.yomikaze.persistence.entity.Genre;
 import org.yomikaze.snowflake.Snowflake;
@@ -73,4 +74,6 @@ public interface ComicRepository extends CrudRepository<Comic, Snowflake> {
     Page<Comic> findByNameStartingWithIgnoreCase(String name, Pageable pageable);
 
     Page<Comic> findByGenresContaining(Genre genre, Pageable pageable);
+
+    Page<Comic> findByUploader(Account uploader, Pageable pageable);
 }

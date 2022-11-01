@@ -10,7 +10,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
 import org.yomikaze.persistence.entity.Account;
 import org.yomikaze.persistence.repository.AccountRepository;
-import org.yomikaze.web.dto.Registration;
+import org.yomikaze.web.dto.SignInForm;
+import org.yomikaze.web.dto.SignUpForm;
 
 @Service
 @RequiredArgsConstructor
@@ -20,26 +21,21 @@ public class AuthenticationService {
     private final AccountRepository accountRepository;
     private final AuthenticationManager authenticationManager;
 
-    public Account register(@Validated Registration registration) {
-        return register(registration, true);
-    }
-
-    public Account register(@Validated Registration registration, boolean autoLogin) {
-        final String username = registration.getUsername();
-        final String email = registration.getEmail();
-        final String rawPassword = registration.getPassword();
+    public Account register(@Validated SignUpForm signUpForm) {
+        final String username = signUpForm.getUsername();
+        final String email = signUpForm.getEmail();
+        final String rawPassword = signUpForm.getPassword();
         final String password = passwordEncoder.encode(rawPassword);
         Account account = new Account();
         account.setEmail(email);
         account.setUsername(username);
         account.setPassword(password);
         account = accountRepository.save(account);
-        if (autoLogin) login(username, rawPassword);
         return account;
     }
 
-    public void login(String username, String password) {
-        UsernamePasswordAuthenticationToken token = new UsernamePasswordAuthenticationToken(username, password);
+    public void login(SignInForm signInForm) {
+        UsernamePasswordAuthenticationToken token = new UsernamePasswordAuthenticationToken(signInForm.getUsername(), signInForm.getPassword());
         Authentication authentication = authenticationManager.authenticate(token);
         SecurityContextHolder.getContext().setAuthentication(authentication);
     }
