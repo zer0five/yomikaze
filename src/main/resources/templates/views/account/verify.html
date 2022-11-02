@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en" th:insert="layouts/default">
+<head>
+    <title th:fragment="page-title">account:verify</title>
+</head>
+<body th:fragment="content">
+<div class="hero text-base-content min-h-screen">
+    <div class="hero-content flex-col lg:flex-row-reverse">
+        <div class="text-center lg:text-left lg:px-16">
+            <h1 class="text-5xl font-bold">Account verification</h1>
+            <p class="py-6">
+                Verify your account to access member only features
+            </p>
+        </div>
+        <!--/*@thymesVar id="signInForm" type="org.yomikaze.web.dto.SignInForm"*/-->
+        <form
+            @submit="submit = true"
+            class="card flex-shrink-0 w-full max-w-sm shadow-2xl bg-base-300" method="GET"
+            th:action="@{/account/verify}"
+            th:object="${verifyForm}"
+            x-data="{submit: false}">
+            <div
+                class="alert alert-error shadow-lg"
+                role="alert"
+                th:each="error : ${#fields.globalErrors()}"
+                th:if="${#fields.hasGlobalErrors()}"
+                x-data="{el: null}"
+                x-init="el = $el"
+            >
+
+                <i aria-hidden="true" data-feather="alert-circle"></i>
+                <!--/*@thymesVar id="error" type="java.lang.String"*/-->
+                <span class="text-sm" th:text="${error}"></span>
+                <div class="flex-none">
+                    <button @click="el.remove()" aria-label="dismiss" class="btn btn-sm btn-ghost"
+                            type="button">
+                        <i aria-hidden="true" data-feather="x"></i>
+                    </button>
+                </div>
+
+            </div>
+            <div class="card-body">
+                <div class="form-control">
+                    <label class="label" for="token">
+                        <span class="label-text">Token</span>
+                    </label>
+                    <textarea class="input input-bordered" id="token" placeholder="Paste token here"
+                              required
+                              th:errorclass="input-error" th:field="*{token}" type="text">
+                    </textarea>
+                    <span class="label text-sm text-error"
+                          th:if="${#fields.hasErrors('token')}"
+                          th:text="${#messages.msgOrNull(#fields.errors('token'))}">
+                        Invalid token
+                    </span>
+                </div>
+                <div class="form-control">
+                    <button :class="{loading: submit}" :disabled="submit" class="btn btn-accent">
+                        <span x-text="submit ? 'Verifying...' : 'Verify'">Verify</span>
+                    </button>
+                </div>
+
+                <div class="w-full text-sm py-2 gap-2 float-right">
+                    <p>
+                        Token expired?
+                        <a class="link link-accent" href="/forgot-password"
+                           th:href="@{/account/verify/resend}">
+                            Resend
+                        </a>
+                    </p>
+                    <p>
+                        Don't have an account?
+                        <a class="link link-accent" href="/sign-up" th:href="@{/sign-up}">
+                            Sign Up
+                        </a>
+                    </p>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+</body>
+</html>

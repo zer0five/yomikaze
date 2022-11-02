@@ -20,7 +20,7 @@ public class AccountController {
             accountVerificationService.verifyAccount(token.get());
             return "redirect:/login?verified";
         }
-        return "views/auth/verify";
+        return "views/account/verify";
     }
 
     @GetMapping("/resend-verification")

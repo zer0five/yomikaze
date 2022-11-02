@@ -52,13 +52,11 @@ public class AccountVerificationService {
         ctx.setVariable("token", token);
         ctx.setVariable("account", account);
         ctx.setVariable("url", baseUrl + "/account/verify/" + token);
-        emailTemplateEngine.getTemplateResolvers().forEach(resolver -> log.info("Resolver: {}", resolver));
         final String htmlContent = emailTemplateEngine.process("verification", ctx);
         if (htmlContent.equals("verification")) {
             log.error("Template not found");
             return;
         }
-        log.info("Content: {}", htmlContent);
         final MimeMailMessage message = new MimeMailMessage(mailSender.createMimeMessage());
         MimeMessageHelper helper;
         try {

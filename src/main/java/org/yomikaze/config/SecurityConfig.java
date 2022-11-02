@@ -41,6 +41,8 @@ public class SecurityConfig {
                 .sessionFixation().migrateSession()
             )
             .rememberMe(rememberMe -> rememberMe
+                .key("yomikaze")
+                .rememberMeParameter("remember-me")
                 .tokenValiditySeconds(60 * 3600 * 24 * 7)
                 .userDetailsService(userDetailsService)
             )
