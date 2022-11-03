@@ -23,6 +23,7 @@
             x-data="{submit: false}">
             <div
                 class="alert alert-error shadow-lg"
+                id="errors"
                 role="alert"
                 th:each="error : ${#fields.globalErrors()}"
                 th:if="${#fields.hasGlobalErrors()}"
@@ -42,7 +43,7 @@
 
             </div>
             <div class="card-body">
-                <div class="form-control">
+                <div class="form-control" id="username-group">
                     <label class="label" for="username">
                         <span class="label-text">Username</span>
                     </label>
@@ -55,7 +56,7 @@
                         Account with this username already exists.
                     </span>
                 </div>
-                <div class="form-control">
+                <div class="form-control" id="password-group">
                     <label class="label" for="password">
                         <span class="label-text">Password</span>
                     </label>
@@ -78,19 +79,19 @@
                     </label>
                 </div>
                 <div class="form-control">
-                    <button :class="{loading: submit}" :disabled="submit" class="btn btn-accent">
+                    <button :class="{loading: submit}" :disabled="submit" class="btn btn-accent" id="submit"
+                            type="submit">
                         <span x-text="submit ? 'Signing In...' : 'Sign In'">Sign In</span>
                     </button>
                 </div>
-
-                <div class="w-full text-sm py-2 gap-2">
-                    <p class="float-right">
+                <div class="w-full text-sm py-2 gap-2 float-right">
+                    <p>
                         Don't have an account?
                         <a class="link link-accent" href="/sign-up" th:href="@{/sign-up}">
                             Sign Up
                         </a>
                     </p>
-                    <p class="float-right">
+                    <p>
                         Don't remember your password?
                         <a class="link link-accent" href="/forgot-password"
                            th:href="@{/account/password/reset}">

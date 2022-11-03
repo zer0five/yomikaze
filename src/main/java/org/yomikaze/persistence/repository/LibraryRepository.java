@@ -2,6 +2,7 @@ package org.yomikaze.persistence.repository;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.stereotype.Repository;
 import org.yomikaze.persistence.entity.Account;
@@ -21,5 +22,6 @@ public interface LibraryRepository extends CrudRepository<Library, Snowflake> {
 
     Optional<Library> findByAccountAndComic(Account account, Comic comic);
 
-    Optional<Library> findByAccountAndComic_Id(Account account, Snowflake comic_id);
+    @Query("select l from library l where l.account = ?1 and l.comic.id = ?2")
+    Optional<Library> findByAccountAndComic(Account account, Snowflake comicId);
 }

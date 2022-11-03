@@ -7,9 +7,9 @@
 <div class="hero text-base-content min-h-screen">
     <div class="hero-content flex-col lg:flex-row-reverse">
         <div class="text-center lg:text-left lg:px-16">
-            <h1 class="text-5xl font-bold">Account verification</h1>
+            <h1 class="text-5xl font-bold">Resend verification email</h1>
             <p class="py-6">
-                Verify your account to access member only features
+                Resend verification email to get new token
             </p>
         </div>
         <!--/*@thymesVar id="signInForm" type="org.yomikaze.web.dto.SignInForm"*/-->
@@ -17,7 +17,7 @@
             @submit="submit = true"
             class="card flex-shrink-0 w-full max-w-sm shadow-2xl bg-base-300" method="GET"
             th:action="@{/account/verify}"
-            th:object="${verifyForm}"
+            th:object="${resendForm}"
             x-data="{submit: false}">
             <div
                 class="alert alert-error shadow-lg"
@@ -41,34 +41,33 @@
             </div>
             <div class="card-body">
                 <div class="form-control">
-                    <label class="label" for="token">
-                        <span class="label-text">Token</span>
+                    <label class="label" for="email">
+                        <span class="label-text">Email</span>
                     </label>
-                    <textarea class="textarea textarea-bordered resize-none" id="token" placeholder="Paste token here"
-                              required
-                              rows="3"
-                              th:errorclass="textarea-error" th:field="*{token}" type="text">
-                    </textarea>
+                    <input class="textarea textarea-bordered resize-none"
+                           id="email" placeholder="Email"
+                           required
+                           th:errorclass="textarea-error" th:field="*{email}" type="text"/>
                     <span class="label text-sm text-error"
-                          th:each="error : ${#fields.errors('token')}"
-                          th:if="${#fields.hasErrors('token')}"
+                          th:each="error : ${#fields.errors('email')}"
+                          th:if="${#fields.hasErrors('email')}"
                           th:text="${#objects.nullSafe(#messages.msgOrNull(error), error)}"
                     >
-                        Invalid token
+                        Invalid email
                     </span>
                 </div>
                 <div class="form-control">
                     <button :class="{loading: submit}" :disabled="submit" class="btn btn-accent">
-                        <span x-text="submit ? 'Verifying...' : 'Verify'">Verify</span>
+                        <span x-text="submit ? 'Resending...' : 'Resend'">Resend</span>
                     </button>
                 </div>
 
                 <div class="w-full text-sm py-2 gap-2 float-right">
                     <p>
-                        Token expired?
+                        Already have token?
                         <a class="link link-accent" href="/account/verify/resend"
-                           th:href="@{/account/verify/resend}">
-                            Resend token
+                           th:href="@{/account/verify}">
+                            Verify
                         </a>
                     </p>
                     <p>

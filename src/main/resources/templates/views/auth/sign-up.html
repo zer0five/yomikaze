@@ -92,6 +92,27 @@
                         <span x-text="submit ? 'Signing Up...' : 'Sign Up'">Sign Up</span>
                     </button>
                 </div>
+                <div class="w-full text-sm py-2 gap-2 float-right">
+                    <p>
+                        Already have an account?
+                        <a class="link link-accent" href="/sign-up" th:href="@{/sign-in}">
+                            Sign In
+                        </a>
+                    </p>
+                    <p>
+                        Don't remember your password?
+                        <a class="link link-accent" href="/forgot-password"
+                           th:href="@{/account/password/reset}">
+                            Reset Password
+                        </a>
+                    </p>
+                    <p>
+                        Verify your account?
+                        <a class="link link-accent" href="/verify" th:href="@{/account/verify}">
+                            Verify Account
+                        </a>
+                    </p>
+                </div>
             </form>
         </div>
     </div>
