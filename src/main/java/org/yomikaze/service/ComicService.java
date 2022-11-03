@@ -76,7 +76,7 @@ public class ComicService {
     }
 
     public long countViews(Comic comic) {
-        return historyRepository.countAllByComicId(comic.getId());
+        return historyRepository.countAllByChapterComicId(comic.getId());
     }
 
     public long countInLibraries(Comic comic) {

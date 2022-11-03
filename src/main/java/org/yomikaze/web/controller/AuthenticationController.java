@@ -18,8 +18,8 @@ import org.yomikaze.persistence.entity.Account;
 import org.yomikaze.service.AccountService;
 import org.yomikaze.service.AuthenticationService;
 import org.yomikaze.service.RedirectService;
-import org.yomikaze.web.dto.SignInForm;
-import org.yomikaze.web.dto.SignUpForm;
+import org.yomikaze.web.dto.form.SignInForm;
+import org.yomikaze.web.dto.form.SignUpForm;
 
 import javax.servlet.http.HttpSession;
 import java.net.URI;

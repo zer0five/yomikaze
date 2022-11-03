@@ -1,4 +1,4 @@
-package org.yomikaze.web.dto;
+package org.yomikaze.web.dto.form;
 
 import lombok.Data;
 import org.hibernate.validator.constraints.Length;

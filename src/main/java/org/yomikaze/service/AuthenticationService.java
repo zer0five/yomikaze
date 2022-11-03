@@ -10,8 +10,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
 import org.yomikaze.persistence.entity.Account;
 import org.yomikaze.persistence.repository.AccountRepository;
-import org.yomikaze.web.dto.SignInForm;
-import org.yomikaze.web.dto.SignUpForm;
+import org.yomikaze.web.dto.form.SignInForm;
+import org.yomikaze.web.dto.form.SignUpForm;
 
 @Service
 @RequiredArgsConstructor

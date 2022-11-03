@@ -39,9 +39,19 @@ public class AccountService {
     @Value("#{T(java.time.Duration).parse('PT${yomikaze.account.verification.expire:24h}')}")
     private Duration tokenDuration = Duration.ofHours(24);
 
-    private String generateToken(Account account) {
+    private String generateVerifyToken(Account account) {
         JwtClaimsSet claims = JwtClaimsSet.builder()
             .expiresAt(Instant.now().plus(tokenDuration))
+            .subject("verify")
+            .id(account.getId().toString())
+            .build();
+        return jwtEncoder.encode(JwtEncoderParameters.from(claims)).getTokenValue();
+    }
+
+    private String generateResetToken(Account account) {
+        JwtClaimsSet claims = JwtClaimsSet.builder()
+            .expiresAt(Instant.now().plus(tokenDuration))
+            .subject("reset")
             .id(account.getId().toString())
             .build();
         return jwtEncoder.encode(JwtEncoderParameters.from(claims)).getTokenValue();
@@ -49,7 +59,7 @@ public class AccountService {
 
     public void sendVerificationEmail(Account account) {
         log.info("Verification for {}", account.getEmail());
-        String token = generateToken(account);
+        String token = generateVerifyToken(account);
         log.info("Generated token {}", token);
 
         final Context ctx = new Context(Locale.US);
@@ -60,13 +70,35 @@ public class AccountService {
         builder.queryParam("token", token);
         final URI verifyUrl = builder.build().toUri();
         ctx.setVariable("url", verifyUrl);
-        final String content = emailTemplateEngine.process("verification", ctx);
+
+        sendMail(ctx, "verification", "Yomikaze Account Verification", account);
+    }
+
+    public void sendResetEmail(Account account) {
+        log.info("Reset for {}", account.getEmail());
+        String token = generateResetToken(account);
+        log.info("Generated token {}", token);
+
+        final Context ctx = new Context(Locale.US);
+        ctx.setVariable("token", token);
+        ctx.setVariable("account", account);
+        UriComponentsBuilder builder = UriComponentsBuilder.fromUriString(baseUrl);
+        builder.path("/account/reset");
+        builder.queryParam("token", token);
+        final URI verifyUrl = builder.build().toUri();
+        ctx.setVariable("url", verifyUrl);
+
+        sendMail(ctx, "reset-password", "Yomikaze Reset Password", account);
+    }
+
+    private void sendMail(Context ctx, String template, String subject, Account account) {
+        final String content = emailTemplateEngine.process(template, ctx);
         final MimeMailMessage message = new MimeMailMessage(mailSender.createMimeMessage());
         MimeMessageHelper helper;
         try {
             helper = new MimeMessageHelper(message.getMimeMessage(), true);
             helper.setTo(account.getEmail());
-            helper.setSubject("Account Verification");
+            helper.setSubject(subject);
             helper.setText(content, true);
         } catch (MessagingException e) {
             throw new IllegalStateException("Failed to create email message", e);
@@ -77,7 +109,7 @@ public class AccountService {
         } catch (MailAuthenticationException e) {
             log.error("Authentication failed for email account: {}", e.getMessage());
         } catch (Exception e) {
-            log.error("Failed to send verification email", e);
+            log.error("Failed to send email", e);
         }
     }
 
@@ -85,6 +117,9 @@ public class AccountService {
         Jwt jwt;
         try {
             jwt = jwtDecoder.decode(token);
+            if (!jwt.getSubject().equals("verify")) {
+                throw new IllegalArgumentException("Invalid token");
+            }
         } catch (JwtValidationException e) {
             throw new AccountExpiredException("Expired token", e);
         } catch (JwtException e) {
@@ -101,5 +136,26 @@ public class AccountService {
         account.setVerified(true);
         accountRepository.save(account);
         log.info("Account {} verified", account);
+    }
+
+    public void resetPassword(String token, String password) {
+        Jwt jwt;
+        try {
+            jwt = jwtDecoder.decode(token);
+            if (!jwt.getSubject().equals("reset")) {
+                throw new IllegalArgumentException("Invalid token");
+            }
+        } catch (JwtValidationException e) {
+            throw new AccountExpiredException("Expired token", e);
+        } catch (JwtException e) {
+            throw new IllegalArgumentException("Invalid token", e);
+        }
+        Snowflake id = Snowflake.of(jwt.getId());
+        log.info("Resetting password for account with id {}", id);
+        Account account = accountRepository.findById(id).orElseThrow(EntityNotFoundException::new);
+        log.info("Resetting password for account {}", account);
+        account.setPassword(password);
+        accountRepository.save(account);
+        log.info("Password for account {} reset", account);
     }
 }

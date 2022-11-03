@@ -13,7 +13,7 @@
             </p>
         </div>
         <div class="card flex-shrink-0 w-full max-w-sm shadow-2xl bg-base-300">
-            <!--/*@thymesVar id="signUpForm" type="org.yomikaze.web.dto.SignUpForm"*/-->
+            <!--/*@thymesVar id="signUpForm" type="org.yomikaze.web.dto.form.SignUpForm"*/-->
             <form @submit="submit = true" action="/sign-up" class="card-body" method="POST" th:action="@{/sign-up}"
                   th:object="${signUpForm}"
                   x-data="{submit: false}">
