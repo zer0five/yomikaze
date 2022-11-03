@@ -2,53 +2,50 @@ package org.yomikaze.web.controller;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.access.prepost.PostAuthorize;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.servlet.ModelAndView;
 import org.yomikaze.persistence.entity.Account;
 import org.yomikaze.persistence.entity.Request;
+import org.yomikaze.persistence.entity.Role;
 import org.yomikaze.persistence.repository.AccountRepository;
 import org.yomikaze.persistence.repository.RequestRepository;
+import org.yomikaze.persistence.repository.RoleRepository;
 import org.yomikaze.snowflake.Snowflake;
 
 import javax.persistence.EntityNotFoundException;
-import java.util.Optional;
 
 @Controller
 @RequiredArgsConstructor
 @RequestMapping("/request")
+@PreAuthorize("authentication != null && !anonymous")
 public class RequestController {
+    private final RoleRepository roleRepository;
     private final AccountRepository accountRepository;
     private final RequestRepository requestRepository;
 
     //for user
-    @PreAuthorize("authentication != null && isAuthenticated()")
     @PostAuthorize("hasAuthority('request.create.uploader')")
     @GetMapping({"", "/"})
-    public ModelAndView request(ModelAndView modelAndView, Authentication authentication, Optional<Integer> page, Optional<Integer> size) {
-        Account account = accountRepository.findByUsername(authentication.getName()).orElseThrow(() -> new UsernameNotFoundException("User not found!"));
-        modelAndView.setViewName("request-uploader-page");
-        Pageable pageable = PageRequest.of(page.orElse(1) - 1, 5);
+    public String request(Pageable pageable, Model model, Authentication authentication) {
+        Account account = (Account) authentication.getPrincipal();
         Page<Request> requests = requestRepository.findAllByRequester(account, pageable);
-        modelAndView.addObject("requests", requests);
-        return modelAndView;
+        model.addAttribute("requests", requests);
+        return "views/request/request-uploader-page";
 
     }
 
-    @PreAuthorize("authentication != null && isAuthenticated()")
     @PostAuthorize("hasAuthority('request.create.uploader')")
     @PostMapping({"", "/"})
     public String request(String message, Authentication authentication) {
-        Account account = accountRepository.findByUsername(authentication.getName()).orElseThrow(() -> new UsernameNotFoundException("User not found!"));
+        Account account = (Account) authentication.getPrincipal();
         Request request = new Request();
         request.setRequester(account);
         request.setMessage(message);
@@ -57,31 +54,55 @@ public class RequestController {
         return "redirect:/request";
     }
 
-    @PreAuthorize("authentication != null && isAuthenticated()")
     @PostAuthorize("hasAuthority('request.cancel')")
-    @GetMapping("/delete/{id}")
-    public String delete(@PathVariable("id") String id, Authentication authentication) {
-        Account account = accountRepository.findByUsername(authentication.getName()).orElseThrow(() -> new UsernameNotFoundException("User not found!"));
-        Request request = requestRepository.findById(Snowflake.of(id)).orElseThrow(() -> new EntityNotFoundException("Request not found!"));
+    @GetMapping("/{id}/cancel")
+    public String delete(@PathVariable("id") Snowflake id, Authentication authentication) {
+        Account account = (Account) authentication.getPrincipal();
+        Request request = requestRepository.findById(id)
+            .orElseThrow(() -> new EntityNotFoundException("Request not found!"));
 
         if (request.getRequester().equals(account)) {
-            requestRepository.delete(request);
+            request.setApproved(false);
+            requestRepository.save(request);
         }
         return "redirect:/request";
     }
 
     //for admin
-    @PreAuthorize("authentication != null && isAuthenticated()")
-    @PostAuthorize("hasAuthority('request.create.uploader')")
-    @GetMapping({"/admin"})
-    public ModelAndView requestAdmin(ModelAndView modelAndView, Authentication authentication, Optional<Integer> page, Optional<Integer> size) {
-
-        modelAndView.setViewName("request-page-admin");
-        Pageable pageable = PageRequest.of(page.orElse(1) - 1, 5);
+    @PostAuthorize("hasAuthority('request.manage')")
+    @GetMapping({"/manage"})
+    public String requestAdmin(Pageable pageable, Model model) {
         Page<Request> requests = requestRepository.findAllByApprovedIsNull(pageable);
-        modelAndView.addObject("requests", requests);
-        return modelAndView;
+        model.addAttribute("requests", requests);
+        return "views/request/request-page-admin";
+    }
 
+    @PostAuthorize("hasAuthority('request.manage')")
+    @PostMapping({"/{id}/approve"})
+    public String approve(@PathVariable("id") Snowflake id, Authentication authentication) {
+        Account account = (Account) authentication.getPrincipal();
+        Request request = requestRepository.findById(id)
+            .orElseThrow(() -> new EntityNotFoundException("Request not found!"));
+        request.setApproved(true);
+        request.setApprovedBy(account);
+        requestRepository.save(request);
+        Account requester = request.getRequester();
+        Role uploader = roleRepository.findByName("Uploader").orElseThrow(() -> new EntityNotFoundException("Role not found!"));
+        requester.getRoles().add(uploader);
+        accountRepository.save(requester);
+        return "redirect:/request/manage";
+    }
+
+    @PostAuthorize("hasAuthority('request.manage')")
+    @PostMapping({"/{id}/reject"})
+    public String reject(@PathVariable("id") Snowflake id, Authentication authentication) {
+        Account account = (Account) authentication.getPrincipal();
+        Request request = requestRepository.findById(id)
+            .orElseThrow(() -> new EntityNotFoundException("Request not found!"));
+        request.setApproved(false);
+        request.setApprovedBy(account);
+        requestRepository.save(request);
+        return "redirect:/request/manage";
     }
 
 

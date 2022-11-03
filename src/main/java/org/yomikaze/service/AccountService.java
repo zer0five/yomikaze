@@ -7,8 +7,10 @@ import org.springframework.mail.MailAuthenticationException;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMailMessage;
 import org.springframework.mail.javamail.MimeMessageHelper;
+import org.springframework.security.authentication.AccountExpiredException;
 import org.springframework.security.oauth2.jwt.*;
 import org.springframework.stereotype.Service;
+import org.springframework.web.util.UriComponentsBuilder;
 import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.context.Context;
 import org.yomikaze.persistence.entity.Account;
@@ -17,6 +19,7 @@ import org.yomikaze.snowflake.Snowflake;
 
 import javax.mail.MessagingException;
 import javax.persistence.EntityNotFoundException;
+import java.net.URI;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.Locale;
@@ -24,7 +27,7 @@ import java.util.Locale;
 @Slf4j
 @Service
 @RequiredArgsConstructor
-public class AccountVerificationService {
+public class AccountService {
     private final JwtEncoder jwtEncoder;
     private final JwtDecoder jwtDecoder;
     private final AccountRepository accountRepository;
@@ -48,22 +51,23 @@ public class AccountVerificationService {
         log.info("Verification for {}", account.getEmail());
         String token = generateToken(account);
         log.info("Generated token {}", token);
+
         final Context ctx = new Context(Locale.US);
         ctx.setVariable("token", token);
         ctx.setVariable("account", account);
-        ctx.setVariable("url", baseUrl + "/account/verify/" + token);
-        final String htmlContent = emailTemplateEngine.process("verification", ctx);
-        if (htmlContent.equals("verification")) {
-            log.error("Template not found");
-            return;
-        }
+        UriComponentsBuilder builder = UriComponentsBuilder.fromUriString(baseUrl);
+        builder.path("/account/verify");
+        builder.queryParam("token", token);
+        final URI verifyUrl = builder.build().toUri();
+        ctx.setVariable("url", verifyUrl);
+        final String content = emailTemplateEngine.process("verification", ctx);
         final MimeMailMessage message = new MimeMailMessage(mailSender.createMimeMessage());
         MimeMessageHelper helper;
         try {
             helper = new MimeMessageHelper(message.getMimeMessage(), true);
             helper.setTo(account.getEmail());
             helper.setSubject("Account Verification");
-            helper.setText(htmlContent, true);
+            helper.setText(content, true);
         } catch (MessagingException e) {
             throw new IllegalStateException("Failed to create email message", e);
         }
@@ -82,7 +86,7 @@ public class AccountVerificationService {
         try {
             jwt = jwtDecoder.decode(token);
         } catch (JwtValidationException e) {
-            throw new IllegalArgumentException("Expired token", e);
+            throw new AccountExpiredException("Expired token", e);
         } catch (JwtException e) {
             throw new IllegalArgumentException("Invalid token", e);
         }

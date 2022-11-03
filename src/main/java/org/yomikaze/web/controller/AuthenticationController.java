@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.yomikaze.persistence.entity.Account;
-import org.yomikaze.service.AccountVerificationService;
+import org.yomikaze.service.AccountService;
 import org.yomikaze.service.AuthenticationService;
 import org.yomikaze.service.RedirectService;
 import org.yomikaze.web.dto.SignInForm;
@@ -33,7 +33,7 @@ import java.util.Optional;
 public class AuthenticationController {
     private final AuthenticationService authenticationService;
     private final RedirectService redirectService;
-    private final AccountVerificationService verificationService;
+    private final AccountService verificationService;
 
     @GetMapping({"/login", "/sign-in"})
     public String login(@ModelAttribute SignInForm signInForm,
