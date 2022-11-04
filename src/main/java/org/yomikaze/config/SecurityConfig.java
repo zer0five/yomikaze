@@ -48,7 +48,7 @@ public class SecurityConfig {
             )
             .logout(logout -> logout
                 .logoutUrl("/logout")
-                .logoutRequestMatcher(new AntPathRequestMatcher("/logout", "POST"))
+                .logoutRequestMatcher(new AntPathRequestMatcher("/logout"))
                 .deleteCookies("YOMIKAZE_SESSION", "token", "JSESSIONID", "remember-me")
                 .clearAuthentication(true)
                 .invalidateHttpSession(true)
