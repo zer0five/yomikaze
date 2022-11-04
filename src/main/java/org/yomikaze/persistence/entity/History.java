@@ -32,8 +32,8 @@ public class History {
     private Instant readAt;
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    @OnDelete(action = OnDeleteAction.CASCADE)
-    @JoinColumn(name = "account", nullable = false)
+    @OnDelete(action = OnDeleteAction.NO_ACTION)
+    @JoinColumn(name = "account")
     @ToString.Exclude
     private Account account;
 

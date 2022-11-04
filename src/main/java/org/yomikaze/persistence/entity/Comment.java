@@ -34,7 +34,7 @@ public class Comment {
     private Account account;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "chapter", nullable = false)
+    @JoinColumn(name = "chapter")
     @ToString.Exclude
     private Chapter chapter;
 

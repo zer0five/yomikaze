@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en" th:insert="layouts/dashboard">
+<head>
+    <title th:fragment="page-title">genre::create</title>
+</head>
+<body>
+<div th:fragment="content">
+    <!--/*@thymesVar id="genreForm" type="org.yomikaze.web.dto.form.GenreForm"*/-->
+    <form
+        @submit="submit = true"
+        class="card flex-shrink-0 w-full max-w-sm shadow-2xl bg-base-300" method="POST"
+        th:action="@{/genre/{action}(action=${action})}"
+        th:object="${genreForm}"
+        x-data="{submit: false}">
+        <div
+            class="alert alert-error shadow-lg"
+            id="errors"
+            role="alert"
+            th:each="error : ${#fields.globalErrors()}"
+            th:if="${#fields.hasGlobalErrors()}"
+            x-data="{el: null}"
+            x-init="el = $el"
+        >
+
+            <i aria-hidden="true" data-feather="alert-circle"></i>
+            <!--/*@thymesVar id="error" type="java.lang.String"*/-->
+            <span class="text-sm" th:text="${error}"></span>
+            <div class="flex-none">
+                <button @click="el.remove()" aria-label="dismiss" class="btn btn-sm btn-ghost"
+                        type="button">
+                    <i aria-hidden="true" data-feather="x"></i>
+                </button>
+            </div>
+
+        </div>
+        <div class="card-body">
+            <div class="form-control" id="username-group">
+                <label class="label" for="genre">
+                    <span class="label-text">Genre name</span>
+                </label>
+                <input class="input input-bordered" id="genre" placeholder="Genre"
+                       required
+                       th:errorclass="input-error" th:field="${genreForm.name}" type="text"/>
+                <!--/*@thymesVar id="error" type="java.lang.String"*/-->
+                <span class="label text-sm text-error"
+                      th:each="error : ${#fields.errors('name')}"
+                      th:if="${#fields.hasErrors('name')}"
+                      th:text="${error}">
+                            Invalid genre name
+                    </span>
+            </div>
+            <div class="form-control" id="password-group">
+                <label class="label" for="description">
+                    <span class="label-text">Description</span>
+                </label>
+                <textarea class="input input-bordered" id="description" placeholder="Write description here..."
+                          rows="2"
+                          th:errorclass="input-error" th:field="${genreForm.description}"></textarea>
+                <!--/*@thymesVar id="error" type="java.lang.String"*/-->
+                <span class="label text-sm text-error"
+                      th:each="error : ${#fields.errors('description')}"
+                      th:if="${#fields.hasErrors('description')}"
+                      th:text="${error}">
+                            Invalid description
+                    </span>
+            </div>
+            <div class="form-control">
+                <button :class="{loading: submit}" :disabled="submit" class="btn btn-accent" id="submit"
+                        type="submit">
+                    <span x-text="submit ? 'Creating...' : 'Create'">Create</span>
+                </button>
+            </div>
+        </div>
+    </form>
+</div>
+
+</body>
+</html>

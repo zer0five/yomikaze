@@ -110,6 +110,10 @@ public class RolePermissionConfig implements ApplicationListener<ContextRefreshe
 
         String admin = "Admin";
         List<Permission> adminPermissions = Arrays.asList(
+            createPermissionIfNotFound("genre.manage"),
+            createPermissionIfNotFound("genre.create"),
+            createPermissionIfNotFound("genre.edit"),
+            createPermissionIfNotFound("genre.delete"),
             createPermissionIfNotFound("request.manage"),
             createPermissionIfNotFound("request.approve"),
             createPermissionIfNotFound("request.approve.all"),

@@ -6,8 +6,11 @@
 <body th:fragment="content">
 <link rel="stylesheet" th:href="@{/asset/css/datatables.min.css}" type="text/css"/>
 <div class="text-base-content">
-    <a class="btn btn-primary btn-sm my-6" th:href="@{/comic/create}">Create new comic</a>
-    <table class="table" id="comics">
+    <a class="btn btn-primary btn-sm my-6 gap-2" th:href="@{/genre/create}">
+        <i data-feather="plus"></i>
+        <span class="text-sm">Create new genre</span>
+    </a>
+    <table class="table" id="genres">
         <thead>
         <tr>
             <th>Genre</th>
@@ -16,27 +19,32 @@
         </tr>
         </thead>
         <tbody>
-        <!--/*@thymesVar id="comic" type="org.yomikaze.persistence.entity.Comic"*/-->
+        <!--/*@thymesVar id="genre" type="org.yomikaze.persistence.entity.Genre"*/-->
         <tr th:each="genre : ${genres}">
             <td>
                 <span class="text-xl">
-                    <a th:href="@{/comic/genre/{id}(id=${genre.id})}" th:text="${genre.name}">name</a>
+                    <a th:href="@{/comic/search/(genre=${genre.id})}" th:text="${genre.name}">name</a>
                 </span>
             </td>
             <td>
                 <span th:text="${genre.description}">description</span>
             </td>
             <td>
-                <button class="btn btn-sm btn-primary" th:href="@{/comic/{id}/detail(id=${comic.id})}">Detail</button>
-                <button class="btn btn-sm btn-warning" th:href="@{/comic/{id}/edit(id=${comic.id})}">Edit</button>
-                <button class="btn btn-sm btn-error" th:href="@{/comic/{id}/delete(id=${comic.id})}">delete</button>
+                <a class="btn btn-sm btn-warning gap-2" th:href="@{/genre/{id}/edit(id=${genre.id})}">
+                    <i data-feather="edit"></i>
+                    <span class="text-sm">Edit</span>
+                </a>
+                <a class="btn btn-sm btn-error gap-2" th:href="@{/genre/{id}/delete(id=${genre.id})}">
+                    <i data-feather="trash"></i>
+                    <span class="text-sm">Delete</span>
+                </a>
             </td>
         </tr>
         </tbody>
         <tfoot>
         <tr>
-            <th>Comic</th>
-            <th>Last Updated</th>
+            <th>Genre</th>
+            <th>Description</th>
             <th>Actions</th>
         </tr>
         </tfoot>
@@ -227,7 +235,7 @@
     }));
 </script>
 <script th:inline="javascript">
-    $(document).ready(() => $('#comics').DataTable());
+    $(document).ready(() => $('#genres').DataTable());
 </script>
 </body>
 </html>

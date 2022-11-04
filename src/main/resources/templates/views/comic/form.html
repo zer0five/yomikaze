@@ -90,7 +90,7 @@
                             <label class="label" for="aliases">
                                 <span class="label-text">Comic aliases</span>
                             </label>
-                            <textarea class="input h-24 input-bordered"
+                            <textarea class="textarea h-24 textarea-bordered"
                                       id="aliases"
                                       placeholder="Comic aliases, one per line"
                                       th:errorclass="input-error" th:field="*{aliases}">
@@ -105,7 +105,7 @@
                             <label class="label" for="description">
                                 <span class="label-text">Comic description</span>
                             </label>
-                            <textarea class="input h-24 input-bordered"
+                            <textarea class="textarea h-24 textarea-bordered"
                                       id="description"
                                       placeholder="Write description here"
                                       th:errorclass="input-error" th:field="*{description}">
@@ -122,7 +122,7 @@
             <hr/>
             <fieldset>
                 <legend class="text-center">Genres</legend>
-                <div class="grid grid-cols-4 gap-4">
+                <div class=" grid grid-cols-4 gap-4">
                     <div class="inline"
                          th:each="genre : ${@genreRepository.findAll()}"
                          th:object="${genre}">
