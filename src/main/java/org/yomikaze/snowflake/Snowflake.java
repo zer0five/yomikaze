@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonGetter;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import org.jetbrains.annotations.NotNull;
+import org.springframework.format.annotation.DateTimeFormat;
 
 import java.io.Serializable;
 import java.util.Date;
@@ -55,6 +56,7 @@ public class Snowflake implements Serializable, Comparable<Snowflake> {
 
     @JsonGetter
     @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss.SSSXXX")
+    @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
     public Date getTimestamp() {
         return new Date(((this.id & SnowflakeFactory.TIMESTAMP_MASK) >> SnowflakeFactory.TIMESTAMP_SHIFT) + SnowflakeFactory.EPOCH);
     }

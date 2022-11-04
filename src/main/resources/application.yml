@@ -1,3 +1,8 @@
+yomikaze:
+  account:
+    verification:
+      expire: ${VERIFICATION_TOKEN_DURATION:5m}
+
 spring:
   profiles:
     active: default,${SPRING_PROFILE:dev}
@@ -42,26 +47,26 @@ server:
   compression:
     enabled: true
     mime-types:
-    - text/html
-    - text/xml
-    - text/plain
-    - text/css
-    - text/javascript
-    - application/javascript
-    - application/json
-    - image/svg+xml
-    - image/png
-    - image/jpeg
-    - image/gif
-    - image/webp
-    - font/ttf
-    - font/otf
-    - font/woff
-    - font/woff2
-    - application/x-font-ttf
-    - application/x-font-otf
-    - application/x-font-woff
-    - application/x-font-woff2
+      - text/html
+      - text/xml
+      - text/plain
+      - text/css
+      - text/javascript
+      - application/javascript
+      - application/json
+      - image/svg+xml
+      - image/png
+      - image/jpeg
+      - image/gif
+      - image/webp
+      - font/ttf
+      - font/otf
+      - font/woff
+      - font/woff2
+      - application/x-font-ttf
+      - application/x-font-otf
+      - application/x-font-woff
+      - application/x-font-woff2
 
 logging:
   level:

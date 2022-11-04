@@ -19,11 +19,6 @@ import java.util.concurrent.TimeUnit;
 public class MvcConfig implements WebMvcConfigurer {
 
     @Override
-    public void addViewControllers(ViewControllerRegistry registry) {
-        registry.addViewController("/layouts/dashboard").setViewName("layouts/dashboard");
-    }
-
-    @Override
     public void configureDefaultServletHandling(final DefaultServletHandlerConfigurer configurer) {
         configurer.enable();
     }
@@ -31,7 +26,7 @@ public class MvcConfig implements WebMvcConfigurer {
     @Override
     public void addResourceHandlers(final ResourceHandlerRegistry registry) {
         registry.addResourceHandler("/**")
-            .addResourceLocations("classpath:/static/")
+            .addResourceLocations("classpath:/static/", "./static/")
             .setUseLastModified(true)
             .setOptimizeLocations(true)
             .setCacheControl(CacheControl.maxAge(365, TimeUnit.DAYS));

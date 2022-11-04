@@ -55,6 +55,10 @@ public class SecurityConfig {
                 .logoutSuccessUrl("/login")
             )
             .exceptionHandling(exceptions -> exceptions
+                .authenticationEntryPoint((request, response, authException) -> {
+                    log.warn("Authentication failed: {}", authException.getMessage());
+                    response.sendRedirect("/login");
+                })
                 .accessDeniedPage("/access-denied.html")
             )
             .build();

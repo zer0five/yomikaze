@@ -10,9 +10,9 @@ import org.yomikaze.persistence.entity.Page;
 import org.yomikaze.persistence.repository.*;
 import org.yomikaze.snowflake.Snowflake;
 import org.yomikaze.web.dto.comic.ComicDetailModel;
-import org.yomikaze.web.dto.comic.ComicInputModel;
+import org.yomikaze.web.dto.comic.ComicForm;
 import org.yomikaze.web.dto.comic.GenreModel;
-import org.yomikaze.web.dto.comic.chapter.ChapterInputModel;
+import org.yomikaze.web.dto.comic.chapter.ChapterForm;
 import org.yomikaze.web.dto.comic.chapter.ChapterModel;
 
 import javax.persistence.EntityNotFoundException;
@@ -49,12 +49,12 @@ public class ComicService {
         return slug.toLowerCase(Locale.ENGLISH);
     }
 
-    public Comic createComic(ComicInputModel comic, MultipartFile thumbnail, Account uploader) {
+    public Comic createComic(ComicForm comic, MultipartFile thumbnail, Account uploader) {
         Comic comicEntity = new Comic();
         comicEntity.setName(comic.getName());
-        comicEntity.setAliases(comic.getListAliases());
+        comicEntity.setAliases(comic.getAliasList());
         comicEntity.setDescription(comic.getDescription());
-        comicEntity.setAuthors(comic.getListAuthors());
+        comicEntity.setAuthors(comic.getAuthorList());
         comicEntity.setPublished(comic.getPublished());
         comicEntity.setFinished(comic.getFinished());
         comicEntity.setGenres(genreRepository.findAllByIdIn(comic.getGenres()));
@@ -117,7 +117,7 @@ public class ComicService {
         return model;
     }
 
-    public void addChapter(ComicDetailModel comic, ChapterInputModel chapter) {
+    public void addChapter(ComicDetailModel comic, ChapterForm chapter) {
         Comic comicEntity = comicRepository.findById(comic.getId()).orElseThrow(EntityNotFoundException::new);
         Chapter chapterEntity = new Chapter(comicEntity);
         chapterEntity.setTitle(chapter.getTitle());
@@ -130,12 +130,12 @@ public class ComicService {
         comicRepository.save(comicEntity);
     }
 
-    public Comic updateComic(Snowflake id, ComicInputModel comic, MultipartFile thumbnail) {
+    public Comic updateComic(Snowflake id, ComicForm comic, MultipartFile thumbnail) {
         Comic comicEntity = comicRepository.findById(id).orElseThrow(EntityNotFoundException::new);
         comicEntity.setName(comic.getName());
-        comicEntity.setAliases(comic.getListAliases());
+        comicEntity.setAliases(comic.getAliasList());
         comicEntity.setDescription(comic.getDescription());
-        comicEntity.setAuthors(comic.getListAuthors());
+        comicEntity.setAuthors(comic.getAuthorList());
         comicEntity.setPublished(comic.getPublished());
         comicEntity.setFinished(comic.getFinished());
         comicEntity.setGenres(genreRepository.findAllByIdIn(comic.getGenres()));
