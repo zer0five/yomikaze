@@ -1,4 +1,4 @@
-package org.yomikaze.web.dto;
+package org.yomikaze.web.dto.form;
 
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -13,7 +13,7 @@ import java.util.Objects;
 
 @Data
 @NoArgsConstructor
-public class Registration {
+public class SignUpForm {
 
     @NotBlank(message = "registration.username.blank")
     @Length(min = 3, max = 32, message = "registration.username.invalid.length")
@@ -34,7 +34,7 @@ public class Registration {
     private String passwordConfirmation;
 
     @AssertTrue(message = "registration.password.confirmation.mismatch")
-    @SuppressWarnings("unused")
+    @SuppressWarnings("unused") // used by @AssertTrue
     public boolean isPasswordConfirmationValid() {
         return Objects.equals(password, passwordConfirmation);
     }

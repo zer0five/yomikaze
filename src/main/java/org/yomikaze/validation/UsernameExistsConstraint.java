@@ -1,12 +1,12 @@
 package org.yomikaze.validation;
 import javax.validation.Constraint;
 import java.lang.annotation.*;
-@Target({ElementType.FIELD})
+@Target({ElementType.FIELD, ElementType.PARAMETER})
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
 @Constraint(validatedBy = UsernameExistsConstraintValidator.class)
 public @interface UsernameExistsConstraint {
-    String message() default "Username already exists";
+    String message() default "Username does not exist";
 
     Class<?>[] groups() default {};
 

@@ -4,7 +4,7 @@
     <title th:fragment="page-title">sign-up</title>
 </head>
 <body>
-<div class="hero min-h-screen bg-base-200" th:fragment="content">
+<div class="hero min-h-screen" th:fragment="content">
     <div class="hero-content flex-col lg:flex-row-reverse">
         <div class="text-center lg:text-left lg:px-16">
             <h1 class="text-5xl font-bold">Sign up now!</h1>
@@ -12,20 +12,22 @@
                 Sign-up an account to get access member only features.
             </p>
         </div>
-        <div class="card flex-shrink-0 w-full max-w-sm shadow-2xl bg-base-100">
-            <!--/*@thymesVar id="registration" type="org.yomikaze.web.dto.Registration"*/-->
-            <form x-data="{submit: false}" @submit="submit = true" class="card-body" method="POST" action ="/sign-up"
-                  th:action="@{/sign-up}"
-                  th:object="${registration}">
+        <div class="card flex-shrink-0 w-full max-w-sm shadow-2xl bg-base-300">
+            <!--/*@thymesVar id="signUpForm" type="org.yomikaze.web.dto.form.SignUpForm"*/-->
+            <form @submit="submit = true" action="/sign-up" class="card-body" method="POST" th:action="@{/sign-up}"
+                  th:object="${signUpForm}"
+                  x-data="{submit: false}">
                 <div class="form-control">
                     <label class="label" for="username">
                         <span class="label-text">Username</span>
                     </label>
-                    <input type="text" id="username" class="input input-bordered" placeholder="Username"
-                           th:field="*{username}" th:errorclass="input-error"/>
+                    <input class="input input-bordered" id="username" placeholder="Username" required
+                           th:errorclass="input-error" th:field="*{username}"
+                           th:value="*{username}" type="text"/>
                     <span class="label text-error"
+                          th:each="error : ${#fields.errors('username')}"
                           th:if="${#fields.hasErrors('username')}"
-                          th:text="${#messages.msgOrNull(#fields.errors('username'))}">
+                          th:text="${#objects.nullSafe(#messages.msgOrNull(error), error)}">
                         Account with this username already exists.
                     </span>
                 </div>
@@ -33,11 +35,17 @@
                     <label class="label" for="email">
                         <span class="label-text">Email</span>
                     </label>
-                    <input type="email"  id="email" class="input input-bordered" placeholder="Email"
-                           th:field="*{email}" th:errorclass="input-error"/>
+                    <input class="input input-bordered" id="email" placeholder="Email" required
+                           th:errorclass="input-error" th:field="*{email}"
+                           th:value="*{email}"
+                           type="email"
+                    />
+
+                    <!--/*@thymesVar id="error" type="java.lang.String"*/-->
                     <span class="label text-error"
+                          th:each="error : ${#fields.errors('email')}"
                           th:if="${#fields.hasErrors('email')}"
-                          th:text="${#messages.msgOrNull(#fields.errors('email'))}">
+                          th:text="${#objects.nullSafe(#messages.msgOrNull(error), error)}">
                         Account with this email already exists.
                     </span>
                 </div>
@@ -45,11 +53,14 @@
                     <label class="label" for="password">
                         <span class="label-text">Password</span>
                     </label>
-                    <input type="password" id="password" class="input input-bordered" placeholder="Password"
-                           th:field="*{password}" th:errorclass="input-error"/>
+                    <input class="input input-bordered" id="password" placeholder="Password" required
+                           th:errorclass="input-error" th:field="*{password}"
+                           th:value="*{password}" type="password"
+                    />
                     <span class="label text-error"
-                            th:if="${#fields.hasErrors('password')}"
-                            th:text="${#messages.msgOrNull(#fields.errors('password'))}">
+                          th:each="error : ${#fields.errors('password')}"
+                          th:if="${#fields.hasErrors('password')}"
+                          th:text="${#objects.nullSafe(#messages.msgOrNull(error), error)}">
                         Password must be at least 8 characters long and contain at least one digit.
                     </span>
                 </div>
@@ -57,11 +68,22 @@
                     <label class="label" for="password-confirmation">
                         <span class="label-text">Confirm Password</span>
                     </label>
-                    <input type="password" id="password-confirmation" class="input input-bordered" placeholder="Confirm Password"
-                           th:field="*{passwordConfirmation}" th:errorclass="input-error"/>
+                    <input class="input input-bordered" id="password-confirmation" placeholder="Confirm Password"
+                           required
+                           th:classappend="${#fields.hasErrors('passwordConfirmationValid') ? 'input-error' : ''}"
+                           th:errorclass="input-error" th:field="*{passwordConfirmation}"
+                           type="password"
+                    />
                     <span class="label text-error"
+                          th:each="error : ${#fields.errors('passwordConfirmation')}"
+                          th:if="${#fields.hasErrors('passwordConfirmation')}"
+                          th:text="${#objects.nullSafe(#messages.msgOrNull(error), error)}">
+                        Invalid password confirmation.
+                    </span>
+                    <span class="label text-error"
+                          th:each="error : ${#fields.errors('passwordConfirmationValid')}"
                           th:if="${#fields.hasErrors('passwordConfirmationValid')}"
-                          th:text="${#messages.msgOrNull(#fields.errors('passwordConfirmationValid'))}">
+                          th:text="${#objects.nullSafe(#messages.msgOrNull(error), error)}">
                         Passwords do not match.
                     </span>
                 </div>
@@ -69,6 +91,27 @@
                     <button :class="{loading: submit}" :disabled="submit" class="btn btn-accent">
                         <span x-text="submit ? 'Signing Up...' : 'Sign Up'">Sign Up</span>
                     </button>
+                </div>
+                <div class="w-full text-sm py-2 gap-2 float-right">
+                    <p>
+                        Already have an account?
+                        <a class="link link-accent" href="/sign-up" th:href="@{/sign-in}">
+                            Sign In
+                        </a>
+                    </p>
+                    <p>
+                        Don't remember your password?
+                        <a class="link link-accent" href="/forgot-password"
+                           th:href="@{/account/password/reset}">
+                            Reset Password
+                        </a>
+                    </p>
+                    <p>
+                        Verify your account?
+                        <a class="link link-accent" href="/verify" th:href="@{/account/verify}">
+                            Verify Account
+                        </a>
+                    </p>
                 </div>
             </form>
         </div>

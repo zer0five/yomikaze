@@ -10,6 +10,6 @@ import java.io.IOException;
 public class SnowflakeJsonSerializer extends JsonSerializer<Snowflake> {
     @Override
     public void serialize(Snowflake snowflake, JsonGenerator jsonGenerator, SerializerProvider serializerProvider) throws IOException {
-        jsonGenerator.writeNumber(snowflake.getId());
+        jsonGenerator.writeString(snowflake.toString());
     }
 }

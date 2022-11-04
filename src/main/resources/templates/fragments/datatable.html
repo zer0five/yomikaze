@@ -1,0 +1,31 @@
+<div th:fragment="datatable">
+    <div class="input-group">
+        <label for="size">
+            Show
+        </label>
+        <select id="size">
+            <option th:selected="${page.size == 12}" value="12">12</option>
+            <option th:selected="${page.size == 24}" value="24">24</option>
+            <option th:selected="${page.size == 48}" value="48">48</option>
+            <option th:selected="${page.size == 96}" value="96">96</option>
+            <option th:selected="${page.size <= 0}" value="0">All</option>
+        </select>
+    </div>
+    <table>
+        <thead>
+        <tr>
+            <th th:each="header : ${table.headers}">
+                [[${header}]]
+            </th>
+        </tr>
+        <tr>
+
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="row : ${rows}">
+            <td th:each="column : ${columns}">[[${row[column]}]]</td>
+        </tr>
+        </tbody>
+    </table>
+</div>

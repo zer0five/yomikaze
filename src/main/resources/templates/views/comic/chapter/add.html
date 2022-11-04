@@ -6,7 +6,7 @@
 <body th:fragment="content">
 <form class="hidden" id="chapter-form" method="post" th:action="@{/comic/{id}/chapter/add(id=${comic.id})}">
 </form>
-<div class="min-h-screen flex flex-col items-stretch p-8 gap-8" x-data="{ current_step: 1 }">
+<div class="min-h-screen flex flex-col items-stretch p-8 gap-8" x-data="{ current_step: 1 }" x-ref="base">
     <ul class="steps w-full max-w-lg self-center">
         <li @click="current_step = 1" class="step" :class="{'step-primary': current_step >= 1}">Fill in infos</li>
         <li @click="current_step = 2" class="step" :class="{'step-primary': current_step >= 2}">Upload images</li>
@@ -275,13 +275,15 @@
                     .then(data => {
                         console.log(data);
                         if (data.error) {
+                            this.submitting = false;
                             alert(data.error);
                             return;
                         }
                         this.files = [];
                         this.$el.reset();
                         this.$store.data.urls.push(...data);
-                        this.submitting = false
+                        this.submitting = false;
+                        this.$refs.base.current_step = 3;
                         alert('Images uploaded successfully, you can now go to the next step');
                     })
                     .catch(error => console.error('Error:', error));

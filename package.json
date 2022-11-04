@@ -2,7 +2,7 @@
     "name": "yomikaze",
     "version": "1.0.0",
     "dependencies": {
-      "daisyui": "^2.36.1",
+      "daisyui": "^2.37.0",
       "flowbite": "^1.5.3"
     }
 }

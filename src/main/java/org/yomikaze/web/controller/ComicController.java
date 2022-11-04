@@ -69,6 +69,7 @@ public class ComicController {
         }
         ComicDetailModel detailModel = comicService.getComicDetail(comic);
         model.addAttribute("comic", detailModel);
+        model.addAttribute("chapters", comic.getChapters());
         return "views/comic/detail";
     }
 
@@ -101,14 +102,14 @@ public class ComicController {
     }
 
     @GetMapping("/create")
-    @PreAuthorize("authentication != null && authenticated")
+    @PreAuthorize("authentication != null && !anonymous")
     @PostAuthorize("hasAuthority('comic.create')")
     public String create(@ModelAttribute("comic") ComicInputModel comic) {
         return "views/comic/form";
     }
 
     @PostMapping(path = "/create", consumes = {"multipart/form-data"})
-    @PreAuthorize("authentication != null && authenticated")
+    @PreAuthorize("authentication != null && !anonymous")
     @PostAuthorize("hasAuthority('comic.create')")
     public String create(@RequestPart MultipartFile thumbnail, @Validated @ModelAttribute("comic") ComicInputModel comic, BindingResult bindingResult, Authentication authentication) {
         if (bindingResult.hasErrors()) {
@@ -159,7 +160,7 @@ public class ComicController {
     }
 
     @GetMapping("/{id}/edit")
-    @PreAuthorize("authentication != null && authenticated")
+    @PreAuthorize("authentication != null && !anonymous")
     @PostAuthorize("hasAuthority('comic.edit')")
     public String edit(@PathVariable Snowflake id, Model model) {
         Comic comic = comicRepository.findById(id)
@@ -169,7 +170,7 @@ public class ComicController {
     }
 
     @PostMapping(path = "/{id}/edit", consumes = {"multipart/form-data"})
-    @PreAuthorize("authentication != null && authenticated")
+    @PreAuthorize("authentication != null && !anonymous")
     @PostAuthorize("hasAuthority('comic.edit')")
     public String edit(@PathVariable Snowflake id, @RequestPart MultipartFile thumbnail, @Validated @ModelAttribute("comic") ComicInputModel comic, BindingResult bindingResult, Authentication authentication) {
         if (bindingResult.hasErrors()) {
@@ -182,6 +183,40 @@ public class ComicController {
         }
         Comic saved = comicService.updateComic(id, comic, thumbnail);
         return MessageFormat.format("redirect:/comic/{0}/detail", saved.getId());
+    }
+
+    @GetMapping("/{id}/delete")
+    @PreAuthorize("authentication != null && !anonymous")
+    @PostAuthorize("hasAuthority('comic.delete')")
+    public String delete(@PathVariable Snowflake id, Model model) {
+        Comic comic = comicRepository.findById(id)
+            .orElseThrow(() -> new EntityNotFoundException("comic.not-found"));
+        model.addAttribute("comic", comic);
+        return "views/comic/delete";
+    }
+
+    @PostMapping("/{id}/delete")
+    @PreAuthorize("authentication != null && !anonymous")
+    @PostAuthorize("hasAuthority('comic.delete')")
+    public String delete(@PathVariable Snowflake id, Authentication authentication) {
+        Account uploader = (Account) authentication.getPrincipal();
+        Comic db = comicRepository.findById(id).orElseThrow(EntityNotFoundException::new);
+        if (!db.getUploader().equals(uploader)) {
+            throw new AccessDeniedException("comic.delete.access-denied");
+        }
+        comicRepository.deleteById(id);
+        return "redirect:/comic";
+    }
+
+    @GetMapping("/manage")
+    @PreAuthorize("authentication != null && !anonymous")
+    @PostAuthorize("hasAuthority('comic.manage')")
+    public String manage(@PageableDefault(size = 12) Pageable pageable,
+                         Authentication authentication, Model model) {
+        Account uploader = (Account) authentication.getPrincipal();
+        Page<Comic> comics = comicRepository.findByUploader(uploader, pageable);
+        model.addAttribute("comics", comics);
+        return "views/comic/manage";
     }
 
     @ExceptionHandler(EntityNotFoundException.class)

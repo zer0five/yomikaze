@@ -96,6 +96,7 @@ public class RolePermissionConfig implements ApplicationListener<ContextRefreshe
 
         String uploader = "Uploader";
         List<Permission> uploaderPermissions = Arrays.asList(
+            createPermissionIfNotFound("comic.manage"),
             createPermissionIfNotFound("comic.create"),
             createPermissionIfNotFound("comic.edit"),
             createPermissionIfNotFound("comic.delete"),
@@ -109,6 +110,7 @@ public class RolePermissionConfig implements ApplicationListener<ContextRefreshe
 
         String admin = "Admin";
         List<Permission> adminPermissions = Arrays.asList(
+            createPermissionIfNotFound("request.manage"),
             createPermissionIfNotFound("request.approve"),
             createPermissionIfNotFound("request.approve.all"),
             createPermissionIfNotFound("request.reject"),
@@ -142,6 +144,7 @@ public class RolePermissionConfig implements ApplicationListener<ContextRefreshe
             account.addRole(memberRole);
             account.addRole(uploaderRole);
             account.addRole(adminRole);
+            account.setVerified(true);
             account.getProfile().setDisplayName("Administrator");
             accountRepository.save(account);
         }

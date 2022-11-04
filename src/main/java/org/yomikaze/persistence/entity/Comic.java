@@ -1,5 +1,7 @@
 package org.yomikaze.persistence.entity;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -8,6 +10,7 @@ import lombok.ToString;
 import org.hibernate.Hibernate;
 import org.hibernate.annotations.UpdateTimestamp;
 import org.springframework.data.domain.Sort;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.yomikaze.snowflake.Snowflake;
 import org.yomikaze.snowflake.json.SnowflakeJsonSerializer;
 
@@ -58,6 +61,8 @@ public class Comic {
 
     @UpdateTimestamp
     @Column(name = "updated_at", nullable = false)
+    @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
+    @JsonFormat(shape = JsonFormat.Shape.NUMBER)
     private Instant updatedAt;
 
     @ManyToMany(fetch = FetchType.LAZY)
@@ -71,6 +76,7 @@ public class Comic {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "uploader")
     @ToString.Exclude
+    @JsonIgnore
     private Account uploader = null;
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "comic", cascade = CascadeType.ALL, orphanRemoval = true)

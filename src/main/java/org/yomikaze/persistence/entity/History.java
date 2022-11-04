@@ -5,11 +5,13 @@ import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 import org.hibernate.Hibernate;
+import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
 import org.yomikaze.snowflake.Snowflake;
 
 import javax.persistence.*;
+import java.time.Instant;
 import java.util.Objects;
 
 @Getter
@@ -25,6 +27,10 @@ public class History {
     @Column(name = "id", nullable = false)
     private Snowflake id;
 
+    @Column(name = "read_at", nullable = false)
+    @CreationTimestamp
+    private Instant readAt;
+
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @OnDelete(action = OnDeleteAction.CASCADE)
     @JoinColumn(name = "account", nullable = false)
@@ -36,6 +42,7 @@ public class History {
     @JoinColumn(name = "chapter", nullable = false)
     @ToString.Exclude
     private Chapter chapter;
+
 
     @Override
     public boolean equals(Object o) {
