@@ -17,47 +17,51 @@
             <form @submit="submit = true" action="/sign-up" class="card-body" method="POST" th:action="@{/sign-up}"
                   th:object="${signUpForm}"
                   x-data="{submit: false}">
-                <div class="form-control">
+                <div class="form-control" id="username-group">
                     <label class="label" for="username">
                         <span class="label-text">Username</span>
                     </label>
                     <input class="input input-bordered" id="username" placeholder="Username" required
-                           th:errorclass="input-error" th:field="*{username}"
-                           th:value="*{username}" type="text"/>
+                           th:errorclass="input-error" th:field="${signUpForm.username}"
+                           th:value="${signUpForm.username}" type="text"/>
+                    <!--/*@thymesVar id="error" type="java.lang.String"*/-->
                     <span class="label text-error"
+                          role="alert"
                           th:each="error : ${#fields.errors('username')}"
                           th:if="${#fields.hasErrors('username')}"
                           th:text="${#objects.nullSafe(#messages.msgOrNull(error), error)}">
                         Account with this username already exists.
                     </span>
                 </div>
-                <div class="form-control">
+                <div class="form-control" id="email-group">
                     <label class="label" for="email">
                         <span class="label-text">Email</span>
                     </label>
                     <input class="input input-bordered" id="email" placeholder="Email" required
-                           th:errorclass="input-error" th:field="*{email}"
-                           th:value="*{email}"
+                           th:errorclass="input-error" th:field="${signUpForm.email}"
+                           th:value="${signUpForm.email}"
                            type="email"
                     />
-
                     <!--/*@thymesVar id="error" type="java.lang.String"*/-->
                     <span class="label text-error"
+                          role="alert"
                           th:each="error : ${#fields.errors('email')}"
                           th:if="${#fields.hasErrors('email')}"
                           th:text="${#objects.nullSafe(#messages.msgOrNull(error), error)}">
                         Account with this email already exists.
                     </span>
                 </div>
-                <div class="form-control">
+                <div class="form-control" id="password-group">
                     <label class="label" for="password">
                         <span class="label-text">Password</span>
                     </label>
                     <input class="input input-bordered" id="password" placeholder="Password" required
-                           th:errorclass="input-error" th:field="*{password}"
-                           th:value="*{password}" type="password"
+                           th:errorclass="input-error" th:field="${signUpForm.password}"
+                           th:value="${signUpForm.password}" type="password"
                     />
+                    <!--/*@thymesVar id="error" type="java.lang.String"*/-->
                     <span class="label text-error"
+                          role="alert"
                           th:each="error : ${#fields.errors('password')}"
                           th:if="${#fields.hasErrors('password')}"
                           th:text="${#objects.nullSafe(#messages.msgOrNull(error), error)}">
@@ -71,16 +75,20 @@
                     <input class="input input-bordered" id="password-confirmation" placeholder="Confirm Password"
                            required
                            th:classappend="${#fields.hasErrors('passwordConfirmationValid') ? 'input-error' : ''}"
-                           th:errorclass="input-error" th:field="*{passwordConfirmation}"
+                           th:errorclass="input-error" th:field="${signUpForm.passwordConfirmation}"
                            type="password"
                     />
+                    <!--/*@thymesVar id="error" type="java.lang.String"*/-->
                     <span class="label text-error"
+                          role="alert"
                           th:each="error : ${#fields.errors('passwordConfirmation')}"
                           th:if="${#fields.hasErrors('passwordConfirmation')}"
                           th:text="${#objects.nullSafe(#messages.msgOrNull(error), error)}">
                         Invalid password confirmation.
                     </span>
+                    <!--/*@thymesVar id="error" type="java.lang.String"*/-->
                     <span class="label text-error"
+                          role="alert"
                           th:each="error : ${#fields.errors('passwordConfirmationValid')}"
                           th:if="${#fields.hasErrors('passwordConfirmationValid')}"
                           th:text="${#objects.nullSafe(#messages.msgOrNull(error), error)}">
@@ -88,25 +96,26 @@
                     </span>
                 </div>
                 <div class="form-control mt-6">
-                    <button :class="{loading: submit}" :disabled="submit" class="btn btn-accent">
+                    <button :class="{loading: submit}" :disabled="submit" class="btn btn-accent" id="sign-up"
+                            type="submit">
                         <span x-text="submit ? 'Signing Up...' : 'Sign Up'">Sign Up</span>
                     </button>
                 </div>
-                <div class="w-full text-sm py-2 gap-2 float-right">
-                    <p>
+                <div class="w-full text-sm py-2 gap-2">
+                    <p class="float-right">
                         Already have an account?
                         <a class="link link-accent" href="/sign-up" th:href="@{/sign-in}">
                             Sign In
                         </a>
                     </p>
-                    <p>
+                    <p class="float-right">
                         Don't remember your password?
                         <a class="link link-accent" href="/forgot-password"
                            th:href="@{/account/password/reset}">
                             Reset Password
                         </a>
                     </p>
-                    <p>
+                    <p class="float-right">
                         Verify your account?
                         <a class="link link-accent" href="/verify" th:href="@{/account/verify}">
                             Verify Account
