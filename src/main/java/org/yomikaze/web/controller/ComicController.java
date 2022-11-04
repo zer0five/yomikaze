@@ -10,6 +10,7 @@ import org.springframework.data.web.PageableDefault;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.access.prepost.PostAuthorize;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -24,10 +25,11 @@ import org.yomikaze.persistence.entity.Genre;
 import org.yomikaze.persistence.repository.ComicRepository;
 import org.yomikaze.persistence.repository.GenreRepository;
 import org.yomikaze.service.ComicService;
+import org.yomikaze.service.HistoryService;
 import org.yomikaze.snowflake.Snowflake;
 import org.yomikaze.web.dto.comic.ComicDetailModel;
-import org.yomikaze.web.dto.comic.ComicInputModel;
-import org.yomikaze.web.dto.comic.chapter.ChapterInputModel;
+import org.yomikaze.web.dto.comic.ComicForm;
+import org.yomikaze.web.dto.comic.chapter.ChapterForm;
 
 import javax.persistence.EntityNotFoundException;
 import java.text.MessageFormat;
@@ -46,6 +48,7 @@ public class ComicController {
     private final ComicRepository comicRepository;
     private final GenreRepository genreRepository;
     private final ComicService comicService;
+    private final HistoryService historyService;
 
     @GetMapping({"", "/"})
     public String comic() {
@@ -53,8 +56,10 @@ public class ComicController {
     }
 
     @RequestMapping("/listing")
-    public String listing(@PageableDefault(size = 12) Pageable pageable,
-                          Model model) {
+    public String listing(
+        @PageableDefault(size = 12) Pageable pageable,
+        Model model
+    ) {
         Pageable withSort = PageRequest.of(pageable.getPageNumber(), pageable.getPageSize(), Comic.DEFAULT_SORT);
         Page<Comic> comics = comicRepository.findAll(withSort);
         model.addAttribute("comics", comics);
@@ -63,10 +68,7 @@ public class ComicController {
 
     @GetMapping("{id}/detail")
     public String detail(@PathVariable Snowflake id, Model model) {
-        Comic comic = comicRepository.findById(id).orElse(null);
-        if (comic == null) {
-            throw new EntityNotFoundException("Comic with id not found");
-        }
+        Comic comic = comicRepository.findById(id).orElseThrow(EntityNotFoundException::new);
         ComicDetailModel detailModel = comicService.getComicDetail(comic);
         model.addAttribute("comic", detailModel);
         model.addAttribute("chapters", comic.getChapters());
@@ -78,7 +80,8 @@ public class ComicController {
         @PageableDefault(size = 12) Pageable pageable,
         Model model,
         Optional<Long> genre,
-        Optional<String> q, Optional<String> cq
+        Optional<String> q,
+        Optional<String> cq
     ) {
         Pageable withSort = PageRequest.of(pageable.getPageNumber(), pageable.getPageSize(), Comic.DEFAULT_SORT);
         Page<Comic> result = new PageImpl<>(Collections.emptyList());
@@ -104,14 +107,14 @@ public class ComicController {
     @GetMapping("/create")
     @PreAuthorize("authentication != null && !anonymous")
     @PostAuthorize("hasAuthority('comic.create')")
-    public String create(@ModelAttribute("comic") ComicInputModel comic) {
+    public String create(@ModelAttribute("comic") ComicForm comic) {
         return "views/comic/form";
     }
 
     @PostMapping(path = "/create", consumes = {"multipart/form-data"})
     @PreAuthorize("authentication != null && !anonymous")
     @PostAuthorize("hasAuthority('comic.create')")
-    public String create(@RequestPart MultipartFile thumbnail, @Validated @ModelAttribute("comic") ComicInputModel comic, BindingResult bindingResult, Authentication authentication) {
+    public String create(@RequestPart MultipartFile thumbnail, @Validated @ModelAttribute("comic") ComicForm comic, BindingResult bindingResult, Authentication authentication) {
         if (bindingResult.hasErrors()) {
             return "views/comic/form";
         }
@@ -123,16 +126,18 @@ public class ComicController {
     @GetMapping("/{id}/chapter/add")
     @PreAuthorize("authentication != null && !anonymous")
     @PostAuthorize("hasAuthority('chapter.add')")
-    public String createChapter(@ModelAttribute("chapter") ChapterInputModel chapter, @PathVariable Snowflake id, Model model) {
+    public String createChapter(@ModelAttribute("chapter") ChapterForm chapter, @PathVariable Snowflake id, Model model) {
         Comic comic = comicRepository.findById(id).orElseThrow(EntityNotFoundException::new);
-        model.addAttribute("comic", comicService.getComicDetail(comic));
+        chapter.setIndex(comic.getChapters().size());
+        chapter.setTitle("Chapter " + (comic.getChapters().size() + 1));
+        model.addAttribute("comic", comic);
         return "views/comic/chapter/add";
     }
 
     @PostMapping("/{id}/chapter/add")
     @PreAuthorize("authentication != null && !anonymous")
     @PostAuthorize("hasAuthority('chapter.add')")
-    public String createChapter(@ModelAttribute("chapter") ChapterInputModel chapter, @ModelAttribute("comic") ComicDetailModel comic, BindingResult bindingResult, Model model) {
+    public String createChapter(@ModelAttribute("chapter") ChapterForm chapter, @ModelAttribute("comic") ComicDetailModel comic, BindingResult bindingResult, Model model) {
         if (bindingResult.hasErrors()) {
             return "views/comic/chapter/add";
         }
@@ -141,7 +146,7 @@ public class ComicController {
     }
 
     @GetMapping("/{id}/chapter/{index}")
-    public String readChapter(@PathVariable Snowflake id, @PathVariable int index, Model model) {
+    public String readChapter(@PathVariable Snowflake id, @PathVariable int index, Model model, Authentication authentication) {
         Comic comic = comicRepository.findById(id).orElseThrow(EntityNotFoundException::new);
         List<Chapter> chapterList = new ArrayList<>(comic.getChapters());
         if (index < 0 || index >= comic.getChapters().size()) {
@@ -151,6 +156,10 @@ public class ComicController {
         boolean hasPrev = index > 0;
         boolean hasNext = index < chapterList.size() - 1;
         Chapter chapter = chapterList.get(index);
+        if (!(authentication instanceof AnonymousAuthenticationToken)) {
+            Account account = (Account) authentication.getPrincipal();
+            historyService.read(account, chapter);
+        }
         model.addAttribute("index", index);
         model.addAttribute("chapters", chapterList);
         model.addAttribute("chapter", chapter);
@@ -172,7 +181,7 @@ public class ComicController {
     @PostMapping(path = "/{id}/edit", consumes = {"multipart/form-data"})
     @PreAuthorize("authentication != null && !anonymous")
     @PostAuthorize("hasAuthority('comic.edit')")
-    public String edit(@PathVariable Snowflake id, @RequestPart MultipartFile thumbnail, @Validated @ModelAttribute("comic") ComicInputModel comic, BindingResult bindingResult, Authentication authentication) {
+    public String edit(@PathVariable Snowflake id, @RequestPart MultipartFile thumbnail, @Validated @ModelAttribute("comic") ComicForm comic, BindingResult bindingResult, Authentication authentication) {
         if (bindingResult.hasErrors()) {
             return "views/comic/form";
         }

@@ -4,16 +4,23 @@
     <title th:fragment="page-title">comic::new</title>
 </head>
 <body th:fragment="content">
-<form class="hidden" id="chapter-form" method="post" th:action="@{/comic/{id}/chapter/add(id=${comic.id})}">
+<form class="hidden" id="chapter-form" method="post" th:action="@{/comic/{id}/chapter/add(id=${comic.id})}"
+      th:object="${chapter}">
 </form>
-<div class="min-h-screen flex flex-col items-stretch p-8 gap-8" x-data="{ current_step: 1 }" x-ref="base">
+<div class="min-h-screen flex flex-col items-stretch p-8 gap-8">
     <ul class="steps w-full max-w-lg self-center">
-        <li @click="current_step = 1" class="step" :class="{'step-primary': current_step >= 1}">Fill in infos</li>
-        <li @click="current_step = 2" class="step" :class="{'step-primary': current_step >= 2}">Upload images</li>
-        <li @click="current_step = 3" class="step" :class="{'step-primary': current_step >= 3}">Finishing</li>
+        <li :class="{'step-primary': $store.current_step >= 1}" @click="$store.current_step = 1" class="step">Fill in
+            infos
+        </li>
+        <li :class="{'step-primary': $store.current_step >= 2}" @click="$store.current_step = 2" class="step">Upload
+            images
+        </li>
+        <li :class="{'step-primary': $store.current_step >= 3}" @click="$store.current_step = 3" class="step">
+            Finishing
+        </li>
     </ul>
     <div class="grow flex items-center justify-center">
-        <div class="flex justify-center gap-4" x-show="current_step === 1">
+        <div class="flex justify-center gap-4" x-show="$store.current_step === 1">
             <div>
                 <label class="label" for="chapter-no">
                     <span class="label-text">Chapter Index</span>
@@ -25,7 +32,7 @@
                     class="input input-bordered w-24"
                     type="number"
                     name="index"
-                    th:value="${comic.chapters.size() + 1}"
+                    th:field="${chapter.index}"
                 />
             </div>
             <div>
@@ -36,13 +43,14 @@
                     class="input input-bordered w-48 sm:w-64"
                     form="chapter-form"
                     id="chapter-title"
-                    name="title"
+                    required
+                    th:field="${chapter.title}"
                     placeholder="Chapter's title"
                     type="text"
                 />
             </div>
         </div>
-        <div class="flex justify-center gap-4 w-9/12" x-show="current_step === 2">
+        <div class="flex justify-center gap-4 w-9/12" x-show="$store.current_step === 2">
             <div class="w-full">
                 <div x-data="dataFileDnD()"
                      class="relative flex flex-col p-4 text-base-content rounded bg-base-200"
@@ -126,7 +134,7 @@
             </div>
         </div>
 
-        <div class="flex flex-row w-11/12 h-full" x-show="current_step === 3">
+        <div class="flex flex-row w-11/12 h-full" x-show="$store.current_step === 3">
             <div class="w-6/12 h-full">
                 <div class="form-control h-full">
                     <label for="image-order" class="label"><span class="label-text">Images order</span></label>
@@ -174,32 +182,36 @@
         </div>
     </div>
     <div class="flex justify-between">
-        <button x-show="current_step === 1">&nbsp;</button>
+        <button x-show="$store.current_step === 1">&nbsp;</button>
         <button
-            x-show="current_step >= 2"
+            @click="$store.current_step--"
             class="btn self-start"
-            @click="current_step--"
+            x-show="$store.current_step >= 2"
         >Back</button>
         <button
-            x-show="current_step === 1"
+            @click="$store.current_step = 2"
             class="btn btn-primary"
-            @click="current_step = 2"
+            x-show="$store.current_step === 1"
         >Next</button>
         <button
-            x-show="current_step === 2"
+            @click="$store.current_step = 3"
             class="btn btn-primary"
-            @click="current_step = 3"
+            x-show="$store.current_step === 2"
         >Next</button>
         <button
             form="chapter-form"
             type="submit"
-            x-show="current_step === 3"
+            x-show="$store.current_step === 3"
             class="btn btn-primary"
         >Submit
         </button>
     </div>
 </div>
 <script>
+    document.addEventListener("alpine:init", () => {
+        Alpine.store("current_step", 1);
+    });
+
     function dataFileDnD() {
         return {
             files: [],
@@ -283,8 +295,10 @@
                         this.$el.reset();
                         this.$store.data.urls.push(...data);
                         this.submitting = false;
-                        this.$refs.base.current_step = 3;
-                        alert('Images uploaded successfully, you can now go to the next step');
+                        this.$nextTick(() => setTimeout(() => {
+                            alert('Images uploaded successfully, you can now go to the next step');
+                            this.$store.current_step = 3;
+                        }, 200));
                     })
                     .catch(error => console.error('Error:', error));
             },

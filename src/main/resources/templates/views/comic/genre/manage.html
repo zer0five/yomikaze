@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en" th:insert="layouts/dashboard">
 <head>
-    <title th:fragment="page-title">comic::manage</title>
+    <title th:fragment="page-title">comic::genre::manage</title>
 </head>
 <body th:fragment="content">
 <link rel="stylesheet" th:href="@{/asset/css/datatables.min.css}" type="text/css"/>
@@ -10,40 +10,33 @@
     <table class="table" id="comics">
         <thead>
         <tr>
-            <th>Comic</th>
-            <th>Last updated</th>
-            <th>Total views</th>
+            <th>Genre</th>
+            <th>Description</th>
             <th>Actions</th>
         </tr>
         </thead>
         <tbody>
         <!--/*@thymesVar id="comic" type="org.yomikaze.persistence.entity.Comic"*/-->
-        <tr th:each="comic : ${comics}">
+        <tr th:each="genre : ${genres}">
             <td>
                 <span class="text-xl">
-                    <a th:href="@{/comic/{id}(id=${comic.id})}" th:text="${comic.name}">name</a>
+                    <a th:href="@{/comic/genre/{id}(id=${genre.id})}" th:text="${genre.name}">name</a>
                 </span>
-                <br/>
-                <span class="text-sm text-gray-500" th:text="${#strings.listJoin(comic.authors, ', ')}">author</span>
             </td>
             <td>
-                <span th:x-text="| moment('${comic.updatedAt}').fromNow() |">date</span>
+                <span th:text="${genre.description}">description</span>
             </td>
             <td>
-                <span th:text="${@comicService.countViews(comic)}">views</span>
-            </td>
-            <td>
-                <a class="btn btn-sm btn-primary" th:href="@{/comic/{id}/detail(id=${comic.id})}">Detail</a>
-                <a class="btn btn-sm btn-warning" th:href="@{/comic/{id}/edit(id=${comic.id})}">Edit</a>
-                <a class="btn btn-sm btn-error" th:href="@{/comic/{id}/delete(id=${comic.id})}">delete</a>
+                <button class="btn btn-sm btn-primary" th:href="@{/comic/{id}/detail(id=${comic.id})}">Detail</button>
+                <button class="btn btn-sm btn-warning" th:href="@{/comic/{id}/edit(id=${comic.id})}">Edit</button>
+                <button class="btn btn-sm btn-error" th:href="@{/comic/{id}/delete(id=${comic.id})}">delete</button>
             </td>
         </tr>
         </tbody>
         <tfoot>
         <tr>
             <th>Comic</th>
-            <th>Last updated</th>
-            <th>Total views</th>
+            <th>Last Updated</th>
             <th>Actions</th>
         </tr>
         </tfoot>

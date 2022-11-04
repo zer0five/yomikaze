@@ -4,7 +4,7 @@
     <title th:fragment="page-title">comic::new</title>
 </head>
 <body>
-<!--/*@thymesVar id="comic" type="org.yomikaze.web.dto.comic.ComicInputModel"*/-->
+<!--/*@thymesVar id="comic" type="org.yomikaze.web.dto.comic.ComicForm"*/-->
 <div class="min-h-[calc(100vh-10rem)]" th:fragment="content">
     <div class="card shadow-2xl bg-base-300 mx-auto my-10 w-10/12 rounded-box">
         <form class="card-body gap-4" enctype="multipart/form-data" method="POST" th:action="@{/comic/create}"

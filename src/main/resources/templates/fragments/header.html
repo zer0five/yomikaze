@@ -3,18 +3,20 @@
         xmlns:th="http://www.thymeleaf.org">
     <div class="navbar bg-base-200">
         <div class="navbar-start gap-2">
-            <a class="btn btn-ghost gap-2 text-xl text-white hover:bg-transparent" href="/" th:href="@{/}">
+            <a class="btn btn-ghost gap-2 text-xl text-white hover:bg-transparent" href="/" th:fragment="logo"
+               th:href="@{/}">
                 <img alt="logo" class="w-12 h-12" src="/asset/image/logo.svg" th:src="@{/asset/image/logo.svg}"/>
                 <div class="font-title text-primary inline-flex text-lg transition-all duration-200 md:text-3xl">
                     <span class="text-base-content lowercase">yomi</span>
                     <span class="lowercase">kaze</span>
                 </div>
             </a>
-            <button @click="nextTheme()" class="btn btn-ghost btn-circle" aria-label="Theme switcher">
+            <button @click="nextTheme()" aria-label="Theme switcher" class="btn btn-ghost btn-circle"
+                    th:fragment="theme-switcher">
                 <i :data-feather="themeIcon" class="text-xl text-base-content" aria-hidden="true"></i>
             </button>
         </div>
-        <div class="navbar-center">
+        <div class="navbar-center" th:fragment="searchbox">
             <form action="/comic/search" class="form-control" th:action="@{/comic/search}">
                 <label class="input-group">
                     <input class="input input-bordered input-accent" name="cq" placeholder="Search" required
@@ -29,7 +31,7 @@
                 </label>
             </form>
         </div>
-        <div class="navbar-end">
+        <div class="navbar-end" th:fragment="auth">
             <th:block sec:authorize="!anonymous">
                 <!--/*@thymesVar id="account" type="org.yomikaze.persistence.entity.Account"*/-->
                 <div class="dropdown dropdown-end" th:with="account = ${#authentication.principal}">
@@ -47,33 +49,56 @@
                         </div>
                         <span class="hidden md:block" th:text="${profile.displayName}">Name</span>
                     </div>
-                    <ul class="dropdown-content menu menu-compact p-2 shadow-lg bg-base-300 rounded-box w-52 focus:z-50" tabindex="0">
+                    <ul class="dropdown-content menu menu-compact p-2 shadow-lg bg-base-300 rounded-box w-52 focus:z-50"
+                        tabindex="0">
+                        <li class="menu-title"
+                            sec:authorize="hasAnyAuthority('comic.manage', 'genre.manage')">
+                            <span>Manage</span>
+                        </li>
+                        <li sec:authorize="hasAuthority('comic.manage')">
+                            <a href="/comic/manage"
+                               th:href="@{/comic/manage}">
+                                <i aria-hidden="true" class="text-xl text-base-content" data-feather="book-open"></i>
+                                <span class="text-base-content">Manage comics</span>
+                            </a>
+                        </li>
+                        <li sec:authorize="hasAuthority('genre.manage')">
+                            <a href="/genre/manage"
+                               th:href="@{/genre/manage}">
+                                <i aria-hidden="true" class="text-base-content" data-feather="tag"></i>
+                                <span class="text-base-content">Manage genres</span>
+                            </a>
+                        </li>
+                        <li sec:authorize="hasAnyAuthority('comic.manage', 'genre.manage')"></li>
+                        <li class="menu-title">
+                            <span>Me</span>
+                        </li>
                         <li>
                             <a href="/profile"
                                th:href="@{/profile}">
                                 <i data-feather="user" aria-hidden="true"></i>
-                                Profile
+                                <span>Profile</span>
                             </a>
                         </li>
                         <li>
                             <a href="/library"
                                th:href="@{/library}">
                                 <i data-feather="bookmark" aria-hidden="true"></i>
-                                Library
+                                <span>Library</span>
                             </a>
                         </li>
                         <li>
                             <a href="/history"
                                th:href="@{/history}">
                                 <i data-feather="rotate-ccw" aria-hidden="true"></i>
-                                History
+                                <span>History</span>
                             </a>
                         </li>
                         <li>
                             <a href="/settings"
                                th:href="@{/settings}">
                                 <i data-feather="settings" aria-hidden="true"></i>
-                                Settings
+                                <span>Settings</span>
                             </a>
                         </li>
                         <li></li>
@@ -82,12 +107,13 @@
                                class="text-error hover:bg-error hover:text-error-content"
                                th:href="@{/logout}">
                                 <i data-feather="log-out" aria-hidden="true"></i>
-                                Logout
+                                <span>Logout</span>
                             </a>
                         </li>
                     </ul>
                 </div>
             </th:block>
+            <!-- Sign-In Sign-Up button -->
             <div class="gap-2" sec:authorize="anonymous">
                 <a class="btn btn-info btn-outline rounded-full" href="#" th:href="@{/sign-in}">Sign In</a>
                 <a class="btn btn-success btn-outline rounded-full" href="#" th:href="@{/sign-up}">Sign Up</a>

@@ -49,7 +49,7 @@
                     </label>
                     <input class="input input-bordered" id="username" placeholder="Username"
                            required
-                           th:errorclass="input-error" th:field="*{username}" type="text"/>
+                           th:errorclass="input-error" th:field="${signInForm.username}" type="text"/>
                     <span class="label text-sm text-error"
                           th:if="${#fields.hasErrors('username')}"
                           th:text="${#messages.msgOrNull(#fields.errors('username'))}">

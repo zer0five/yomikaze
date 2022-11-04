@@ -64,8 +64,7 @@
                     th:selected="${i == index}"
                     th:value="${i}"
                 >
-                    Chapter [[${i}]] [[${not #strings.isEmpty(chapters.get(i).title) ? ' - ' + chapters.get(i).title :
-                    ''}]]
+                    [[${chapters.get(i).title}]]
                 </option>
             </select>
         </label>

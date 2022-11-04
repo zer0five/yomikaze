@@ -9,7 +9,7 @@ import java.util.Collections;
 import java.util.stream.Collectors;
 
 @Data
-public class ChapterInputModel {
+public class ChapterForm {
     private String title;
     private long index;
     private String pages;

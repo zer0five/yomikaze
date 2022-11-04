@@ -3,8 +3,8 @@
 <head>
     <title th:fragment="page-title">comic::detail</title>
 </head>
-<body>
-<div class="bg-base-100 rounded-box shadow-2xl p-10 border border-dashed border-neutral" th:fragment="content">
+<body class="flex flex-col gap-8" th:fragment="content">
+<div class="bg-base-100 rounded-box shadow-2xl p-10">
     <div class="flex flex-col gap-8 flex-wrap justify-items-center">
         <div class="flex flex-row flex-wrap md:flex-nowrap gap-8">
             <!-- Thumbnail -->
@@ -195,10 +195,18 @@
                     </div>
                 </div>
                 <div class="flex flex-row flex-wrap gap-2">
-                    <a class="btn btn-primary gap-2">
+                    <a class="btn btn-primary gap-2" th:if="${not chapters.empty}">
                         <i data-feather="book-open"></i>
                         Read
                     </a>
+                    <div class="tooltip"
+                         data-tip="Comic currently has no chapters"
+                         th:if="${chapters.empty}">
+                        <button class="btn btn-primary btn-disabled gap-2" disabled>
+                            <i data-feather="book-open"></i>
+                            Read
+                        </button>
+                    </div>
                     <a class="btn btn-secondary gap-2">
                         <i data-feather="fast-forward"></i>
                         Read latest
@@ -280,6 +288,8 @@
                         No chapters available
                     </span>
                     <span class="max-h-[500px] divide-y divide-dashed overflow-y-auto pr-4" th:case="false">
+                        <!--/*@thymesVar id="chapter" type="org.yomikaze.persistence.entity.Chapter"*/-->
+                        <!--/*@thymesVar id="i" type="java.lang.Integer"*/-->
                         <span class="flex flex-nowrap items-center gap-4 p-2 hover:bg-accent hover:bg-opacity-30"
                               th:each="i : ${#numbers.sequence(0, chapters.size() - 1)}"
                               th:with="chapter = ${chapters.get(i)}"
@@ -287,13 +297,13 @@
                             <a class="flex-grow flex flex-nowrap items-center gap-4"
                                th:href="@{/comic/{id}/chapter/{i}(id=${comic.id}, i=${i})}">
                                 <span class="flex-grow">
-                                    Chapter [[${i}]] [[${not #strings.isEmpty(chapters.get(i).title) ? ' - ' + chapters.get(i).title : ''}]]
+                                    [[${chapters.get(i).title}]]
                                 </span>
-                                <span>[[${chapter.id.timestamp}]]</span>
+                                <span th:x-text="| moment('${chapter.id.timestamp.toInstant()}').fromNow() |">[[${chapter.id.timestamp}]]</span>
                             </a>
                             <span class="gap-2">
-                                <button th:@click="| toggleReadStatus('${chapter.id}') |"
-                                        class="btn btn-ghost btn-circle btn-sm">
+                                <button class="btn btn-ghost btn-circle btn-sm"
+                                        th:@click="| toggleReadStatus('${chapter.id}') |">
                                     <i data-feather="eye"></i>
                                 </button>
                                 <button class="btn btn-ghost btn-circle btn-sm">
@@ -326,5 +336,85 @@
             }
         }
     </script>
+</div>
+<div class="bg-base-100 rounded-box shadow-2xl p-10 mt-8">
+    <form class="flex flex-col gap-2 p-4 mb-4" th:action="@{/comic/{id}/comment/post(id=${comic.id})}">
+        <div class="form-control">
+            <label class="label" for="comment-box">
+                <span class="label-text">Comment</span>
+            </label>
+            <textarea class="textarea textarea-bordered" id="comment-box" name="comment"
+                      placeholder="Write your comment here..." rows="3"></textarea>
+        </div>
+        <div class="form-control">
+            <div class="self-end">
+                <button class="btn btn-accent gap-2" type="submit">
+                    <i data-feather="send"></i>
+                    <span>Post</span>
+                </button>
+            </div>
+        </div>
+    </form>
+    <div class="flex items-center justify-center">
+        <div class="p-4 flex max-w-7xl">
+            <!--! user avatar -->
+            <div class="avatar mx-4">
+                <div class="w-14 h-14 rounded-full">
+                    <img alt="avatar" class="h-8 w-8" src="https://placeimg.com/192/192/people"/>
+                </div>
+            </div>
+
+            <!--! display name / role / chapter -->
+            <div>
+                <div class="border rounded-3xl px-4 pt-2 pb-2.5 divide-y gap-2">
+                    <div class="flex justify-between">
+                        <div class="font-semibold text-sm leading-relaxed gap-x-10 my-2">Jon Doe
+                            <span class="badge badge-primary badge-outline mx-1">Author</span>
+                            <span class="font-normal">Chapter 1</span>
+                        </div>
+                        <!--! actions edit / delete / report -->
+                        <div class="my-2">
+                            <button
+                                class="btn btn-xs btn-ghost btn-circle">
+                                <i data-feather="flag"></i>
+                            </button>
+                            <button
+                                class="btn btn-xs btn-ghost btn-circle">
+                                <i data-feather="edit"></i>
+                            </button>
+                            <button
+                                class="btn btn-xs btn-ghost btn-circle">
+                                <i data-feather="trash"></i>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!--! comment content -->
+                    <div class="leading-snug md:leading-normal">
+                        <p class="py-2">Lorem ipsum dolor sit amet,
+                            consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore
+                            magna
+                            aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut
+                            aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate
+                            velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat
+                            non
+                            proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
+                        </p>
+                    </div>
+                </div>
+                <!--! like / dislike / reply -->
+                <div class="button-group">
+                    <label class="btn btn-ghost btn-sm gap-2">
+                        <i data-feather="thumbs-up"></i>
+                        <span class="font-semibold">0</span>
+                    </label>
+                    <label class="btn btn-ghost btn-sm gap-2">
+                        <i data-feather="corner-down-right"></i>
+                        <span class="font-semibold">Reply</span>
+                    </label>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
 </body>

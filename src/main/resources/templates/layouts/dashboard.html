@@ -17,34 +17,36 @@
 </head>
 <body class="bg-base-100 text-base-content overflow-x-hidden" th:fragment="body">
 <th:block th:replace="fragments/scripts"></th:block>
-<th:block th:replace="fragments/header"></th:block>
 <div class="drawer drawer-mobile">
-    <label class="btn btn-circle btn-ghost drawer-button sm:hidden" for="sidebar">
+    <label class="btn btn-circle btn-ghost drawer-button md:hidden" for="sidebar">
         <i data-feather="menu"></i>
     </label>
     <input class="drawer-toggle" id="sidebar" type="checkbox"/>
     <div class="drawer-content">
-        <div class="w-full min-h-[calc(100vh-10rem)]">
+        <header>
+            <div class="navbar bg-base-200">
+                <div class="navbar-start">
+                    <div th:replace="fragments/header :: theme-switcher"></div>
+                </div>
+                <div th:replace="fragments/header :: searchbox"></div>
+                <div th:replace="fragments/header :: auth"></div>
+            </div>
+        </header>
+        <div class="w-full">
             <div class="p-10" th:insert="this :: content">
                 <!-- Main content here -->
             </div>
-            <button @click="window.scrollTo({top: 0, behavior: 'smooth'})"
-                    @scroll.window="scroll = document.documentElement.scrollTop > 20"
-                    class="fixed bottom-10 right-10 btn btn-circle bg-neutral shadow-md hover:bg-accent hover:shadow-lg focus:bg-accent focus:shadow-lg active:bg-accent active:shadow-lg"
-                    id="btn-back-to-top"
-                    type="button"
-                    x-cloak
-                    x-data="{scroll : document.documentElement.scrollTop > 20}"
-                    x-show="scroll"
-                    x-transition.opacity
-            >
-                <i data-feather="arrow-up"></i>
-            </button>
+            <button th:replace="fragments/back-to-top"></button>
         </div>
     </div>
     <div class="drawer-side">
         <label class="drawer-overlay" for="sidebar"></label>
-        <aside class="bg-base-200 w-72 overflow-y-auto text-base-content">
+        <aside class="bg-base-200 w-72 text-base-content">
+            <div class="navbar mb-6">
+                <div class="navbar-start">
+                    <div th:replace="fragments/header :: logo"></div>
+                </div>
+            </div>
             <ul class="menu px-4">
                 <!-- Sidebar content here -->
                 <li class="menu-title"><span>My account</span></li>
