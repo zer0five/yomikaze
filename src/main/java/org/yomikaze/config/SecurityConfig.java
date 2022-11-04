@@ -52,12 +52,12 @@ public class SecurityConfig {
                 .deleteCookies("YOMIKAZE_SESSION", "token", "JSESSIONID")
                 .clearAuthentication(true)
                 .invalidateHttpSession(true)
-                .logoutSuccessUrl("/login")
+                .logoutSuccessUrl("/")
             )
             .exceptionHandling(exceptions -> exceptions
                 .authenticationEntryPoint((request, response, authException) -> {
                     log.warn("Authentication failed: {}", authException.getMessage());
-                    response.sendRedirect("/login");
+                    response.sendRedirect("/logout");
                 })
                 .accessDeniedPage("/access-denied.html")
             )
