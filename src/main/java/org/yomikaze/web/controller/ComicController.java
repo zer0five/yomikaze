@@ -156,7 +156,7 @@ public class ComicController {
         boolean hasPrev = index > 0;
         boolean hasNext = index < chapterList.size() - 1;
         Chapter chapter = chapterList.get(index);
-        if (authentication == null || !(authentication instanceof AnonymousAuthenticationToken)) {
+        if (authentication != null && !(authentication instanceof AnonymousAuthenticationToken)) {
             Account account = (Account) authentication.getPrincipal();
             historyService.read(account, chapter);
         }
