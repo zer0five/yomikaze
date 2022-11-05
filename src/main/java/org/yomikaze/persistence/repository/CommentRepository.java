@@ -12,7 +12,7 @@ import org.yomikaze.snowflake.Snowflake;
 public interface CommentRepository extends CrudRepository<Comment, Snowflake> {
     long countByChapterId(Snowflake chapterId);
 
-    long countByChapterComicId(Snowflake comicId);
+    long countByComicId(Snowflake comicId);
 
     long countByAccountId(Snowflake accountId);
 
@@ -20,4 +20,6 @@ public interface CommentRepository extends CrudRepository<Comment, Snowflake> {
     int countLikesById(Snowflake commentId);
 
     Page<Comment> findAllByChapterId(Snowflake chapterId, Pageable pageable);
+
+    Page<Comment> findAllByComicId(Snowflake comicId, Pageable pageable);
 }

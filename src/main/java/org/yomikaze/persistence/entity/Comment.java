@@ -38,10 +38,20 @@ public class Comment {
     @ToString.Exclude
     private Chapter chapter;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "comic", nullable = false)
+    @ToString.Exclude
+    private Comic comic;
+
     @OneToMany(fetch = FetchType.LAZY)
     @JoinColumn(name = "parent")
     @ToString.Exclude
     private Set<Comment> replies = new HashSet<>();
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "parent")
+    @ToString.Exclude
+    private Comment parent;
 
     @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(name = "comment_likes",

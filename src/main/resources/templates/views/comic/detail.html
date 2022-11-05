@@ -135,7 +135,7 @@
                         </dt>
                         <dd class="col-span-3">
                                     <span th:text="${comic.views}"
-                                          th:x-text="| formatNumber(${comic.inLibraries}) |">
+                                          th:x-text="| formatNumber(${comic.views}) |">
                                         [[${comic.views}]]
                                     </span>
                         </dd>
@@ -338,12 +338,33 @@
     </script>
 </div>
 <div class="bg-base-100 rounded-box shadow-2xl p-10 mt-8">
-    <form class="flex flex-col gap-2 p-4 mb-4" th:action="@{/comic/{id}/comment/post(id=${comic.id})}">
+    <script>
+        async function postComment(form) {
+            let formData = new FormData(form);
+            let response = await fetch(form.action, {
+                method: 'POST',
+                body: formData,
+                credentials: 'include'
+            });
+            let status = response.status;
+            switch (status) {
+                case 200:
+                    alert('Comment posted');
+                    window.location.reload();
+                    break;
+                default:
+                    alert("Failed to post comment: " + status);
+            }
+        }
+    </script>
+    <form @submit.prevent="await postComment($el)" class="flex flex-col gap-2 p-4 mb-4"
+          th:action="@{/comic/{id}/comment/post(id=${comic.id})}">
+        <input th:name="${_csrf.parameterName}" th:value="${_csrf.token}" type="hidden"/>
         <div class="form-control">
             <label class="label" for="comment-box">
-                <span class="label-text">Comment</span>
+                <span class="label-text text-xl font-bold">Comment</span>
             </label>
-            <textarea class="textarea textarea-bordered" id="comment-box" name="comment"
+            <textarea class="textarea textarea-bordered" id="comment-box" name="content"
                       placeholder="Write your comment here..." rows="3"></textarea>
         </div>
         <div class="form-control">
@@ -355,22 +376,38 @@
             </div>
         </div>
     </form>
-    <div class="flex items-center justify-center">
-        <div class="p-4 flex max-w-7xl">
+    <!--/*@thymesVar id="comment" type="org.yomikaze.persistence.entity.Comment"*/-->
+    <!--/*@thymesVar id="commenter" type="org.yomikaze.persistence.entity.Account"*/-->
+    <div class="flex items-center justify-center"
+         th:each="comment : ${@commentService.getComments(comic.id)}"
+    >
+        <div class="p-4 flex gap-4 w-full">
             <!--! user avatar -->
-            <div class="avatar mx-4">
-                <div class="w-14 h-14 rounded-full">
-                    <img alt="avatar" class="h-8 w-8" src="https://placeimg.com/192/192/people"/>
+            <div class="avatar" th:if="${comment.account.profile.picture != null}">
+                <div class="w-10 h-10 rounded-full">
+                    <img alt="Profile picture"
+                         th:src="${comment.account.profile.picture}"/>
+                </div>
+            </div>
+            <div class="avatar placeholder" th:if="${comment.account.profile.picture == null}">
+                <div class="bg-neutral-focus text-neutral-content rounded-full w-10 h-10">
+                    <span class="text-xl" th:text="${comment.account.profile.displayName.substring(0, 1)}"></span>
                 </div>
             </div>
 
             <!--! display name / role / chapter -->
-            <div>
+            <div class="w-full">
                 <div class="border rounded-3xl px-4 pt-2 pb-2.5 divide-y gap-2">
                     <div class="flex justify-between">
-                        <div class="font-semibold text-sm leading-relaxed gap-x-10 my-2">Jon Doe
-                            <span class="badge badge-primary badge-outline mx-1">Author</span>
-                            <span class="font-normal">Chapter 1</span>
+                        <div class="font-semibold text-sm leading-relaxed gap-x-10 my-2">
+                            <span th:text="${comment.account.profile.displayName}">Display name</span>
+                            <!--/*@thymesVar id="role" type="org.yomikaze.persistence.entity.Role"*/-->
+                            <span class="badge badge-primary badge-outline mx-1"
+                                  th:each="role : ${comment.account.roles}"
+                                  th:text="${role.name}">Role</span>
+                            <span class="font-normal"
+                                  th:if="${comment.chapter != null}"
+                                  th:text="${comment.chapter.title}">Chapter </span>
                         </div>
                         <!--! actions edit / delete / report -->
                         <div class="my-2">
@@ -391,7 +428,8 @@
 
                     <!--! comment content -->
                     <div class="leading-snug md:leading-normal">
-                        <p class="py-2">Lorem ipsum dolor sit amet,
+                        <p class="py-2" th:text="${comment.content}">
+                            Lorem ipsum dolor sit amet,
                             consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore
                             magna
                             aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut
@@ -404,10 +442,10 @@
                 </div>
                 <!--! like / dislike / reply -->
                 <div class="button-group">
-                    <label class="btn btn-ghost btn-sm gap-2">
+                    <button class="btn btn-ghost btn-sm gap-2">
                         <i data-feather="thumbs-up"></i>
-                        <span class="font-semibold">0</span>
-                    </label>
+                        <span class="font-semibold" th:text="${comment.likedBy.size()}">0</span>
+                    </button>
                     <label class="btn btn-ghost btn-sm gap-2">
                         <i data-feather="corner-down-right"></i>
                         <span class="font-semibold">Reply</span>
