@@ -17,9 +17,9 @@ body:
             placeholder: ex. email@example.com
         validations:
             required: false
-    -  type: textarea
-       id: bug-description
-       attributes:
+    -   type: textarea
+        id: bug-description
+        attributes:
             label: Description of the bug
             description: Tell us what bug you encountered and what should have happened
         validations:
