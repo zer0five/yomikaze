@@ -26,19 +26,19 @@ public class ReportComment {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "reporter_id")
-    private Account reporter ;
+    private Account reporter;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(
-            name = "approved_by",
-            nullable = false,
-            updatable = false
+        name = "approved_by",
+        nullable = false,
+        updatable = false
     )
     @OnDelete(action = OnDeleteAction.CASCADE)
     @ToString.Exclude
     private Account approvedBy;
 
-    @Column(name="approved")
+    @Column(name = "approved")
     private Boolean approved;
 
     // TODO: Comment id

@@ -8,10 +8,9 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.validation.BindingResult;
+import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.*;
 import org.yomikaze.persistence.entity.Account;
 import org.yomikaze.persistence.entity.Request;
 import org.yomikaze.persistence.entity.Role;
@@ -19,6 +18,7 @@ import org.yomikaze.persistence.repository.AccountRepository;
 import org.yomikaze.persistence.repository.RequestRepository;
 import org.yomikaze.persistence.repository.RoleRepository;
 import org.yomikaze.snowflake.Snowflake;
+import org.yomikaze.web.dto.form.RequestForm;
 
 import javax.persistence.EntityNotFoundException;
 
@@ -34,25 +34,44 @@ public class RequestController {
     //for user
     @PostAuthorize("hasAuthority('request.create.uploader')")
     @GetMapping({"", "/"})
-    public String request(Pageable pageable, Model model, Authentication authentication) {
+    public String request(Pageable pageable, Model model, Authentication authentication, @ModelAttribute RequestForm requestForm) {
         Account account = (Account) authentication.getPrincipal();
         Page<Request> requests = requestRepository.findAllByRequester(account, pageable);
         model.addAttribute("requests", requests);
-        return "views/request/request-uploader-page";
+        return "/views/request/request-uploader";
 
     }
 
     @PostAuthorize("hasAuthority('request.create.uploader')")
     @PostMapping({"", "/"})
-    public String request(String message, Authentication authentication) {
+    public String request(@ModelAttribute @Validated RequestForm requestForm, Authentication authentication, BindingResult bindingResult) {
+        if (bindingResult.hasErrors()) {
+            return "/views/request/request-uploader";
+
+        }
         Account account = (Account) authentication.getPrincipal();
+
         Request request = new Request();
         request.setRequester(account);
-        request.setMessage(message);
+        request.setMessage(requestForm.getMessage());
         requestRepository.save(request);
 
         return "redirect:/request";
     }
+
+    @PostAuthorize("hasAuthority('request.create.uploader')")
+    @GetMapping("/{id}/delete")
+    public String request(@PathVariable("id") Snowflake id, Authentication authentication) {
+
+        Request request = requestRepository.findById(id)
+            .orElseThrow(() -> new EntityNotFoundException("Request not found!"));
+
+
+        requestRepository.delete(request);
+
+        return "redirect:/request";
+    }
+
 
     @PostAuthorize("hasAuthority('request.cancel')")
     @GetMapping("/{id}/cancel")

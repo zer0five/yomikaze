@@ -66,7 +66,7 @@ public class ProfileController {
 
     @PostMapping("/{id}/edit")
     public String editProfile(@PathVariable("id") Snowflake id, @ModelAttribute @Validated EditProfileForm editProfileForm,
-      BindingResult bindingResult, Authentication authentication) {
+                              BindingResult bindingResult, Authentication authentication) {
         Account accountRepo = accountRepository.findById(id).orElseThrow(EntityNotFoundException::new);
         Account account = (Account) authentication.getPrincipal();
         Profile profile = accountRepo.getProfile();

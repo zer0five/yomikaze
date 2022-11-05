@@ -20,14 +20,14 @@ public class ReportComicController {
     private final ReportComicRepository reportComicRepository;
 
     @PostMapping("/report/comic")
-   public String reportComic(Snowflake id, String message, Authentication authentication){
+    public String reportComic(Snowflake id, String message, Authentication authentication) {
         Account account = (Account) authentication.getPrincipal();
-        Comic comic = comicRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("Comic not found")) ;
+        Comic comic = comicRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("Comic not found"));
         ReportComic reportComic = new ReportComic();
         reportComic.setReporter(account);
         reportComic.setMessage(message);
         reportComic.setComic(comic);
         reportComicRepository.save(reportComic);
-        return "redirect:/comic/" +id;
+        return "redirect:/comic/" + id;
     }
 }

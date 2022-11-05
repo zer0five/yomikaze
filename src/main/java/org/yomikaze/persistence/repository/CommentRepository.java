@@ -12,5 +12,4 @@ public interface CommentRepository extends CrudRepository<Comment, Snowflake> {
     Optional<Comment> findCommentByAccount(Account account);
 
 
-
 }
