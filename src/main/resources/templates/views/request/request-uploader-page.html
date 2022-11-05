@@ -190,7 +190,10 @@
                         <td class="pr-8 py-4 text-right">
                             <button class="btn btn-ghost rounded-full gap-2" th:if="*{approved == null}"
                                     x-init="feather.replace()">
-                                <i data-feather="trash-2"></i>
+                                <a class="gap-2" th:href="@{/request/delete/{id}(id = *{id})}">
+                                    <i data-feather="trash-2"></i>
+                                </a>
+
                             </button>
                         </td>
                     </tr>

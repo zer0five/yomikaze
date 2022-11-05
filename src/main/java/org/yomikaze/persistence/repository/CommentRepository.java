@@ -4,14 +4,16 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
-import org.springframework.stereotype.Repository;
+import org.yomikaze.persistence.entity.Account;
 import org.yomikaze.persistence.entity.Comment;
 import org.yomikaze.snowflake.Snowflake;
 
-@Repository
+import java.util.Optional;
+
 public interface CommentRepository extends CrudRepository<Comment, Snowflake> {
     long countByChapterId(Snowflake chapterId);
 
+    Optional<Comment> findCommentByAccount(Account account);
     long countByComicId(Snowflake comicId);
 
     long countByAccountId(Snowflake accountId);

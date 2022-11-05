@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="en" th:insert="layouts/dashboard">
+
+
+<head>
+    <title th:fragment="page-title">edit profile</title>
+
+</head>
+
+<body th:fragment="content">
+<!-- page -->
+<main class="min-h-screen w-full " x-data="layout">
+    <!-- header page -->
+
+
+    <div class="drawer">
+
+
+        <div class="drawer-content">
+            <section class="relative block">
+                <div class="container mx-auto max-w-xl px-4">
+                    <div
+                        class="relative flex flex-col min-w-0  w-full  shadow-xl rounded-lg mb-2 mt-4 pb-8">
+                        <div class="px-6">
+
+
+                            <div class="flex flex-wrap justify-center">
+                                <div class="w-1/3 lg:w-2/12 px-4 lg:order-2 flex justify-center">
+                                    <div class="indicator">
+                                        <span class="indicator-item indicator-bottom bg-transparent"><i class=""
+                                                                                                        data-feather='camera'
+                                                                                                        x-init='feather.replace()'></i></span>
+
+                                        <div class="avatar ">
+                                            <label
+                                                class="w-24 cursor-pointer rounded-full ring ring-primary ring-offset-base-100 ring-offset-2">
+                                                <input class="hidden" type="file"/>
+                                                <img alt="avatar" class="rounded-full"
+                                                     src="https://placeimg.com/192/192/people"/>
+                                            </label>
+                                        </div>
+                                    </div>
+
+
+                                </div>
+                                <div class="w-full lg:w-4/12 px-4 lg:order-3 lg:text-right lg:self-center">
+                                    <div class="py-6 px-3 mt-32 sm:mt-0">
+
+                                    </div>
+                                </div>
+                                <div class="w-full lg:w-4/12 px-4 lg:order-1">
+                                    <div class="flex justify-center py-4 lg:pt-4 pt-8">
+                                        <div class="lg:mr-4 p-3 text-center">
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+
+                            <!--/*@thymesVar id="editProfileForm" type="org.yomikaze.web.dto.form.EditProfileForm"*/-->
+                            <form class="text-center mt-12" method="POST"
+                                  th:action="@{/profile/{id}/edit(id = ${profile.account.id})}"
+                                  th:object="${editProfileForm}">
+                                <h3 class="text-4xl font-semibold leading-normal relative top-3 mb-2 text-blueGray-700"
+                                    th:text="${profile.displayName}">
+
+                                </h3>
+                                <div class="form-control">
+
+                                </div>
+                                <div class="form-control">
+                                    <label class="label" for="display-name">
+                                        <span class="label-text">Display name</span>
+                                    </label>
+                                    <input class="input input-bordered" id="display-name"
+                                           placeholder="Enter your display name"
+                                           th:errorclass="input-error" th:field="*{displayName}"
+                                           th:value="*{displayName}"
+                                           type="text"
+                                    />
+
+                                    <!--/*@thymesVar id="error" type="java.lang.String"*/-->
+                                    <span class="label text-error"
+                                          th:each="error : ${#fields.errors('displayName')}"
+                                          th:if="${#fields.hasErrors('displayName')}"
+                                          th:text="${#objects.nullSafe(#messages.msgOrNull(error), error)}">
+                                      </span>
+                                </div>
+                                <div class="form-control">
+                                    <label class="label" for="birthday">
+                                        <span class="label-text">Birthday</span>
+                                    </label>
+                                    <input class="input input-bordered" id="birthday"
+                                           placeholder="Enter your display name"
+                                           th:errorclass="input-error" th:field="*{birthday}"
+                                           th:value="*{birthday}"
+                                           type="date">
+                                </div>
+                                <div class="grid grid-cols-3 gap-6 mt-4">
+                                    <div class="form-control">
+                                        <label class="label cursor-pointer" for="show-birthday">
+                                            <span class="label-text">Show birthday</span>
+                                            <input class="toggle" id="show-birthday" th:check="*{showBirthday}"
+                                                   th:field="*{showBirthday}" type="checkbox"/>
+                                        </label>
+                                    </div>
+                                    <div class="form-control">
+                                        <label class="label cursor-pointer" for="show-email">
+                                            <span class="label-text">Show email</span>
+                                            <input class="toggle" id="show-email" th:check="*{showEmail}"
+                                                   th:field="*{showEmail}" type="checkbox"/>
+                                        </label>
+                                    </div>
+                                    <div class="form-control">
+                                        <label class="label cursor-pointer" for="show-library">
+                                            <span class="label-text">Show library</span>
+                                            <input class="toggle" id="show-library" th:check="*{showLibrary}"
+                                                   th:field="*{showLibrary}" type="checkbox"/>
+                                        </label>
+
+                                    </div>
+
+                                </div>
+                                <div class="form-control">
+                                    <label class="label" for="bio">
+                                        <span class="label-text">Bio</span>
+                                    </label>
+                                    <textarea class="input h-24 input-bordered"
+                                              id="bio"
+                                              placeholder="Tell about yourself"
+                                              th:errorclass="input-error" th:field="*{bio}">
+                                          </textarea>
+                                    <span class="label text-error"
+                                          th:if="${#fields.hasErrors('bio')}"
+                                          th:text="${#messages.msgOrNull(#fields.errors('bio'))}">
+                                                Bio must be less than 255 characters
+                                        </span>
+                                </div>
+                                <div class="form-control  mt-4">
+                                    <button class="btn btn-active btn-accent" type="submit">Save</button>
+                                </div>
+
+
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </div>
+
+        <div class="drawer-side">
+            <label class="drawer-overlay" for="my-drawer"></label>
+        </div>
+    </div>
+</main>
+
+<!-- script of profile -->
+<script>
+    document.addEventListener("alpine:init", () => {
+        Alpine.data("layout", () => ({
+            profileOpen: false,
+            asideOpen: true,
+        }));
+    });
+</script>
+
+<!-- footer -->
+
+</body>
+
+</html>

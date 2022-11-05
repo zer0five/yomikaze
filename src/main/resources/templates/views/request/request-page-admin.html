@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en" >
+<html lang="en">
 
 <head>
     <meta charset="UTF-8">
@@ -179,20 +179,21 @@
                     <tbody>
                     <!--/*@thymesVar id="requests" type="org.springframework.data.domain.Page"*/-->
                     <!--/*@thymesVar id="request" type="org.yomikaze.persistence.entity.Request"*/-->
-                    <tr
+                    <tr th:each="request : ${requests}"
+                        th:object="${request}"
                         class="bg-white border-b dark:bg-gray-800 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600">
                         <th class="px-6 py-4 font-medium text-gray-900 dark:text-white whitespace-nowrap" scope="row"
                             th:text="*{id.timestamp}">
 
                         </th>
                         <td class="px-6 py-4 font-medium">
-                            Trinh Duc Tuan Khoa
+
                         </td>
                         <td class="px-6 py-4">
-                            .....
+
                         </td>
                         <td class="px-6 py-4">
-                            .....
+
                         </td>
                         <td class="px-6 py-4 text-right">
                             <button class=" gap-2 mr-2" x-init="feather.replace()">
@@ -203,53 +204,7 @@
                             </button>
                         </td>
                     </tr>
-                    <tr
-                        class="bg-white border-b dark:bg-gray-800 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600">
-                        <th class="px-6 py-4 font-medium text-gray-900 dark:text-white whitespace-nowrap"
-                            scope="row">
-                            2
-                        </th>
-                        <td class="px-6 py-4 font-medium">
-                            Thai Binh Quoc Viet
-                        </td>
-                        <td class="px-6 py-4">
-                            ......
-                        </td>
-                        <td class="px-6 py-4">
-                            ......
-                        </td>
-                        <td class="px-6 py-4 text-right">
-                            <button class="mr-2 gap-2" x-init="feather.replace()">
-                                <i data-feather="check"></i>
-                            </button>
-                            <button class="mx-2 gap-2 w-6 h-6" x-init="feather.replace()">
-                                <i data-feather="x"></i>
-                            </button>
-                        </td>
-                    </tr>
-                    <tr class="bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-600">
-                        <th class="px-6 py-4 font-medium text-gray-900 dark:text-white whitespace-nowrap"
-                            scope="row">
-                            3
-                        </th>
-                        <td class="px-6 py-4 font-medium">
-                            Giang Truong Gia Lac
-                        </td>
-                        <td class="px-6 py-4">
-                            .....
-                        </td>
-                        <td class="px-6 py-4">
-                            .....
-                        </td>
-                        <td class="px-6 py-4 text-right">
-                            <button class="mr-2 gap-2" x-init="feather.replace()">
-                                <i data-feather="check"></i>
-                            </button>
-                            <button class="mx-2 gap-2 " x-init="feather.replace()">
-                                <i data-feather="x"></i>
-                            </button>
-                        </td>
-                    </tr>
+
                     </tbody>
                 </table>
             </div>
