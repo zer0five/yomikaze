@@ -17,13 +17,19 @@ body:
             placeholder: ex. email@example.com
         validations:
             required: false
+    - type: textarea
+         id: bug-description
+         attributes:
+            label: Description of the bug
+            description: Tell us what bug you encountered and what should have happened
+        validations:
+            required: true
     -   type: textarea
-        id: what-happened
+        id: steps-to-reproduce
         attributes:
-            label: What happened?
-            description: Also tell us, what did you expect to happen?
-            placeholder: Tell us what you see!
-            value: "A bug happened!"
+            label: Steps To Reproduce
+            description: Steps to reproduce the behavior.
+            placeholder: Please write the steps in a list form
         validations:
             required: true
    
