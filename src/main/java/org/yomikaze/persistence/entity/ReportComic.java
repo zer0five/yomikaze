@@ -20,9 +20,9 @@ import java.util.Objects;
 public class ReportComic {
     @Id
     @Column(
-            name = "id",
-            nullable = false,
-            updatable = false
+        name = "id",
+        nullable = false,
+        updatable = false
     )
     @GeneratedValue(generator = "report-comic-snowflake")
     @Setter(AccessLevel.NONE)
@@ -30,19 +30,19 @@ public class ReportComic {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(
-            name = "comic_id",
-            nullable = false,
-            updatable = false
+        name = "comic_id",
+        nullable = false,
+        updatable = false
     )
     @OnDelete(action = OnDeleteAction.CASCADE)
     @ToString.Exclude
-    private Comic comic ;
+    private Comic comic;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(
-            name = "reporter_id",
-            nullable = false,
-            updatable = false
+        name = "reporter_id",
+        nullable = false,
+        updatable = false
     )
     @OnDelete(action = OnDeleteAction.CASCADE)
     @ToString.Exclude
@@ -53,15 +53,15 @@ public class ReportComic {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(
-            name = "approved_by",
-            nullable = false,
-            updatable = false
+        name = "approved_by",
+        nullable = false,
+        updatable = false
     )
     @OnDelete(action = OnDeleteAction.CASCADE)
     @ToString.Exclude
     private Account approvedBy;
 
-    @Column(name="approved")
+    @Column(name = "approved")
     private Boolean approved;
 
     @Override

@@ -14,6 +14,7 @@ import java.util.Set;
 @RequiredArgsConstructor
 public class RedirectService {
 
+    private static final URI DEFAULT_REDIRECT = URI.create("/");
     private final Set<String> blacklist = new HashSet<>(Arrays.asList(
         "/login", "/register", "/sign-in", "/sign-up", "/logout", "/sign-out"
     ));
@@ -37,8 +38,6 @@ public class RedirectService {
     public void storeRedirect(HttpSession session, Optional<URI> referer) {
         storeRedirect(session, referer.orElse(DEFAULT_REDIRECT));
     }
-
-    private static final URI DEFAULT_REDIRECT = URI.create("/");
 
     public URI getRedirect(HttpSession session) {
         if (session == null) {

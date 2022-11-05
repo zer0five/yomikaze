@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en" th:insert="layouts/dashboard">
+
+<head>
+    <title th:fragment="page-title">request uploader</title>
+
+
+</head>
+
+<body>
+
+
+<!-- page -->
+<main class="min-h-screen w-full" th:fragment="content">
+    <!-- header page -->
+
+
+    <div class="flex">
+
+
+        <!-- main content page -->
+        <div class="max-w-2xl mx-auto">
+            <div class="relative shadow-md sm:rounded-lg">
+                <div class="p-4 text-white flex justify-end">
+                    <label
+                        class="bg-red-400 rounded-full px-2 py-1 hover:scale-95 hover:bg-red-500 transition duration-150 ease-in-outbtn modal-button"
+                        for="my-modal-3">Send
+                        Request</label>
+                </div>
+
+                <input class="modal-toggle" id="my-modal-3" type="checkbox"/>
+                <div class="modal">
+                    <div class="modal-box relative">
+                        <label class="btn btn-sm btn-circle absolute right-2 top-2" for="my-modal-3">✕</label>
+                        <h3 class="text-lg font-bold"> Request to become uploader</h3>
+
+                        <p class="py-4 text-lg"></p>
+                        <!--Form start -->
+                        <!--/*@thymesVar id="requestForm" type="org.yomikaze.web.dto.form.RequestForm"*/-->
+                        <form method="post" th:action="@{/request}" th:object="${requestForm}">
+                            <div class="p-6 -mt-10 space-y-6">
+                                <label class="block mb-2 text-xl font-medium text-gray-900 dark:text-gray-400"
+                                       for="message">Your
+                                    Message</label>
+
+                                <!-- Place to enter message-->
+                                <textarea
+                                    class="block p-2.5 w-full resize-none text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                                    id="message" name="message"
+                                    placeholder="Your message..." required
+                                    rows="4" th:errorclass="input-error"
+                                    th:field="*{message}"></textarea>
+                                <span class="label text-error"
+                                      th:if="${#fields.hasErrors('message')}"
+                                      th:text="${#messages.msgOrNull(#fields.errors('message'))}">
+                                            Error in Message.
+                            </span>
+                            </div>
+                            <!-- Modal footer -->
+                            <div class="flex justify-center">
+                                <input
+                                    class="border rounded-full bg-sky-400 text-base text-white p-1 px-2 hover:bg-sky-500 hover:scale-95 transition duration-150 ease-in-out"
+                                    type="submit"
+                                    value="Request">
+                            </div>
+                        </form>
+                        <!--Form end -->
+
+
+                    </div>
+                </div>
+
+                <table class="w-full text-sm text-left text-gray-500 dark:text-gray-400">
+                    <thead class="uppercase">
+                    <tr>
+
+                        <th class="px-6 py-3" scope="col">
+                            Date
+                        </th>
+                        <th class="px-6 py-3" scope="col">
+                            Message
+                        </th>
+                        <th class="px-6 py-3" scope="col">
+                            Status
+                        </th>
+
+                        <th class="px-6 py-3" scope="col">
+                            Action
+                        </th>
+                    </tr>
+                    </thead>
+                    <!--/*@thymesVar id="requests" type="org.springframework.data.domain.Page"*/-->
+                    <!--/*@thymesVar id="request" type="org.yomikaze.persistence.entity.Request"*/-->
+                    <tbody>
+                    <tr
+                        class="bg-white border-b dark:bg-gray-800 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600"
+                        th:each="request : ${requests}"
+                        th:object="${request}">
+                        <th class="px-6 py-4 font-medium text-gray-900 dark:text-white whitespace-nowrap" scope="row"
+                            th:text="*{#dates.format(id.timestamp, 'hh:mm:ss dd/MM/yyyy')}">
+                        </th>
+                        <td class="px-6 py-4 " th:text="*{message}">
+
+                        </td>
+                        <td class="px-6 py-4">
+                            <span class="badge badge-warning gap-2" th:if="*{approved == null}">
+                                Pending
+                            </span>
+                            <span class="badge badge-error gap-2" th:if="*{approved != null && not approved}">
+                                Rejected
+                            </span>
+                            <span class="badge badge-success gap-2" th:if="*{approved != null && approved}">
+                                Accepted
+                            </span>
+                        </td>
+                        <td class="pr-8 py-4 text-right">
+                            <button class="btn btn-ghost rounded-full gap-2" th:if="*{approved == null}"
+                                    x-init="feather.replace()">
+                                <a class="gap-2" th:href="@{/request/{id}/delete(id = *{id})}">
+                                    <i data-feather="trash-2"></i>
+                                </a>
+                            </button>
+                        </td>
+                    </tr>
+
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</main>
+
+
+<!-- footer -->
+
+
+</body>
+
+</html>

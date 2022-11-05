@@ -30,6 +30,8 @@ import java.util.regex.Pattern;
 @RequiredArgsConstructor
 public class ComicService {
 
+    private static final Pattern NON_LATIN = Pattern.compile("[^\\w-]");
+    private static final Pattern WHITESPACE = Pattern.compile("\\s");
     private final GenreRepository genreRepository;
     private final ComicRepository comicRepository;
     private final ChapterRepository chapterRepository;
@@ -37,9 +39,6 @@ public class ComicService {
     private final LibraryRepository libraryRepository;
     private final HistoryRepository historyRepository;
     private final DatabaseImageStorageService imageStorageService;
-
-    private static final Pattern NON_LATIN = Pattern.compile("[^\\w-]");
-    private static final Pattern WHITESPACE = Pattern.compile("\\s");
 
     public String getSlug(Comic comic) {
         String name = comic.getName();

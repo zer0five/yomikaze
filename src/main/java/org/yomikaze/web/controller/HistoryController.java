@@ -19,7 +19,6 @@ import org.yomikaze.persistence.repository.HistoryRepository;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
 import java.util.stream.Collectors;
 
 @Controller
@@ -37,7 +36,7 @@ public class HistoryController {
     ) {
         Account account = (Account) authentication.getPrincipal();
         Pageable withSort = PageRequest.of(pageable.getPageNumber(), pageable.getPageSize(), Comic.DEFAULT_SORT);
-        Page<History> histories = historyRepository.findAllByAccount(account,pageable);
+        Page<History> histories = historyRepository.findAllByAccount(account, pageable);
         List<Comic> comicList = new ArrayList<>(histories.stream().map(history -> history.getChapter().getComic()).collect(Collectors.toSet()));
         Page<Comic> comics = new PageImpl<>(comicList);
         model.addAttribute("comics", comics);

@@ -85,7 +85,7 @@
                                 <div th:if="${profile.bio!=null}" class="max-w-4xl mt-8 p-4 text-gray-800 bg-white rounded-lg shadow">
                                     <div class="mb-2">
                                         <div class="h-3 text-3xl text-left text-gray-600">“</div>
-                                        <p th:text="${profile.bio}" class="px-4 text-xl text-center text-gray-600">
+                                        <p th:text="${profile.bio}" class=" text-xl text-center text-gray-600">
 
                                         </p>
                                         <div class="h-3 text-3xl text-right text-gray-600">”</div>
@@ -99,7 +99,6 @@
                                                      th:attr="placeholder=${profile.account.email}"
                                                      class="input input-ghost w-full max-w-xs" readonly/>
                                     </label>
-
                                 </div>
                                 <div class="mb-2 ml-32 text-start font-medium  mt-1">
                                     <label for="username">
@@ -107,9 +106,7 @@
                                                         th:attr="placeholder=${profile.account.username}"
                                                         class="input input-ghost w-full max-w-xs" readonly/>
                                     </label>
-
                                 </div>
-
                                 <div class="mb-2 ml-32 text-start font-medium  mt-1">
                                     <div>Birthday: <span class="mx-4 text-gray-400"
                                                          th:text="${#dates.format(profile.birthday, 'dd-MM-yyyy')}"></span>

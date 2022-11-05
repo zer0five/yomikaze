@@ -18,54 +18,54 @@ public interface ComicRepository extends CrudRepository<Comic, Snowflake> {
 
     @Query(
         // @formatter:off
-            "select c " +
+        "select c " +
             "from #{#entityName} c " +
-                "join c.genres g " +
+            "join c.genres g " +
             "where g in (:#{#genres}) " +
             "group by c " +
             "having count(c) = :#{#genres.size.longValue}"
-            // @formatter:on
+        // @formatter:on
     )
     Page<Comic> findByGenresContainingAll(Collection<Genre> genres, Pageable pageable);
 
     @Query(
         // @formatter:off
-            "select c " +
+        "select c " +
             "from #{#entityName} c " +
             "where c not in (" +
-                "select c " +
-                "from #{#entityName} c " +
-                "join c.genres g " +
-                "where g in (:#{#genres}) " +
-                "group by c " +
-                "having count(c) = :#{#genres.size.longValue} " +
+            "select c " +
+            "from #{#entityName} c " +
+            "join c.genres g " +
+            "where g in (:#{#genres}) " +
+            "group by c " +
+            "having count(c) = :#{#genres.size.longValue} " +
             ")"
-            // @formatter:on
+        // @formatter:on
     )
     Page<Comic> findByGenresContainingNone(Collection<Genre> genres, Pageable pageable);
 
     @Query(
         // @formatter:off
-            "select c " +
+        "select c " +
             "from #{#entityName} c " +
             "where c not in (" +
-                "select c " +
-                "from #{#entityName} c " +
-                    "join c.genres g " +
-                "where g in (:#{#blacklist}) " +
-                "group by c " +
-                "having count(c) = :#{#blacklist.size.longValue} " +
+            "select c " +
+            "from #{#entityName} c " +
+            "join c.genres g " +
+            "where g in (:#{#blacklist}) " +
+            "group by c " +
+            "having count(c) = :#{#blacklist.size.longValue} " +
             ") " +
             "and c in (" +
-                "select c " +
-                "from #{#entityName} c " +
-                    "join c.genres g " +
-                "where g in (:#{#whitelist}) " +
-                "group by c " +
-                "having count(c) = :#{#whitelist.size.longValue} " +
+            "select c " +
+            "from #{#entityName} c " +
+            "join c.genres g " +
+            "where g in (:#{#whitelist}) " +
+            "group by c " +
+            "having count(c) = :#{#whitelist.size.longValue} " +
             ") " +
             "group by c "
-            // @formatter:on
+        // @formatter:on
     )
     Page<Comic> findByGenresContainingAllAndGenresContainingNone(Collection<Genre> whitelist, Collection<Genre> blacklist, Pageable pageable);
 

@@ -3,7 +3,6 @@ package org.yomikaze.service;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.Validate;
-import org.hibernate.engine.jdbc.BlobProxy;
 import org.jetbrains.annotations.Nullable;
 import org.springframework.core.io.InputStreamResource;
 import org.springframework.core.io.Resource;
@@ -17,8 +16,6 @@ import org.yomikaze.snowflake.Snowflake;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
-import java.sql.Blob;
-import java.sql.SQLException;
 import java.text.MessageFormat;
 import java.util.Optional;
 
