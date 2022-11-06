@@ -8,6 +8,7 @@ import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMailMessage;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.security.authentication.AccountExpiredException;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.oauth2.jwt.*;
 import org.springframework.stereotype.Service;
 import org.springframework.web.util.UriComponentsBuilder;
@@ -16,6 +17,7 @@ import org.thymeleaf.context.Context;
 import org.yomikaze.persistence.entity.Account;
 import org.yomikaze.persistence.repository.AccountRepository;
 import org.yomikaze.snowflake.Snowflake;
+import org.yomikaze.web.dto.form.account.ChangePasswordForm;
 
 import javax.mail.MessagingException;
 import javax.persistence.EntityNotFoundException;
@@ -157,5 +159,17 @@ public class AccountService {
         account.setPassword(password);
         accountRepository.save(account);
         log.info("Password for account {} reset", account);
+    }
+
+    private final PasswordEncoder passwordEncoder;
+
+    public void changePassword(Account account, ChangePasswordForm form) {
+        if (!passwordEncoder.matches(form.getOldPassword(), account.getPassword())) {
+            throw new IllegalArgumentException("Invalid password");
+        }
+        String newPassword = form.getNewPassword();
+        newPassword = passwordEncoder.encode(newPassword);
+        account.setPassword(newPassword);
+        accountRepository.save(account);
     }
 }
