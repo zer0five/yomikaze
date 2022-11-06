@@ -7,7 +7,9 @@
 <div class="flex flex-col align-middle gap-8"
      th:switch="${comics == null || #lists.isEmpty(comics.getContent())}">
     <div class="w-full mx-auto rounded-box p-8 shadow-xl">
-        <form action="#" method="get" th:action="@{/comic/search/advanced}" th:object="${advancedSearchForm}">
+        <!--/*@thymesVar id="advancedSearchForm" type="org.yomikaze.web.dto.comic.AdvancedSearchForm"*/-->
+        <form action="/comic/search/advanced" method="get" th:action="@{/comic/search/advanced}"
+              th:object="${advancedSearchForm}">
             <div class="grid grid-cols-2 gap-4">
                 <div class="form-control">
                     <label class="label" for="name">
@@ -35,6 +37,7 @@
                                  xmlns="http://www.w3.org/2000/svg">
                                 <path :d="d[state]" x-data="{ d: ['', 'M20 6 9 17l-5-5', 'M18 6 6 18M6 6l12 12'] }"/>
                             </svg>
+
                             <input :checked="state === 1" class="hidden"
                                    th:data-checked="${advancedSearchForm.includeGenre.contains(genre.id)}"
                                    th:field="*{includeGenre}" th:value="${genre.id}" type="checkbox"
