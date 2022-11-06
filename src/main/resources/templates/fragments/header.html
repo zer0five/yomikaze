@@ -55,11 +55,11 @@
                             sec:authorize="hasAnyAuthority('comic.manage', 'genre.manage','request.create.uploader')">
                             <span>Manage</span>
                         </li>
-                        <li sec:authorize="hasAuthority('manage.create.uploader')">
-                            <a href="/request"
-                               th:href="@{/request}">
-                                <i aria-hidden="true" class="text-base-content" data-feather="message-circle"></i>
-                                <span class="text-base-content">Request to become uploader</span>
+                        <li sec:authorize="hasAuthority('request.manage')">
+                            <a href="/account/manage"
+                               th:href="@{/account/manage}">
+                                <i aria-hidden="true" class="text-base-content" data-feather="users"></i>
+                                <span class="text-base-content">Manage Account</span>
                             </a>
                         </li>
                         <li sec:authorize="hasAuthority('comic.manage')">
@@ -83,7 +83,7 @@
                                 <span class="text-base-content">Manage genres</span>
                             </a>
                         </li>
-                        <li sec:authorize="hasAuthority('request.create.uploader') && !hasAuthority('request.manage')">
+                        <li sec:authorize="hasAuthority('request.create.uploader') && !hasAuthority('comic.manage')">
                             <a href="/request"
                                th:href="@{/request}">
                                 <i aria-hidden="true" class="text-base-content" data-feather="message-circle"></i>

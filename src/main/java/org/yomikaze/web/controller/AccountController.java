@@ -80,7 +80,7 @@ public class AccountController {
     }
 
     @GetMapping("/manage")
-    @PostAuthorize("hasAuthority('account.manage')")
+    @PostAuthorize("hasAuthority('request.manage')")
     public String manageAccount( Model model) {
 
         model.addAttribute("accounts",accountRepository.findAll());
