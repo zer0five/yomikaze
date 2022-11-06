@@ -48,18 +48,25 @@ public class RequestController {
 
     @PostAuthorize("hasAuthority('request.create.uploader')")
     @PostMapping
-    public String request(@Validated @ModelAttribute RequestForm requestForm, BindingResult bindingResult, Authentication authentication, Model model) {
-        model.addAttribute("showForm", true);
+    public String request(
+        @Validated @ModelAttribute RequestForm requestForm,
+        BindingResult bindingResult,
+        Authentication authentication,
+        @PageableDefault(size = Integer.MAX_VALUE) Pageable pageable,
+        Model model
+    ) {
+        Account account = (Account) authentication.getPrincipal();
         if (bindingResult.hasErrors()) {
+            model.addAttribute("showForm", true);
+            Pageable actualPageable = pageable.getPageSize() == Integer.MAX_VALUE ? Pageable.unpaged() : pageable;
+            Page<Request> requests = requestRepository.findAllByRequester(account, actualPageable);
+            model.addAttribute("requests", requests);
             return "/views/request/request-uploader";
         }
-        Account account = (Account) authentication.getPrincipal();
-
         Request request = new Request();
         request.setRequester(account);
         request.setMessage(requestForm.getMessage());
         requestRepository.save(request);
-
         return "redirect:/request";
     }
 
