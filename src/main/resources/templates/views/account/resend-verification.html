@@ -20,7 +20,8 @@
             th:object="${emailForm}"
             x-data="{submit: false}">
             <div
-                class="alert alert-success shadow-lg"
+                class="alert shadow-lg"
+                th:classappend="${#objects.nullSafe(success, false) ? 'alert-success' : 'alert-error'}"
                 role="alert"
                 th:each="error : ${#fields.globalErrors()}"
                 th:if="${#fields.hasGlobalErrors()}"
@@ -63,15 +64,22 @@
                     </button>
                 </div>
 
-                <div class="w-full text-sm py-2 gap-2 float-right">
-                    <p>
+                <div class="w-full text-sm py-2 gap-2">
+                    <p class="float-right">
                         Already have token?
                         <a class="link link-accent" href="/account/verify/resend"
                            th:href="@{/account/verify}">
                             Verify
                         </a>
                     </p>
-                    <p>
+                    <p class="float-right">
+                        Account already verified?
+                        <a class="link link-accent" href="/sign-in"
+                           th:href="@{/sign-in}">
+                            Sign In
+                        </a>
+                    </p>
+                    <p class="float-right">
                         Don't have an account?
                         <a class="link link-accent" href="/sign-up" th:href="@{/sign-up}">
                             Sign Up

@@ -133,8 +133,7 @@ public class AccountService {
         Account account = accountRepository.findById(id).orElseThrow(EntityNotFoundException::new);
         log.info("Verifying account {}", account);
         if (account.isVerified()) {
-            log.info("Account {} already verified", account);
-            return;
+            throw new IllegalStateException("Account already verified");
         }
         account.setVerified(true);
         accountRepository.save(account);
