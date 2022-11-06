@@ -64,6 +64,7 @@ class ComicRepositoryTest {
         comicRepository.save(comic);
         comic = new Comic();
         comic.setName("ONE PUNCH MAN");
+        comic.setAliases(singletonList("OPM"));
         comicRepository.save(comic);
         comic = new Comic();
         comic.setName("one one");
@@ -126,11 +127,19 @@ class ComicRepositoryTest {
 
     }
     @Test
-    void testfindByNameStartingWithIgnoreCase(){
+    void testFindByNameStartingWithIgnoreCase(){
         Page<Comic> comics = comicRepository.findByNameStartingWithIgnoreCase("p",pageable);
         assertEquals(0,comics.getTotalElements());
     }
 
-
+    @Test
+    void testFindByGenresContaining(){
+        Page<Comic> comics = comicRepository.findByGenresContaining(genresMap.get("Action"),pageable);
+        assertEquals(3,comics.getTotalElements());
+        Collection<String> comicList = comics.stream().map(Comic::getName).collect(Collectors.toList());
+        assertTrue(comicList.contains("Test 01"));
+        assertTrue(comicList.contains("Test 02"));
+        assertTrue(comicList.contains("Test 03"));
+    }
 
 }
