@@ -13,6 +13,7 @@ import org.yomikaze.snowflake.Snowflake;
 
 import javax.persistence.EntityExistsException;
 import javax.persistence.EntityNotFoundException;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -53,4 +54,17 @@ public class LibraryService {
         removeComic(account, comic);
     }
 
+    public void toggleComic(Account account, Snowflake id) {
+        Comic comic = comicRepository.findById(id).orElseThrow(EntityNotFoundException::new);
+        Optional<Library> library = libraryRepository.findByAccountAndComic(account, comic.getId());
+        if (library.isPresent()) {
+            libraryRepository.delete(library.get());
+        } else {
+            addComic(account, comic);
+        }
+    }
+
+    public boolean isInLibrary(Account account, Snowflake id) {
+        return libraryRepository.findByAccountAndComic(account, id).isPresent();
+    }
 }
