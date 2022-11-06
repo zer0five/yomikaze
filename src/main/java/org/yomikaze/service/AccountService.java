@@ -74,7 +74,7 @@ public class AccountService {
         sendMail(ctx, "verification", "Yomikaze Account Verification", account);
     }
 
-    public void sendResetEmail(Account account) {
+    public void sendResetPasswordEmail(Account account) {
         log.info("Reset for {}", account.getEmail());
         String token = generateResetToken(account);
         log.info("Generated token {}", token);

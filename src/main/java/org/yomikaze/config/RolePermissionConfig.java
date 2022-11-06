@@ -126,10 +126,7 @@ public class RolePermissionConfig implements ApplicationListener<ContextRefreshe
             createPermissionIfNotFound("chapter.delete.other"),
             createPermissionIfNotFound("page.delete.other"),
             createPermissionIfNotFound("user.ban"),
-            createPermissionIfNotFound("user.unban"),
-            createPermissionIfNotFound("user.delete"),
-            createPermissionIfNotFound("user.delete.all"),
-            createPermissionIfNotFound("user.update")
+            createPermissionIfNotFound("user.pardon")
         );
         Role adminRole = createRoleIfNotFound(admin, adminPermissions);
         Optional<Account> adminAccount = accountRepository.findByUsername("admin");

@@ -2,7 +2,6 @@ package org.yomikaze.web.dto.form;
 
 import lombok.Data;
 import org.hibernate.validator.constraints.Length;
-import org.springframework.lang.Nullable;
 
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Pattern;
@@ -14,7 +13,6 @@ public class GenreForm {
     @Pattern(regexp = "^[a-zA-Z0-9\\s]+$", message = "genre.name.invalid")
     private String name;
 
-    @Nullable
-    @Pattern(regexp = "^[a-zA-Z0-9\\s]+$", message = "genre.description.invalid")
+    @Length(max = 255, message = "genre.description.invalid")
     private String description;
 }

@@ -1,4 +1,4 @@
-package org.yomikaze.web.dto.form;
+package org.yomikaze.web.dto.form.account;
 
 import lombok.Data;
 
