@@ -1,10 +1,11 @@
 <!DOCTYPE html>
-<html lang="en" th:insert="layouts/dashboard" xmlns="http://www.w3.org/1999/html">
+<html lang="en" th:insert="layouts/dashboard" xmlns="http://www.w3.org/1999/html"
+      xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity5">
 <head>
     <title th:fragment="page-title">comic::new</title>
 </head>
 <body>
-<!--/*@thymesVar id="comic" type="org.yomikaze.web.dto.comic.CreateComicForm"*/-->
+<!--/*@thymesVar id="comic" type="org.yomikaze.web.dto.comic.EditComicForm"*/-->
 <div class="min-h-[calc(100vh-10rem)]" th:fragment="content">
     <div class="card shadow-2xl bg-base-300 mx-auto my-10 w-10/12 rounded-box">
         <form class="card-body gap-4" enctype="multipart/form-data" method="POST"
@@ -34,7 +35,7 @@
                             <img :src="files[0] ? URL.createObjectURL(files[0]) : $el.dataset.current"
                                  alt="thumbnail"
                                  class="w-[190px] h-[280px] object-cover object-center rounded-box shadow-2xl cursor-pointer"
-                                 th:data-current="*{thumbnail}"
+                                 th:data-current="*{thumbnailUri}"
                             />
                         </span>
                         <input
@@ -174,6 +175,92 @@
                     </div>
                 </div>
             </fieldset>
+            <hr/>
+            <label class="collapse collapse-plus bg-base-300 shadow-xl rounded-box" x-data="{open: true}">
+                <input :checked="open" class="peer" type="checkbox" x-model="open"/>
+                <span class="collapse-title gap-2">
+                    <i data-feather="list"></i>
+                    <span class="font-bold">
+                        Chapter
+                    </span>
+                    <span class="text-sm text-neutral italic"
+                          x-text="open ? '(click to collapse)' : '(click to expand)'">
+                        (click to expand)
+                    </span>
+                </span>
+                <span class="collapse-content" th:switch="${comic.chapters.isEmpty()}">
+                    <a class="btn btn-ghost w-full border-dashed rounded-box border border-dashed border-2"
+                       sec:authorize="!anonymous && hasAuthority('chapter.add')"
+                       th:href="@{/comic/{id}/chapter/add(id=${comic.id})}">
+                        <i data-feather="plus"></i>
+                        Add chapter
+                    </a>
+                    <span class="italic" th:case="true">
+                        No chapters available
+                    </span>
+                    <span class="max-h-[500px] divide-y divide-dashed overflow-y-auto pr-4"
+                          id="chapters" th:case="false"
+                          x-init="$store.data.chapters = Array.from($el.children).map(e => e.id)"
+                    >
+                        <!--/*@thymesVar id="chapter" type="org.yomikaze.persistence.entity.Chapter"*/-->
+                        <!--/*@thymesVar id="i" type="java.lang.Integer"*/-->
+                        <span class="flex flex-nowrap items-center gap-4 p-2 hover:bg-accent hover:bg-opacity-30"
+                              th:each="i : ${#numbers.sequence(0, comic.chapterList.size() - 1)}"
+                              th:id="|${chapter.id}|"
+                              th:with="chapter = ${@chapterRepository.findById(comic.chapterList.get(i).id).orElse(null)}"
+                              th:x-ref="${chapter.id}">
+                            <span class="handle">
+                                <button class="btn btn-circle btn-ghost btn-sm" type="button">
+                                    <i data-feather="menu"></i>
+                                </button>
+                            </span>
+                            <a class="flex-grow flex flex-nowrap items-center gap-4"
+                               th:href="@{/comic/{id}/chapter/{i}(id=${comic.id}, i=${i})}">
+                                <span class="flex-grow">
+                                    [[${chapter.title}]]
+                                </span>
+                                <span th:x-text="| moment('${chapter.id.timestamp.toInstant()}').fromNow() |">[[${chapter.id.timestamp}]]</span>
+                            </a>
+                            <span class="gap-2">
+                                <button class="btn btn-ghost btn-circle btn-sm" type="button">
+                                    <i data-feather="edit"></i>
+                                </button>
+                                <button class="btn btn-ghost btn-circle btn-sm" type="button">
+                                    <i data-feather="delete"></i>
+                                </button>
+                            </span>
+                        </span>
+                    </span>
+                </span>
+                <input :value="$store.data.chapters.join('\n')" name="chapters" th:field="*{chapters}" type="hidden"/>
+                <script src="/asset/js/Sortable.min.js" th:src="@{/asset/js/Sortable.min.js}"></script>
+                <script>
+                    document.addEventListener("alpine:init", () => {
+                        Alpine.store("data", {
+                            chapters: []
+                        });
+                    });
+                    document.addEventListener("DOMContentLoaded", () => {
+                        let chapters = document.getElementById('chapters');
+                        Sortable.create(chapters, {
+                            animation: 150,
+                            scrollSensitivity: 300,
+                            scrollSpeed: 10,
+                            scroll: true,
+                            store: {
+                                set: function (sortable) {
+                                    let chapters = sortable.el.children;
+                                    let chapterIds = [];
+                                    for (let i = 0; i < chapters.length; i++) {
+                                        chapterIds.push(chapters[i].id);
+                                    }
+                                    Alpine.store('data').chapters = chapterIds;
+                                }
+                            }
+                        });
+                    });
+                </script>
+            </label>
             <hr/>
             <button class="btn btn-primary" type="submit">Save</button>
         </form>

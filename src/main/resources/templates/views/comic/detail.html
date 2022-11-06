@@ -120,8 +120,7 @@
                         </dt>
                         <dd class="col-span-3">
                             <span th:text="${comic.updatedAt}"
-                                  th:x-text="| moment('${comic.updatedAt}').fromNow() |">
-                                [[${comic.updatedAt}]]
+                                  th:x-text="|moment('${comic.updatedAt}').fromNow()|">
                             </span>
                         </dd>
                     </dl>

@@ -29,6 +29,7 @@ import org.yomikaze.persistence.repository.GenreRepository;
 import org.yomikaze.service.ComicService;
 import org.yomikaze.service.HistoryService;
 import org.yomikaze.snowflake.Snowflake;
+import org.yomikaze.web.dto.comic.AdvancedSearchForm;
 import org.yomikaze.web.dto.comic.ComicDetailModel;
 import org.yomikaze.web.dto.comic.CreateComicForm;
 import org.yomikaze.web.dto.comic.EditComicForm;
@@ -40,6 +41,8 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
+import java.util.function.Predicate;
+import java.util.stream.Collectors;
 
 @Controller
 @RequiredArgsConstructor
@@ -105,6 +108,76 @@ public class ComicController {
         }
         model.addAttribute("comics", result);
         return "views/comic/search";
+    }
+
+    @GetMapping("/search/advanced")
+    public String advancedSearch(
+        @PageableDefault(size = 12) Pageable pageable,
+        Model model,
+        @ModelAttribute AdvancedSearchForm form
+    ) {
+        Pageable withSort = PageRequest.of(pageable.getPageNumber(), pageable.getPageSize(), Comic.DEFAULT_SORT);
+        Page<Comic> result = new PageImpl<>(Collections.emptyList());
+        List<Genre> whitelist = form.getIncludeGenre().stream().map(genreRepository::findById)
+            .filter(Optional::isPresent).map(Optional::get).collect(Collectors.toList());
+        List<Genre> blacklist = form.getExcludeGenre().stream().map(genreRepository::findById)
+            .filter(Optional::isPresent).map(Optional::get).collect(Collectors.toList());
+        if (!form.getExcludeGenre().isEmpty() && !form.getIncludeGenre().isEmpty()) {
+            result = comicRepository.findByGenresContainingAllAndGenresContainingNone(
+                whitelist, blacklist, withSort
+            );
+        } else if (!form.getIncludeGenre().isEmpty()) {
+            result = comicRepository.findByGenresContainingAll(whitelist, withSort);
+        } else if (!form.getExcludeGenre().isEmpty()) {
+            result = comicRepository.findByGenresContainingNone(blacklist, withSort);
+        } else {
+            result = comicRepository.findAll(withSort);
+        }
+        Predicate<Comic> nameFilter = comic -> {
+            if (form.getNameOrAlias() == null || form.getNameOrAlias().isEmpty()) {
+                return true;
+            }
+            return comic.getName().toLowerCase().contains(form.getNameOrAlias().toLowerCase()) ||
+                comic.getAliases().stream().anyMatch(alias -> alias.toLowerCase().contains(form.getNameOrAlias().toLowerCase()));
+        };
+        Predicate<Comic> authorFilter = comic -> {
+            if (form.getAuthors() == null || form.getAuthors().isEmpty()) {
+                return true;
+            }
+            return comic.getAuthors()
+                .stream().anyMatch(author -> author.toLowerCase().contains(form.getAuthors()));
+        };
+        Predicate<Comic> chapterCountFilter = comic -> {
+            if (form.getChapterCount() == null) {
+                return true;
+            }
+            return comic.getChapters().size() >= form.getChapterCount();
+        };
+        Predicate<Comic> chapterCountMaxFilter = comic -> {
+            if (form.getChapterCountMax() == null) {
+                return true;
+            }
+            return comic.getChapters().size() <= form.getChapterCountMax();
+        };
+        Predicate<Comic> uploaderFilter = comic -> {
+            if (form.getUploader() == null || form.getUploader().isEmpty()) {
+                return true;
+            }
+            return
+                comic.getUploader().getProfile().getDisplayName().toLowerCase().contains(form.getUploader().toLowerCase()) ||
+                    comic.getUploader().getUsername().toLowerCase().contains(form.getUploader().toLowerCase());
+        };
+
+        result = result.stream()
+            .filter(nameFilter)
+            .filter(authorFilter)
+            .filter(chapterCountFilter)
+            .filter(chapterCountMaxFilter)
+            .filter(uploaderFilter)
+            .collect(Collectors.collectingAndThen(Collectors.toList(), list -> new PageImpl<>(list, withSort, list.size())));
+
+        model.addAttribute("comics", result);
+        return "views/comic/advanced-search";
     }
 
     @GetMapping("/create")
@@ -177,7 +250,8 @@ public class ComicController {
     public String edit(@PathVariable Snowflake id, Model model) {
         Comic comic = comicRepository.findById(id)
             .orElseThrow(() -> new EntityNotFoundException("comic.not-found"));
-        model.addAttribute("comic", comic);
+        EditComicForm form = new EditComicForm(comic);
+        model.addAttribute("comic", form);
         return "views/comic/edit";
     }
 

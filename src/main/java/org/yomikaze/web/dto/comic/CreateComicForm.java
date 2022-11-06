@@ -2,8 +2,11 @@ package org.yomikaze.web.dto.comic;
 
 
 import lombok.Data;
+import lombok.NoArgsConstructor;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.lang.Nullable;
+import org.yomikaze.persistence.entity.Comic;
+import org.yomikaze.persistence.entity.Genre;
 import org.yomikaze.snowflake.Snowflake;
 
 import javax.validation.constraints.NotBlank;
@@ -13,8 +16,10 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Data
+@NoArgsConstructor
 public class CreateComicForm {
 
     @NotBlank
@@ -36,6 +41,16 @@ public class CreateComicForm {
 
     private List<Snowflake> genres = new ArrayList<>();
 
+    public CreateComicForm(Comic comic) {
+        this.name = comic.getName();
+        this.aliases = String.join("\n", comic.getAliases());
+        this.authors = String.join("\n", comic.getAuthors());
+        this.description = comic.getDescription();
+        this.published = comic.getPublished();
+        this.finished = comic.getFinished();
+        this.genres = comic.getGenres().stream().map(Genre::getId).collect(Collectors.toList());
+    }
+
     public List<String> getAliasList() {
         return readLines(aliases);
     }
@@ -44,7 +59,7 @@ public class CreateComicForm {
         return readLines(authors);
     }
 
-    private List<String> readLines(String text) {
+    protected List<String> readLines(String text) {
         List<String> result = new ArrayList<>();
         String textSafe = Optional.ofNullable(text).orElse("");
         BufferedReader reader = new BufferedReader(new StringReader(textSafe));
