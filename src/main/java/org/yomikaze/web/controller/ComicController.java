@@ -175,7 +175,7 @@ public class ComicController {
         Comic comic = comicRepository.findById(id)
             .orElseThrow(() -> new EntityNotFoundException("comic.not-found"));
         model.addAttribute("comic", comic);
-        return "views/comic/form";
+        return "views/comic/edit";
     }
 
     @PostMapping(path = "/{id}/edit", consumes = {"multipart/form-data"})
@@ -183,7 +183,7 @@ public class ComicController {
     @PostAuthorize("hasAuthority('comic.edit')")
     public String edit(@PathVariable Snowflake id, @RequestPart MultipartFile thumbnail, @Validated @ModelAttribute("comic") CreateComicForm comic, BindingResult bindingResult, Authentication authentication) {
         if (bindingResult.hasErrors()) {
-            return "views/comic/form";
+            return "views/comic/edit";
         }
         Account uploader = (Account) authentication.getPrincipal();
         Comic db = comicRepository.findById(id).orElseThrow(EntityNotFoundException::new);
