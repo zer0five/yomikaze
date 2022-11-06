@@ -87,6 +87,4 @@ public class AuthenticationController {
         bindingResult.reject("account.verification", "Please check your email to verify your account.");
         return "views/auth/sign-up";
     }
-
-
 }
