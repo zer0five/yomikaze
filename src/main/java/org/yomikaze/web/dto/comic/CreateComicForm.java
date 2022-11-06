@@ -15,7 +15,7 @@ import java.util.List;
 import java.util.Optional;
 
 @Data
-public class ComicForm {
+public class CreateComicForm {
 
     @NotBlank
     private String name;

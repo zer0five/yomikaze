@@ -130,5 +130,4 @@ public class AccountController {
         }
         return reset ? "redirect:/login?reset" : "views/account/reset-password";
     }
-
 }

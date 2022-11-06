@@ -28,7 +28,7 @@ import org.yomikaze.service.ComicService;
 import org.yomikaze.service.HistoryService;
 import org.yomikaze.snowflake.Snowflake;
 import org.yomikaze.web.dto.comic.ComicDetailModel;
-import org.yomikaze.web.dto.comic.ComicForm;
+import org.yomikaze.web.dto.comic.CreateComicForm;
 import org.yomikaze.web.dto.comic.chapter.ChapterForm;
 
 import javax.persistence.EntityNotFoundException;
@@ -107,14 +107,14 @@ public class ComicController {
     @GetMapping("/create")
     @PreAuthorize("authentication != null && !anonymous")
     @PostAuthorize("hasAuthority('comic.create')")
-    public String create(@ModelAttribute("comic") ComicForm comic) {
+    public String create(@ModelAttribute("comic") CreateComicForm comic) {
         return "views/comic/form";
     }
 
     @PostMapping(path = "/create", consumes = {"multipart/form-data"})
     @PreAuthorize("authentication != null && !anonymous")
     @PostAuthorize("hasAuthority('comic.create')")
-    public String create(@RequestPart MultipartFile thumbnail, @Validated @ModelAttribute("comic") ComicForm comic, BindingResult bindingResult, Authentication authentication) {
+    public String create(@RequestPart MultipartFile thumbnail, @Validated @ModelAttribute("comic") CreateComicForm comic, BindingResult bindingResult, Authentication authentication) {
         if (bindingResult.hasErrors()) {
             return "views/comic/form";
         }
@@ -181,7 +181,7 @@ public class ComicController {
     @PostMapping(path = "/{id}/edit", consumes = {"multipart/form-data"})
     @PreAuthorize("authentication != null && !anonymous")
     @PostAuthorize("hasAuthority('comic.edit')")
-    public String edit(@PathVariable Snowflake id, @RequestPart MultipartFile thumbnail, @Validated @ModelAttribute("comic") ComicForm comic, BindingResult bindingResult, Authentication authentication) {
+    public String edit(@PathVariable Snowflake id, @RequestPart MultipartFile thumbnail, @Validated @ModelAttribute("comic") CreateComicForm comic, BindingResult bindingResult, Authentication authentication) {
         if (bindingResult.hasErrors()) {
             return "views/comic/form";
         }
