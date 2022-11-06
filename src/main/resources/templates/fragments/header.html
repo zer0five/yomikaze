@@ -52,14 +52,21 @@
                     <ul class="dropdown-content menu menu-compact p-2 shadow-lg bg-base-300 rounded-box w-52 focus:z-50"
                         tabindex="0">
                         <li class="menu-title"
-                            sec:authorize="hasAnyAuthority('comic.manage', 'genre.manage')">
+                            sec:authorize="hasAnyAuthority('comic.manage', 'genre.manage','request.create.uploader')">
                             <span>Manage</span>
                         </li>
                         <li sec:authorize="hasAuthority('comic.manage')">
                             <a href="/comic/manage"
                                th:href="@{/comic/manage}">
-                                <i aria-hidden="true" class="text-xl text-base-content" data-feather="book-open"></i>
+                                <i aria-hidden="true" class=" text-base-content" data-feather="book-open"></i>
                                 <span class="text-base-content">Manage comics</span>
+                            </a>
+                        </li>
+                        <li sec:authorize="hasAuthority('request.manage')">
+                            <a href="/request/manage"
+                               th:href="@{/request/manage}">
+                                <i aria-hidden="true" class=" text-base-content" data-feather="check-circle"></i>
+                                <span class="text-base-content">Manage requests</span>
                             </a>
                         </li>
                         <li sec:authorize="hasAuthority('genre.manage')">
@@ -67,6 +74,13 @@
                                th:href="@{/genre/manage}">
                                 <i aria-hidden="true" class="text-base-content" data-feather="tag"></i>
                                 <span class="text-base-content">Manage genres</span>
+                            </a>
+                        </li>
+                        <li sec:authorize="hasAuthority('request.create.uploader')">
+                            <a href="/request"
+                               th:href="@{/request}">
+                                <i aria-hidden="true" class="text-base-content" data-feather="message-circle"></i>
+                                <span class="text-base-content">Request to become uploader</span>
                             </a>
                         </li>
                         <li sec:authorize="hasAnyAuthority('comic.manage', 'genre.manage')"></li>
@@ -94,13 +108,7 @@
                                 <span>History</span>
                             </a>
                         </li>
-                        <li>
-                            <a href="/settings"
-                               th:href="@{/settings}">
-                                <i data-feather="settings" aria-hidden="true"></i>
-                                <span>Settings</span>
-                            </a>
-                        </li>
+
                         <li></li>
                         <li>
                             <a href="/logout"

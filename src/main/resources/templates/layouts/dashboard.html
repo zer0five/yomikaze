@@ -51,33 +51,35 @@
                 <!-- Sidebar content here -->
                 <li class="menu-title"><span>My account</span></li>
                 <li>
-                    <a th:classappend="${#request.requestURI == '/me/profile' ? 'active' : ''}"
+                    <a th:classappend="${#request.requestURI == '/profile' ? 'active' : ''}"
                        th:href="@{/profile}">
                         <i aria-hidden="true" data-feather="user"></i>
                         Profile
                     </a>
                 </li>
                 <li>
-                    <a th:classappend="${#request.requestURI == '/me/library' ? 'active' : ''}"
-                       th:href="@{/me/library}">
+                    <a th:classappend="${#request.requestURI == '/library' ? 'active' : ''}"
+                       th:href="@{/library}">
                         <i aria-hidden="true" data-feather="bookmark"></i>
                         Library
                     </a>
                 </li>
                 <li>
-                    <a th:classappend="${#request.requestURI == '/me/history' ? 'active' : ''}"
+                    <a th:classappend="${#request.requestURI == '/history' ? 'active' : ''}"
                        th:href="@{/history}">
                         <i aria-hidden="true" data-feather="rotate-ccw"></i>
                         History
                     </a>
                 </li>
                 <li>
-                    <a th:classappend="${#request.requestURI == '/me/settings' ? 'active' : ''}"
-                       th:href="@{/me/settings}">
-                        <i aria-hidden="true" data-feather="settings"></i>
-                        Settings
+                    <a sec:authorize="hasAuthority('request.create.uploader')"
+                       th:classappend="${#request.requestURI == '/request' ? 'active' : ''}"
+                       th:href="@{/request}">
+                        <i aria-hidden="true" data-feather="message-circle"></i>
+                        Request to become uploader
                     </a>
                 </li>
+
             </ul>
             <ul class="menu px-4">
                 <li></li>
@@ -96,6 +98,14 @@
                        th:href="@{/comic/manage}">
                         <i aria-hidden="true" data-feather="book-open"></i>
                         Manage comic
+                    </a>
+                </li>
+                <li>
+                    <a sec:authorize="hasAuthority('request.manage')"
+                       th:classappend="${#request.requestURI == '/request/manage' ? 'active' : ''}"
+                       th:href="@{/request/manage}">
+                        <i aria-hidden="true" data-feather="check-circle"></i>
+                        Manage Request
                     </a>
                 </li>
             </ul>

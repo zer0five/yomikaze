@@ -66,14 +66,14 @@ public class AccountController {
 
     @GetMapping("/verify/resend")
     public String resendVerification() {
-        return "views/account/resend-verification";
+        return "views/account/resend";
     }
 
     @PostMapping("/verify/resend")
     public String resendVerification(@Email @UsernameExistsConstraint @Validated String email, BindingResult bindingResult) {
         if (bindingResult.hasErrors()) {
             log.info("Validation errors: {}", bindingResult);
-            return "views/account/resend-verification";
+            return "views/account/resend";
         }
         Account account = accountRepository.findByEmail(email)
             .orElseThrow(() -> new EntityNotFoundException("Account not found"));

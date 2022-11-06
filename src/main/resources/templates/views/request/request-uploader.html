@@ -83,10 +83,14 @@
                         <th class="px-6 py-3" scope="col">
                             Status
                         </th>
-
                         <th class="px-6 py-3" scope="col">
                             Action
                         </th>
+                        <th class="px-6 py-3" scope="col">
+                            Action by
+                        </th>
+
+
                     </tr>
                     </thead>
                     <!--/*@thymesVar id="requests" type="org.springframework.data.domain.Page"*/-->
@@ -106,20 +110,30 @@
                             <span class="badge badge-warning gap-2" th:if="*{approved == null}">
                                 Pending
                             </span>
-                            <span class="badge badge-error gap-2" th:if="*{approved != null && not approved}">
-                                Cancel
+                            <span class="badge badge-error gap-2"
+                                  th:if="*{approved != null && not approved && approvedBy != requester}">
+                                Rejected
+                            </span>
+                            <span class="badge badge-error gap-2"
+                                  th:if="*{approved != null && not approved && approvedBy == requester }">
+                                Cancelled
                             </span>
                             <span class="badge badge-success gap-2" th:if="*{approved != null && approved}">
                                 Accepted
                             </span>
                         </td>
                         <td class="pr-8 py-4 text-right">
-                            <button class="btn btn-ghost rounded-full gap-2" th:if="*{approved == null}"
-                                    x-init="feather.replace()">
-                                <a class="gap-2" th:href="@{/request/{id}/cancel(id = *{id})}">
-                                    <i data-feather="trash-2"></i>
-                                </a>
-                            </button>
+                            <a class="btn btn-sm btn-info" th:href="@{/request/{id}/cancel(id=${request.id})}"
+                               th:if="*{approved == null}">Cancel</a>
+                            <div class="tooltip" data-tip="Request has been approved" th:unless="*{approved == null}">
+                                <button class="btn btn-sm btn-info btn-disabled" disabled>Cancel</button>
+                            </div>
+                        </td>
+                        <td class="px-6 py-4 " th:if="*{approved != null}">
+                            <span th:text="*{approvedBy.username}"></span>
+                        </td>
+                        <td class="px-6 py-4 " th:unless="*{approved != null}">
+                            <span>Not yet</span>
                         </td>
                     </tr>
 
