@@ -64,7 +64,7 @@ public class LibraryController {
         return ResponseEntity.ok().build();
     }
 
-    @GetMapping("/status/{id}")
+    @GetMapping("/status/{id}") // used by ajax
     public ResponseEntity<Object> status(Authentication authentication, @PathVariable("id") Snowflake id) {
         Account account = (Account) authentication.getPrincipal();
         boolean inLibrary = libraryService.isInLibrary(account, id);
