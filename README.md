@@ -16,8 +16,9 @@
 
 ### 🧾 Dependencies
 
-- [`???`]()
-- [`???`]() _(optional)_
+- [Java](https://www.java.com) (8 or higher)
+- [Postgresql](https://www.postgresql.org)
+- [Redis](https://redis.io)
 
 ### 📥 Installation
 
