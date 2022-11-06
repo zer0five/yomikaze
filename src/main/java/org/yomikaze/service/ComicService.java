@@ -11,6 +11,7 @@ import org.yomikaze.persistence.repository.*;
 import org.yomikaze.snowflake.Snowflake;
 import org.yomikaze.web.dto.comic.ComicDetailModel;
 import org.yomikaze.web.dto.comic.CreateComicForm;
+import org.yomikaze.web.dto.comic.EditComicForm;
 import org.yomikaze.web.dto.comic.GenreModel;
 import org.yomikaze.web.dto.comic.chapter.ChapterForm;
 import org.yomikaze.web.dto.comic.chapter.ChapterModel;
@@ -129,7 +130,7 @@ public class ComicService {
         comicRepository.save(comicEntity);
     }
 
-    public Comic updateComic(Snowflake id, CreateComicForm comic, MultipartFile thumbnail) {
+    public Comic updateComic(Snowflake id, EditComicForm comic, MultipartFile thumbnail) {
         Comic comicEntity = comicRepository.findById(id).orElseThrow(EntityNotFoundException::new);
         comicEntity.setName(comic.getName());
         comicEntity.setAliases(comic.getAliasList());

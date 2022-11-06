@@ -5,6 +5,8 @@ import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 import org.hibernate.Hibernate;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
 import org.yomikaze.snowflake.Snowflake;
 
 import javax.persistence.*;
@@ -41,6 +43,7 @@ public class Comment {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "comic", nullable = false)
     @ToString.Exclude
+    @OnDelete(action = OnDeleteAction.CASCADE)
     private Comic comic;
 
     @OneToMany(fetch = FetchType.LAZY)
