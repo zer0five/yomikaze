@@ -3,6 +3,7 @@ package org.yomikaze.web.controller;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.security.access.prepost.PostAuthorize;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
@@ -35,21 +36,22 @@ public class RequestController {
 
     //for user
     @PostAuthorize("hasAuthority('request.create.uploader')")
-    @GetMapping({"", "/"})
-    public String request(Pageable pageable, Model model, Authentication authentication, @ModelAttribute RequestForm requestForm) {
+    @GetMapping
+    public String request(@PageableDefault(size = Integer.MAX_VALUE) Pageable pageable, Model model, Authentication authentication, @ModelAttribute RequestForm requestForm) {
         Account account = (Account) authentication.getPrincipal();
-        Page<Request> requests = requestRepository.findAllByRequester(account, pageable);
+        Pageable actualPageable = pageable.getPageSize() == Integer.MAX_VALUE ? Pageable.unpaged() : pageable;
+        Page<Request> requests = requestRepository.findAllByRequester(account, actualPageable);
         model.addAttribute("requests", requests);
         return "/views/request/request-uploader";
 
     }
 
     @PostAuthorize("hasAuthority('request.create.uploader')")
-    @PostMapping({"", "/"})
-    public String request(@ModelAttribute @Validated RequestForm requestForm, Authentication authentication, BindingResult bindingResult) {
+    @PostMapping
+    public String request(@Validated @ModelAttribute RequestForm requestForm, BindingResult bindingResult, Authentication authentication, Model model) {
+        model.addAttribute("showForm", true);
         if (bindingResult.hasErrors()) {
             return "/views/request/request-uploader";
-
         }
         Account account = (Account) authentication.getPrincipal();
 

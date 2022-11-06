@@ -345,10 +345,6 @@
                                 <span th:x-text="| moment('${chapter.id.timestamp.toInstant()}').fromNow() |">[[${chapter.id.timestamp}]]</span>
                             </a>
                             <span class="gap-2">
-                                <button class="btn btn-ghost btn-circle btn-sm"
-                                        th:@click="| toggleReadStatus('${chapter.id}') |">
-                                    <i data-feather="eye"></i>
-                                </button>
                                 <button class="btn btn-ghost btn-circle btn-sm">
                                     <i data-feather="edit"></i>
                                 </button>
@@ -422,7 +418,7 @@
     <!--/*@thymesVar id="commenter" type="org.yomikaze.persistence.entity.Account"*/-->
     <div class="flex items-center justify-center"
          th:each="comment : ${@commentService.getComments(comic.id)}">
-        <div class="p-4 flex gap-4 w-full">
+        <div class="p-4 flex gap-4 w-full" th:id="'comment-' + comment.id ">
             <!--! user avatar -->
             <div class="avatar" th:if="${comment.account.profile.picture != null}">
                 <div class="w-10 h-10 rounded-full">
@@ -436,16 +432,20 @@
                 </div>
             </div>
 
-            <!--! display name / role / chapter -->
+            <!--! display name / roles / chapter -->
             <div class="w-full">
                 <div class="border rounded-3xl px-4 pt-2 pb-2.5 divide-y gap-2">
                     <div class="flex justify-between">
+                        <!-- roles / chapter -->
                         <div class="font-semibold text-sm leading-relaxed gap-x-10 my-2">
                             <span th:text="${comment.account.profile.displayName}">Display name</span>
+                            <!-- roles -->
                             <!--/*@thymesVar id="role" type="org.yomikaze.persistence.entity.Role"*/-->
                             <span class="badge badge-primary badge-outline mx-1"
                                   th:each="role : ${comment.account.roles}"
                                   th:text="${role.name}">Role</span>
+
+                            <!-- chapter -->
                             <span class="font-normal"
                                   th:if="${comment.chapter != null}"
                                   th:text="${comment.chapter.title}">Chapter </span>
