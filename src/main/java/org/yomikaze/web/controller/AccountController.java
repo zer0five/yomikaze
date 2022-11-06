@@ -2,6 +2,7 @@ package org.yomikaze.web.controller;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.authentication.AccountExpiredException;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.BindingResult;
@@ -31,12 +32,14 @@ public class AccountController {
     private final AccountRepository accountRepository;
 
     @GetMapping("/verify")
+    @PreAuthorize("authentication == null || anonymous")
     public String verify(@ModelAttribute VerifyForm verifyForm) {
         log.info("Displaying verify form");
         return "views/account/verify";
     }
 
     @GetMapping(value = "/verify", params = "token")
+    @PreAuthorize("authentication == null || anonymous")
     public String verify(@Validated @ModelAttribute VerifyForm verifyForm, BindingResult bindingResult) {
         String token = verifyForm.getToken().trim();
         boolean valid = false;
@@ -65,59 +68,59 @@ public class AccountController {
     }
 
     @GetMapping("/verify/resend")
+    @PreAuthorize("authentication == null || anonymous")
     public String resendVerification() {
         return "views/account/resend-verification";
     }
 
     @PostMapping("/verify/resend")
+    @PreAuthorize("authentication == null || anonymous")
     public String resendVerification(@Email @UsernameExistsConstraint @Validated String email, BindingResult bindingResult) {
         if (bindingResult.hasErrors()) {
-            log.info("Validation errors: {}", bindingResult);
             return "views/account/resend-verification";
         }
         Account account = accountRepository.findByEmail(email)
             .orElseThrow(() -> new EntityNotFoundException("Account not found"));
         accountService.sendVerificationEmail(account);
-        return "redirect:/login?resent";
+        bindingResult.reject("verify.email.resent", "Verification email sent");
+        return "views/account/resend-verification";
     }
 
     @GetMapping("/password/forgot")
+    @PreAuthorize("authentication == null || anonymous")
     public String forgotPassword(@ModelAttribute EmailForm emailForm) {
         return "views/account/forgot-password";
     }
 
     @PostMapping("/password/forgot")
+    @PreAuthorize("authentication == null || anonymous")
     public String forgotPassword(@Validated @ModelAttribute EmailForm emailForm, BindingResult bindingResult) {
         if (bindingResult.hasErrors()) {
-            log.info("Validation errors: {}", bindingResult);
             return "views/account/forgot-password";
         }
         Account account = accountRepository.findByEmail(emailForm.getEmail())
             .orElseThrow(() -> new EntityNotFoundException("Account not found"));
         accountService.sendPasswordResetEmail(account);
-        bindingResult.reject("email.sent", "Password reset email sent");
+        bindingResult.reject("forgot-password.email.sent", "Password reset email sent");
         return "views/account/forgot-password";
     }
 
     @GetMapping("/password/reset")
+    @PreAuthorize("authentication == null || anonymous")
     public String resetPassword(@ModelAttribute ResetPasswordForm resetPasswordForm, Optional<String> token) {
         token.ifPresent(resetPasswordForm::setToken);
         return "views/account/reset-password";
     }
 
     @PostMapping("/password/reset")
+    @PreAuthorize("authentication == null || anonymous")
     public String resetPassword(@Validated @ModelAttribute ResetPasswordForm resetPasswordForm, BindingResult bindingResult) {
-        String token = resetPasswordForm.getToken().trim();
-        String password = resetPasswordForm.getPassword().trim();
-        boolean valid = false;
-        log.info("Resetting password with token {}", token);
         if (bindingResult.hasErrors()) {
-            log.info("Validation errors: {}", bindingResult);
+            return "views/account/reset-password";
         }
         try {
             accountService.resetPassword(resetPasswordForm);
-            log.info("Password reset");
-            valid = true;
+            bindingResult.reject("password.reset.success", "Password reset, now you can login with your new password");
         } catch (AccountExpiredException e) {
             bindingResult.rejectValue("token", "token.expired", "Token has expired");
             log.info("Token has expired");
@@ -127,9 +130,6 @@ public class AccountController {
         } catch (EntityNotFoundException e) {
             bindingResult.rejectValue("token", "token.id.not-found", "Token with given id not found");
             log.info("Token with id {} not found", resetPasswordForm.getToken());
-        }
-        if (valid) {
-            bindingResult.reject("password.reset", "Password reset");
         }
         return "views/account/reset-password";
     }

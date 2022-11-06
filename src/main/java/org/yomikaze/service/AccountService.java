@@ -144,7 +144,7 @@ public class AccountService {
     public void resetPassword(ResetPasswordForm form) {
         Jwt jwt;
         try {
-            jwt = jwtDecoder.decode(form.getToken());
+            jwt = jwtDecoder.decode(form.getToken().trim());
             if (!jwt.getSubject().equals("reset")) {
                 throw new IllegalArgumentException("Invalid token");
             }

@@ -43,7 +43,6 @@ public class RequestController {
         Page<Request> requests = requestRepository.findAllByRequester(account, actualPageable);
         model.addAttribute("requests", requests);
         return "/views/request/request-uploader";
-
     }
 
     @PostAuthorize("hasAuthority('request.create.uploader')")

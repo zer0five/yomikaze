@@ -12,11 +12,11 @@
                 Resend verification email to get new token
             </p>
         </div>
-        <!--/*@thymesVar id="signInForm" type="org.yomikaze.web.dto.form.account.SignInForm"*/-->
+        <!--/*@thymesVar id="emailForm" type="org.yomikaze.web.dto.form.account.EmailForm"*/-->
         <form
             @submit="submit = true"
-            class="card flex-shrink-0 w-full max-w-sm shadow-2xl bg-base-300" method="GET"
-            th:action="@{/account/verify}"
+            class="card flex-shrink-0 w-full max-w-sm shadow-2xl bg-base-300" method="POST"
+            th:action="@{/account/verify/resend}"
             th:object="${emailForm}"
             x-data="{submit: false}">
             <div
@@ -30,9 +30,9 @@
 
                 <i aria-hidden="true" data-feather="alert-circle"></i>
                 <!--/*@thymesVar id="error" type="java.lang.String"*/-->
-                <span class="text-sm" th:text="${error}"></span>
+                <span class="text-sm" th:text="${#objects.nullSafe(#messages.msgOrNull(error), error)}"></span>
                 <div class="flex-none">
-                    <button @click="el.remove()" aria-label="dismiss" class="btn btn-sm btn-ghost"
+                    <button @click="el.remove()" aria-label="dismiss" class="btn btn-circle btn-sm btn-ghost"
                             type="button">
                         <i aria-hidden="true" data-feather="x"></i>
                     </button>
@@ -47,7 +47,8 @@
                     <input class="textarea textarea-bordered resize-none"
                            id="email" placeholder="Email"
                            required
-                           th:errorclass="textarea-error" th:field="*{email}" type="text"/>
+                           th:errorclass="textarea-error" th:field="${emailForm.email}" type="text"/>
+                    <!--/*@thymesVar id="error" type="java.lang.String"*/-->
                     <span class="label text-sm text-error"
                           th:each="error : ${#fields.errors('email')}"
                           th:if="${#fields.hasErrors('email')}"

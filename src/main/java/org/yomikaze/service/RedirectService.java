@@ -16,7 +16,9 @@ public class RedirectService {
 
     private static final URI DEFAULT_REDIRECT = URI.create("/");
     private final Set<String> blacklist = new HashSet<>(Arrays.asList(
-        "/login", "/register", "/sign-in", "/sign-up", "/logout", "/sign-out"
+        "/login", "/register", "/sign-in", "/sign-up", "/logout", "/sign-out",
+        "/account/verify", "/account/verify/resend",
+        "/account/password/forgot", "/account/password/reset"
     ));
 
     public boolean isBlacklisted(String path) {

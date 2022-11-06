@@ -12,7 +12,7 @@
                 Verify your account to access member only features
             </p>
         </div>
-        <!--/*@thymesVar id="signInForm" type="org.yomikaze.web.dto.form.account.SignInForm"*/-->
+        <!--/*@thymesVar id="verifyForm" type="org.yomikaze.web.dto.form.account.VerifyForm"*/-->
         <form
             @submit="submit = true"
             class="card flex-shrink-0 w-full max-w-sm shadow-2xl bg-base-300" method="GET"
@@ -20,7 +20,7 @@
             th:object="${verifyForm}"
             x-data="{submit: false}">
             <div
-                class="alert alert-error shadow-lg"
+                class="alert alert-success shadow-lg"
                 role="alert"
                 th:each="error : ${#fields.globalErrors()}"
                 th:if="${#fields.hasGlobalErrors()}"
@@ -30,9 +30,9 @@
 
                 <i aria-hidden="true" data-feather="alert-circle"></i>
                 <!--/*@thymesVar id="error" type="java.lang.String"*/-->
-                <span class="text-sm" th:text="${error}"></span>
+                <span class="text-sm" th:text="${#objects.nullSafe(#messages.msgOrNull(error), error)}"></span>
                 <div class="flex-none">
-                    <button @click="el.remove()" aria-label="dismiss" class="btn btn-sm btn-ghost"
+                    <button @click="el.remove()" aria-label="dismiss" class="btn btn-circle btn-sm btn-ghost"
                             type="button">
                         <i aria-hidden="true" data-feather="x"></i>
                     </button>
@@ -47,8 +47,9 @@
                     <textarea class="textarea textarea-bordered resize-none" id="token" placeholder="Paste token here"
                               required
                               rows="3"
-                              th:errorclass="textarea-error" th:field="*{token}" type="text">
+                              th:errorclass="textarea-error" th:field="${verifyForm.token}" type="text">
                     </textarea>
+                    <!--/*@thymesVar id="error" type="java.lang.String"*/-->
                     <span class="label text-sm text-error"
                           th:each="error : ${#fields.errors('token')}"
                           th:if="${#fields.hasErrors('token')}"
