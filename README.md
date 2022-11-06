@@ -14,6 +14,8 @@
 
 ## 🚀 Setup
 
+[![Deploy](https://www.herokucdn.com/deploy/button.svg)](https://heroku.com/deploy?template=https://github.com/zer0five/yomikaze/tree/main)
+
 ### 🧾 Dependencies
 
 - [`???`]()
