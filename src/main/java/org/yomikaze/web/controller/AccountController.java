@@ -140,6 +140,7 @@ public class AccountController {
         }
         return "views/account/reset-password";
     }
+    
 
     @PostAuthorize("hasAuthority('account.manage')")
     @GetMapping("/manage")

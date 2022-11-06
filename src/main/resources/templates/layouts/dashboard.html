@@ -110,6 +110,15 @@
                     </a>
                 </li>
                 <li>
+                    <a sec:authorize="hasAuthority('genre.manage')"
+                       th:classappend="${#request.requestURI == '/genre/manage' ? 'active' : ''}"
+                       th:href="@{/genre/manage}">
+                        <i aria-hidden="true" data-feather="tag"></i>
+                        Manage genres
+                    </a>
+                </li>
+
+                <li>
                     <a sec:authorize="hasAuthority('request.manage')"
                        th:classappend="${#request.requestURI == '/request/manage' ? 'active' : ''}"
                        th:href="@{/request/manage}">
