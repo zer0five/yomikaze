@@ -75,4 +75,8 @@ public class AccountController {
         return "redirect:/login?resent";
     }
 
+    public String manageAccount() {
+        return "views/account/account-list";
+    }
+
 }

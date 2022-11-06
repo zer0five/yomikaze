@@ -54,11 +54,15 @@ public class ProfileController {
         if (!account.getId().equals(findAccount.getId())) {
             throw new AccessDeniedException("");
         }
+        //profile service
         Profile profile = findAccount.getProfile();
         model.addAttribute("profile", profile);
         editProfileForm.setDisplayName(profile.getDisplayName());
         editProfileForm.setBirthday(profile.getBirthday());
         editProfileForm.setBio(profile.getBio());
+        editProfileForm.setShowEmail(profile.isShowEmail());
+        editProfileForm.setShowLibrary(profile.isShowLibrary());
+        editProfileForm.setShowBirthday(profile.isShowBirthday());
 
 
         return "/views/profile/profile-edit";

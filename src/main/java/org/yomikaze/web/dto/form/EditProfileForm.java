@@ -16,7 +16,7 @@ public class EditProfileForm {
     @Length(min = 3, max = 32, message = "profile.display-name.invalid.length")
     private String displayName;
     @Length(max = 255, message = "profile.bio.invalid.length")
-    private String bio;
+    private String bio ;
 
     @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
     private Date birthday;

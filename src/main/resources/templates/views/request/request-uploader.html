@@ -107,7 +107,7 @@
                                 Pending
                             </span>
                             <span class="badge badge-error gap-2" th:if="*{approved != null && not approved}">
-                                Rejected
+                                Cancel
                             </span>
                             <span class="badge badge-success gap-2" th:if="*{approved != null && approved}">
                                 Accepted
@@ -116,7 +116,7 @@
                         <td class="pr-8 py-4 text-right">
                             <button class="btn btn-ghost rounded-full gap-2" th:if="*{approved == null}"
                                     x-init="feather.replace()">
-                                <a class="gap-2" th:href="@{/request/{id}/delete(id = *{id})}">
+                                <a class="gap-2" th:href="@{/request/{id}/cancel(id = *{id})}">
                                     <i data-feather="trash-2"></i>
                                 </a>
                             </button>

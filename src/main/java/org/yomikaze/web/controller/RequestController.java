@@ -59,20 +59,9 @@ public class RequestController {
         return "redirect:/request";
     }
 
-    @PostAuthorize("hasAuthority('request.create.uploader')")
-    @GetMapping("/{id}/delete")
-    public String request(@PathVariable("id") Snowflake id, Authentication authentication) {
-
-        Request request = requestRepository.findById(id)
-            .orElseThrow(() -> new EntityNotFoundException("Request not found!"));
 
 
-        requestRepository.delete(request);
-
-        return "redirect:/request";
-    }
-
-
+    //for admin
     @PostAuthorize("hasAuthority('request.cancel')")
     @GetMapping("/{id}/cancel")
     public String delete(@PathVariable("id") Snowflake id, Authentication authentication) {
