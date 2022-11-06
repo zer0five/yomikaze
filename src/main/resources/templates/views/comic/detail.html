@@ -18,6 +18,7 @@
             </div>
             <!-- Detail -->
             <div class="flex-grow flex flex-col gap-4">
+                <!-- Comic name -->
                 <div class="flex gap-2">
                     <div class="flex-grow">
                         <div class="flex flex-col">
@@ -83,6 +84,7 @@
                         </div>
                     </div>
                 </div>
+                <!-- Comic attributes -->
                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
                     <dl class="grid grid-cols-5 gap-x-4 gap-y-2 flex-grow-0">
                         <dt class="col-span-2 gap-2 font-bold">
@@ -175,6 +177,7 @@
                         </dd>
                     </dl>
                 </div>
+                <!-- Comic genres -->
                 <div class="grid grid-cols-5 gap-2">
                     <div class="col-span-1">
                                 <span class="font-bold gap-2">
@@ -194,7 +197,9 @@
                         </div>
                     </div>
                 </div>
+                <!-- Action button -->
                 <div class="flex flex-row flex-wrap gap-2">
+                    <!-- Read button -->
                     <a class="btn btn-primary gap-2"
                        th:href="@{/comic/{id}/chapter/0(id=${comic.id})}"
                        th:if="${not chapters.isEmpty()}">
@@ -209,7 +214,7 @@
                             Read
                         </button>
                     </div>
-
+                    <!-- Read the latest button -->
                     <a class="btn btn-secondary gap-2"
                        th:href="@{/comic/{id}/chapter/{index}(id=${comic.id}, index=${chapters.size() - 1})}"
                        th:if="${not chapters.isEmpty()}">
@@ -225,6 +230,7 @@
                         </button>
                     </div>
 
+                    <!-- Continue reading button -->
                     <!--/*@thymesVar id="index" type="java.lang.Integer"*/-->
                     <th:block sec:authorize="!anonymous" th:if="${not chapters.isEmpty()}"
                               th:with="index = ${chapters.indexOf(@historyService.getLastReadChapter(#authentication.principal, @comicRepository.findById(comic.id).orElse(null)))}">
@@ -252,11 +258,19 @@
                         </button>
                     </div>
 
-                    <button class="btn btn-error gap-2" sec:authorize="!anonymous"
-                            type="button">
+                    <!-- Add to library button -->
+                    <a class="btn btn-error gap-2" sec:authorize="!anonymous"
+                       th:href="@{/library/add/{id}(id=${comic.id})}"
+                       th:if="${not @libraryService.isInLibrary(#authentication.principal, comic.id)}">
                         <i data-feather="bookmark"></i>
                         Add to library
-                    </button>
+                    </a>
+                    <a class="btn btn-error gap-2" sec:authorize="!anonymous"
+                       th:href="@{/library/remove/{id}(id=${comic.id})}"
+                       th:if="${@libraryService.isInLibrary(#authentication.principal, comic.id)}">
+                        <i data-feather="bookmark"></i>
+                        Remove from library
+                    </a>
                     <div class="tooltip"
                          data-tip="You must be logged in to add this comic to your library"
                          sec:authorize="anonymous">
