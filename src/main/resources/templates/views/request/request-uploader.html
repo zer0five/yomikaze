@@ -28,7 +28,8 @@
                         Request</label>
                 </div>
 
-                <input class="modal-toggle" id="my-modal-3" type="checkbox"/>
+                <input class="modal-toggle" id="my-modal-3" th:checked="${#objects.nullSafe(showForm, false)}"
+                       type="checkbox"/>
                 <div class="modal">
                     <div class="modal-box relative">
                         <label class="btn btn-sm btn-circle absolute right-2 top-2" for="my-modal-3">✕</label>
@@ -40,8 +41,7 @@
                         <form method="post" th:action="@{/request}" th:object="${requestForm}">
                             <div class="p-6 -mt-10 space-y-6">
                                 <label class="block mb-2 text-xl font-medium text-gray-900 dark:text-gray-400"
-                                       for="message">Your
-                                    Message</label>
+                                       for="message">Your Message</label>
 
                                 <!-- Place to enter message-->
                                 <textarea

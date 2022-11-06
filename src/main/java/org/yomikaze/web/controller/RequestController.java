@@ -3,6 +3,7 @@ package org.yomikaze.web.controller;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.security.access.prepost.PostAuthorize;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
@@ -34,40 +35,47 @@ public class RequestController {
     private final RequestRepository requestRepository;
 
     //for user
-    @PostAuthorize("hasAuthority('request.create.uploader')")
-    @PreAuthorize("!hasAuthority('comic.manange')")
-    @GetMapping({"", "/"})
-    public String request(Pageable pageable, Model model, Authentication authentication, @ModelAttribute RequestForm requestForm) {
+    @PostAuthorize("hasAuthority('request.create.uploader' ) && !hasAuthority('comic.manange') " )
+
+
+    @GetMapping
+    public String request(@PageableDefault(size = Integer.MAX_VALUE) Pageable pageable, Model model, Authentication authentication, @ModelAttribute RequestForm requestForm) {
         Account account = (Account) authentication.getPrincipal();
-        Page<Request> requests = requestRepository.findAllByRequester(account, pageable);
+        Pageable actualPageable = pageable.getPageSize() == Integer.MAX_VALUE ? Pageable.unpaged() : pageable;
+        Page<Request> requests = requestRepository.findAllByRequester(account, actualPageable);
         model.addAttribute("requests", requests);
         return "/views/request/request-uploader";
 
     }
 
     @PostAuthorize("hasAuthority('request.create.uploader')")
-    @PreAuthorize("!hasAuthority('comic.manange')")
-    @PostMapping({"", "/"})
-    public String request(@ModelAttribute @Validated RequestForm requestForm, Authentication authentication, BindingResult bindingResult) {
-        if (bindingResult.hasErrors()) {
-            return "/views/request/request-uploader";
-
-        }
+    @PostMapping
+    public String request(
+        @Validated @ModelAttribute RequestForm requestForm,
+        BindingResult bindingResult,
+        Authentication authentication,
+        @PageableDefault(size = Integer.MAX_VALUE) Pageable pageable,
+        Model model
+    ) {
         Account account = (Account) authentication.getPrincipal();
-
+        if (bindingResult.hasErrors()) {
+            model.addAttribute("showForm", true);
+            Pageable actualPageable = pageable.getPageSize() == Integer.MAX_VALUE ? Pageable.unpaged() : pageable;
+            Page<Request> requests = requestRepository.findAllByRequester(account, actualPageable);
+            model.addAttribute("requests", requests);
+            return "/views/request/request-uploader";
+        }
         Request request = new Request();
         request.setRequester(account);
         request.setMessage(requestForm.getMessage());
         requestRepository.save(request);
-
         return "redirect:/request";
     }
 
 
 
-
+    //for admin
     @PostAuthorize("hasAuthority('request.cancel')")
-    @PreAuthorize("!hasAuthority('comic.manange')")
     @GetMapping("/{id}/cancel")
     public String delete(@PathVariable("id") Snowflake id, Authentication authentication) {
         Account account = (Account) authentication.getPrincipal();

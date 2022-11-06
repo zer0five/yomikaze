@@ -22,6 +22,7 @@ import org.yomikaze.snowflake.Snowflake;
 
 import javax.persistence.EntityExistsException;
 import javax.persistence.EntityNotFoundException;
+import java.text.MessageFormat;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -44,17 +45,17 @@ public class LibraryController {
     }
 
     @GetMapping("/add/{id}")
-    public ResponseEntity<Object> add(Authentication authentication, @PathVariable("id") Snowflake id) {
+    public String add(Authentication authentication, @PathVariable("id") Snowflake id) {
         Account account = (Account) authentication.getPrincipal();
         libraryService.addComic(account, id);
-        return ResponseEntity.ok().build();
+        return MessageFormat.format("redirect:/comic/{0}/detail", id);
     }
 
     @GetMapping("/remove/{id}")
-    public ResponseEntity<Object> remove(Authentication authentication, @PathVariable("id") Snowflake id) {
+    public String remove(Authentication authentication, @PathVariable("id") Snowflake id) {
         Account account = (Account) authentication.getPrincipal();
         libraryService.removeComic(account, id);
-        return ResponseEntity.ok().build();
+        return MessageFormat.format("redirect:/comic/{0}/detail", id);
     }
 
     @GetMapping("/toggle/{id}")

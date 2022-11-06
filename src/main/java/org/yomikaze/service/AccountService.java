@@ -18,6 +18,7 @@ import org.yomikaze.persistence.entity.Account;
 import org.yomikaze.persistence.repository.AccountRepository;
 import org.yomikaze.snowflake.Snowflake;
 import org.yomikaze.web.dto.form.account.ChangePasswordForm;
+import org.yomikaze.web.dto.form.account.ResetPasswordForm;
 
 import javax.mail.MessagingException;
 import javax.persistence.EntityNotFoundException;
@@ -76,7 +77,7 @@ public class AccountService {
         sendMail(ctx, "verification", "Yomikaze Account Verification", account);
     }
 
-    public void sendResetPasswordEmail(Account account) {
+    public void sendPasswordResetEmail(Account account) {
         log.info("Reset for {}", account.getEmail());
         String token = generateResetToken(account);
         log.info("Generated token {}", token);
@@ -140,10 +141,10 @@ public class AccountService {
         log.info("Account {} verified", account);
     }
 
-    public void resetPassword(String token, String password) {
+    public void resetPassword(ResetPasswordForm form) {
         Jwt jwt;
         try {
-            jwt = jwtDecoder.decode(token);
+            jwt = jwtDecoder.decode(form.getToken());
             if (!jwt.getSubject().equals("reset")) {
                 throw new IllegalArgumentException("Invalid token");
             }
@@ -156,6 +157,7 @@ public class AccountService {
         log.info("Resetting password for account with id {}", id);
         Account account = accountRepository.findById(id).orElseThrow(EntityNotFoundException::new);
         log.info("Resetting password for account {}", account);
+        String password = passwordEncoder.encode(form.getPassword());
         account.setPassword(password);
         accountRepository.save(account);
         log.info("Password for account {} reset", account);
