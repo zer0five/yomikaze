@@ -35,6 +35,7 @@ public class RequestController {
 
     //for user
     @PostAuthorize("hasAuthority('request.create.uploader')")
+    @PreAuthorize("!hasAuthority('comic.manange')")
     @GetMapping({"", "/"})
     public String request(Pageable pageable, Model model, Authentication authentication, @ModelAttribute RequestForm requestForm) {
         Account account = (Account) authentication.getPrincipal();
@@ -45,6 +46,7 @@ public class RequestController {
     }
 
     @PostAuthorize("hasAuthority('request.create.uploader')")
+    @PreAuthorize("!hasAuthority('comic.manange')")
     @PostMapping({"", "/"})
     public String request(@ModelAttribute @Validated RequestForm requestForm, Authentication authentication, BindingResult bindingResult) {
         if (bindingResult.hasErrors()) {
@@ -63,8 +65,9 @@ public class RequestController {
 
 
 
-    //for admin
+
     @PostAuthorize("hasAuthority('request.cancel')")
+    @PreAuthorize("!hasAuthority('comic.manange')")
     @GetMapping("/{id}/cancel")
     public String delete(@PathVariable("id") Snowflake id, Authentication authentication) {
         Account account = (Account) authentication.getPrincipal();

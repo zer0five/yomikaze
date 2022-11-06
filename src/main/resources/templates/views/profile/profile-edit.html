@@ -19,26 +19,21 @@
         <div class="drawer-content">
             <section class="relative block">
                 <div class="container mx-auto max-w-xl px-4">
-                    <div
-                        class="relative flex flex-col min-w-0  w-full  shadow-xl rounded-lg mb-2 mt-4 pb-8">
+                    <div>
+                        class="relative flex flex-col min-w-0 w-full shadow-xl rounded-lg mb-2 mt-4 pb-8">
                         <div class="flex  justify-center">
                             <div class="tabs tabs-boxed">
-
                                 <a class="tab tab-active">Edit profile</a>
                                 <a class="tab">Forgot password</a>
                             </div>
                         </div>
-
                         <div class="p-10 ">
-
-
                             <div class="flex flex-wrap justify-center">
                                 <div class="w-1/3 lg:w-2/12 px-4 lg:order-2 flex justify-center">
                                     <div class="indicator">
                                         <span class="indicator-item indicator-bottom bg-transparent"><i class=""
                                                                                                         data-feather='camera'
                                                                                                         x-init='feather.replace()'></i></span>
-
                                         <div class="avatar ">
                                             <label
                                                 class="w-24 cursor-pointer rounded-full ring ring-primary ring-offset-base-100 ring-offset-2">
@@ -48,8 +43,6 @@
                                             </label>
                                         </div>
                                     </div>
-
-
                                 </div>
                                 <div class="w-full lg:w-4/12 px-4 lg:order-3 lg:text-right lg:self-center">
                                     <div class="py-6 px-3 mt-32 sm:mt-0">
@@ -63,18 +56,14 @@
                                     </div>
                                 </div>
                             </div>
-
-
                             <!--/*@thymesVar id="editProfileForm" type="org.yomikaze.web.dto.form.EditProfileForm"*/-->
                             <form class="text-center mt-12" method="POST"
                                   th:action="@{/profile/{id}/edit(id = ${profile.account.id})}"
                                   th:object="${editProfileForm}">
                                 <h3 class="text-4xl font-semibold leading-normal relative top-3 mb-2 text-blueGray-700"
                                     th:text="${profile.displayName}">
-
                                 </h3>
                                 <div class="form-control">
-
                                 </div>
                                 <div class="form-control">
                                     <label class="label" for="display-name">
@@ -86,7 +75,6 @@
                                            th:value="*{displayName}"
                                            type="text"
                                     />
-
                                     <!--/*@thymesVar id="error" type="java.lang.String"*/-->
                                     <span class="label text-error"
                                           th:each="error : ${#fields.errors('displayName')}"
@@ -125,9 +113,7 @@
                                             <input class="toggle" id="show-library" th:check="*{showLibrary}"
                                                    th:field="*{showLibrary}" type="checkbox"/>
                                         </label>
-
                                     </div>
-
                                 </div>
                                 <div class="form-control">
                                     <label class="label" for="bio">
@@ -147,30 +133,17 @@
                                 <div class="form-control  mt-4">
                                     <button class="btn btn-active btn-accent" type="submit">Save</button>
                                 </div>
-
-
                             </form>
                         </div>
                     </div>
                 </div>
             </section>
         </div>
-
-        <div class="drawer-side">
-            <label class="drawer-overlay" for="my-drawer"></label>
-        </div>
     </div>
 </main>
 
 <!-- script of profile -->
-<script>
-    document.addEventListener("alpine:init", () => {
-        Alpine.data("layout", () => ({
-            profileOpen: false,
-            asideOpen: true,
-        }));
-    });
-</script>
+
 
 <!-- footer -->
 

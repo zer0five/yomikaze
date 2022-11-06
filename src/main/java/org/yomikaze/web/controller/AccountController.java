@@ -2,8 +2,10 @@ package org.yomikaze.web.controller;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.access.prepost.PostAuthorize;
 import org.springframework.security.authentication.AccountExpiredException;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -14,10 +16,12 @@ import org.yomikaze.persistence.entity.Account;
 import org.yomikaze.persistence.repository.AccountRepository;
 import org.yomikaze.service.AccountService;
 import org.yomikaze.validation.UsernameExistsConstraint;
+import org.yomikaze.web.dto.form.account.ChangePasswordForm;
 import org.yomikaze.web.dto.form.account.VerifyForm;
 
 import javax.persistence.EntityNotFoundException;
 import javax.validation.constraints.Email;
+import java.util.List;
 
 @Controller
 @RequiredArgsConstructor
@@ -75,7 +79,13 @@ public class AccountController {
         return "redirect:/login?resent";
     }
 
-    public String manageAccount() {
+    @GetMapping("/manage")
+    @PostAuthorize("hasAuthority('account.manage')")
+    public String manageAccount( Model model) {
+
+        model.addAttribute("accounts",accountRepository.findAll());
+
+
         return "views/account/account-list";
     }
 

@@ -22,4 +22,6 @@ public interface AccountRepository extends CrudRepository<Account, Snowflake> {
 
     boolean existsByUsernameOrEmail(String username, String email);
 
+
+
 }
