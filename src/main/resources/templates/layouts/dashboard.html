@@ -71,6 +71,14 @@
                         History
                     </a>
                 </li>
+                <li>
+                    <a sec:authorize="hasAuthority('request.create.uploader')"
+                       th:classappend="${#request.requestURI == '/request' ? 'active' : ''}"
+                       th:href="@{/request}">
+                        <i aria-hidden="true" data-feather="message-circle"></i>
+                        Request to become uploader
+                    </a>
+                </li>
 
             </ul>
             <ul class="menu px-4">
@@ -90,6 +98,14 @@
                        th:href="@{/comic/manage}">
                         <i aria-hidden="true" data-feather="book-open"></i>
                         Manage comic
+                    </a>
+                </li>
+                <li>
+                    <a sec:authorize="hasAuthority('request.manage')"
+                       th:classappend="${#request.requestURI == '/request/manage' ? 'active' : ''}"
+                       th:href="@{/request/manage}">
+                        <i aria-hidden="true" data-feather="check-circle"></i>
+                        Manage Request
                     </a>
                 </li>
             </ul>
