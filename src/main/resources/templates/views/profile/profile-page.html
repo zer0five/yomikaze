@@ -34,7 +34,7 @@
                                 </div>
                             </div>
                             <div class="text-center mt-12">
-                                <h3 class="text-4xl font-semibold leading-normal mt-16 mb-2 "
+                                <h3 th:classappend="${profile.account.locked ? 'text-strikethrough' : ''}" class="text-4xl font-semibold leading-normal mt-16 mb-2 "
                                     th:text="${profile.displayName}"
                                 >
 
