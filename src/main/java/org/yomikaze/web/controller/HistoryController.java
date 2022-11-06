@@ -40,7 +40,7 @@ public class HistoryController {
         List<Comic> comicList = new ArrayList<>(histories.stream().map(history -> history.getChapter().getComic()).collect(Collectors.toSet()));
         Page<Comic> comics = new PageImpl<>(comicList);
         model.addAttribute("comics", comics);
-        return "views/comic/listing";
+        return "views/history/history-list";
     }
 
 
