@@ -48,9 +48,9 @@
             </td>
             <td>
 
-                <a class="btn btn-sm btn-success">Accept</a>
-                <a class="btn btn-sm btn-accent">Cancel</a>
-                <a class="btn btn-sm btn-error">Delete</a>
+                <a class="btn btn-sm btn-success" th:href="@{/request/{id}/approve(id=${request.id})}">Approve</a>
+                <a class="btn btn-sm btn-accent" th:href="@{/request/{id}/reject(id=${request.id})}">reject</a>
+
             </td>
         </tr>
         </tbody>

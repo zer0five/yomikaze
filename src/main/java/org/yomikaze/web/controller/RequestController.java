@@ -21,6 +21,8 @@ import org.yomikaze.snowflake.Snowflake;
 import org.yomikaze.web.dto.form.RequestForm;
 
 import javax.persistence.EntityNotFoundException;
+import java.util.HashSet;
+import java.util.Set;
 
 @Controller
 @RequiredArgsConstructor
@@ -71,6 +73,7 @@ public class RequestController {
 
         if (request.getRequester().equals(account)) {
             request.setApproved(false);
+            request.setApprovedBy(account);
             requestRepository.save(request);
         }
         return "redirect:/request";
@@ -86,7 +89,7 @@ public class RequestController {
     }
 
     @PostAuthorize("hasAuthority('request.manage')")
-    @PostMapping({"/{id}/approve"})
+    @GetMapping({"/{id}/approve"})
     public String approve(@PathVariable("id") Snowflake id, Authentication authentication) {
         Account account = (Account) authentication.getPrincipal();
         Request request = requestRepository.findById(id)
@@ -96,13 +99,15 @@ public class RequestController {
         requestRepository.save(request);
         Account requester = request.getRequester();
         Role uploader = roleRepository.findByName("Uploader").orElseThrow(() -> new EntityNotFoundException("Role not found!"));
-        requester.getRoles().add(uploader);
+        Set<Role>roles = new HashSet<>(requester.getRoles());
+        roles.add(uploader);
+        requester.setRoles(roles);
         accountRepository.save(requester);
         return "redirect:/request/manage";
     }
 
     @PostAuthorize("hasAuthority('request.manage')")
-    @PostMapping({"/{id}/reject"})
+    @GetMapping({"/{id}/reject"})
     public String reject(@PathVariable("id") Snowflake id, Authentication authentication) {
         Account account = (Account) authentication.getPrincipal();
         Request request = requestRepository.findById(id)

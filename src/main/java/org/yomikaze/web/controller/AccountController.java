@@ -14,7 +14,8 @@ import org.yomikaze.persistence.entity.Account;
 import org.yomikaze.persistence.repository.AccountRepository;
 import org.yomikaze.service.AccountService;
 import org.yomikaze.validation.UsernameExistsConstraint;
-import org.yomikaze.web.dto.form.VerifyForm;
+
+import org.yomikaze.web.dto.form.account.VerifyForm;
 
 import javax.persistence.EntityNotFoundException;
 import javax.validation.constraints.Email;
