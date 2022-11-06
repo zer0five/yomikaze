@@ -23,5 +23,5 @@ public interface CommentRepository extends CrudRepository<Comment, Snowflake> {
 
     Page<Comment> findAllByChapterId(Snowflake chapterId, Pageable pageable);
 
-    Page<Comment> findAllByComicId(Snowflake comicId, Pageable pageable);
+    Page<Comment> findAllByComicIdAndParentIsNull(Snowflake comicId, Pageable pageable);
 }

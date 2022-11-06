@@ -7,12 +7,11 @@ import lombok.ToString;
 import org.hibernate.Hibernate;
 import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
+import org.jetbrains.annotations.NotNull;
 import org.yomikaze.snowflake.Snowflake;
 
 import javax.persistence.*;
-import java.util.HashSet;
-import java.util.Objects;
-import java.util.Set;
+import java.util.*;
 
 
 @Getter
@@ -21,7 +20,7 @@ import java.util.Set;
 @RequiredArgsConstructor
 @Entity(name = "comment")
 @Table(name = "comment")
-public class Comment {
+public class Comment implements Comparable<Comment> {
     @Id
     @GeneratedValue(generator = "comment-snowflake")
     @Column(name = "id", nullable = false, updatable = false)
@@ -49,7 +48,8 @@ public class Comment {
     @OneToMany(fetch = FetchType.LAZY)
     @JoinColumn(name = "parent")
     @ToString.Exclude
-    private Set<Comment> replies = new HashSet<>();
+    @OrderBy("id ASC")
+    private Collection<Comment> replies = new ArrayList<>();
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "parent")
@@ -74,5 +74,10 @@ public class Comment {
     @Override
     public int hashCode() {
         return Objects.hashCode(id);
+    }
+
+    @Override
+    public int compareTo(@NotNull Comment o) {
+        return this.id.compareTo(o.id);
     }
 }
