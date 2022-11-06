@@ -39,4 +39,10 @@ public class SignUpForm {
         return Objects.equals(password, passwordConfirmation);
     }
 
+    public void clear() {
+        username = null;
+        email = null;
+        password = null;
+        passwordConfirmation = null;
+    }
 }

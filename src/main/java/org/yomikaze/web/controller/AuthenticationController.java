@@ -8,6 +8,7 @@ import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.DisabledException;
 import org.springframework.security.authentication.LockedException;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -66,23 +67,25 @@ public class AuthenticationController {
     }
 
     @GetMapping({"/register", "/sign-up"})
-    public String register(@ModelAttribute SignUpForm signUpForm,
-                           @RequestHeader(HttpHeaders.REFERER) Optional<URI> referer,
-                           HttpSession session) {
-        redirectService.storeRedirect(session, referer);
+    public String register(@ModelAttribute SignUpForm signUpForm) {
         return "views/auth/sign-up";
     }
 
     @PostMapping({"/register", "/sign-up"})
-    public String register(@Validated @ModelAttribute SignUpForm signUpForm,
-                           BindingResult bindingResult,
-                           HttpSession session) {
+    public String register(
+        @Validated @ModelAttribute SignUpForm signUpForm,
+        BindingResult bindingResult,
+        Model model
+    ) {
         if (bindingResult.hasErrors()) {
             return "views/auth/sign-up";
         }
         Account account = authenticationService.register(signUpForm);
         verificationService.sendVerificationEmail(account);
-        return redirectService.getRedirectSpring(session);
+        model.addAttribute("success", true);
+        signUpForm.clear();
+        bindingResult.reject("account.verification", "Please check your email to verify your account.");
+        return "views/auth/sign-up";
     }
 
 
