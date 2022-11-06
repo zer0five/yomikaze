@@ -1,9 +1,10 @@
 <h1 align="center">Yomikaze</h1>
 <p align="center"><img width="128px" src="src/main/resources/static/asset/image/logo.svg"></p>
+<p align="center">A comic reader for everyone</p>
 
 ## 💡 About
 
-#TODO
+**Yomikaze** is a online web comic reader.
 
 ### ✨ Features
 
@@ -20,13 +21,7 @@
 
 ### 📥 Installation
 
-Just download the file to `~/.zshrc`:
-
-```sh
-curl https://raw.githubusercontent.com/NNBnh/kickstart.zsh/main/.zshrc > ~/.zshrc
-```
-
-> **Warning** The command above will delete existen `~/.zshrc` permanently.
+#TODO
 
 ## 💌 Credits
 
