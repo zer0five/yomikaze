@@ -57,6 +57,7 @@
                         Profile
                     </a>
                 </li>
+
                 <li>
                     <a th:classappend="${#request.requestURI == '/library' ? 'active' : ''}"
                        th:href="@{/library}">
@@ -84,6 +85,14 @@
             <ul class="menu px-4">
                 <li></li>
                 <li class="menu-title"><span>Uploader zone</span></li>
+                <li>
+                    <a sec:authorize="hasAuthority('account.manage')"
+                       th:classappend="${#request.requestURI == '/account/manage' ? 'active' : ''}"
+                       th:href="@{/account/manage}">
+                        <i aria-hidden="true" data-feather="users"></i>
+                        Manage Account
+                    </a>
+                </li>
                 <li>
                     <a sec:authorize="hasAuthority('comic.create')"
                        th:classappend="${#request.requestURI == '/comic/create' ? 'active' : ''}"

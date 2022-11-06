@@ -65,7 +65,6 @@ public class AuthenticationController {
         }
         return redirectService.getRedirectSpring(session);
     }
-
     @GetMapping({"/register", "/sign-up"})
     public String register(@ModelAttribute SignUpForm signUpForm) {
         return "views/auth/sign-up";
