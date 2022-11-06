@@ -115,7 +115,7 @@ public class AccountController {
             log.info("Validation errors: {}", bindingResult);
         }
         try {
-            accountService.resetPassword(token, password);
+            accountService.resetPassword(resetPasswordForm);
             log.info("Password reset");
             valid = true;
         } catch (AccountExpiredException e) {
