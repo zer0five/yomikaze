@@ -1,0 +1,7 @@
+{
+  "name": "Yomikaze",
+  "description": "A comic reader for everyone",
+  "repository": "https://github.com/zer0five/yomikaze",
+  "logo": "https://github.com/zer0five/yomikaze/raw/master/src/main/resources/static/asset/image/logo.svg",
+  "keywords": ["comic", "manga"]
+}
