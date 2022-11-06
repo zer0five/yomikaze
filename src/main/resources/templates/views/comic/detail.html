@@ -195,26 +195,54 @@
                     </div>
                 </div>
                 <div class="flex flex-row flex-wrap gap-2">
-                    <a class="btn btn-primary gap-2" th:if="${not chapters.empty}">
+                    <a class="btn btn-primary gap-2"
+                       th:href="@{/comic/{id}/chapter/0(id=${comic.id})}"
+                       th:if="${not chapters.isEmpty()}">
                         <i data-feather="book-open"></i>
                         Read
                     </a>
                     <div class="tooltip"
                          data-tip="Comic currently has no chapters"
-                         th:if="${chapters.empty}">
+                         th:if="${chapters.isEmpty()}">
                         <button class="btn btn-primary btn-disabled gap-2" disabled>
                             <i data-feather="book-open"></i>
                             Read
                         </button>
                     </div>
-                    <a class="btn btn-secondary gap-2">
+
+                    <a class="btn btn-secondary gap-2"
+                       th:href="@{/comic/{id}/chapter/{index}(id=${comic.id}, index=${chapters.size() - 1})}"
+                       th:if="${not chapters.isEmpty()}">
                         <i data-feather="fast-forward"></i>
                         Read latest
                     </a>
-                    <a class="btn btn-accent gap-2" sec:authorize="!anonymous">
-                        <i data-feather="navigation"></i>
-                        Continue reading
-                    </a>
+                    <div class="tooltip"
+                         data-tip="Comic currently has no chapters"
+                         th:if="${chapters.isEmpty()}">
+                        <button class="btn btn-secondary btn-disabled gap-2" disabled>
+                            <i data-feather="fast-forward"></i>
+                            Read latest
+                        </button>
+                    </div>
+
+                    <!--/*@thymesVar id="index" type="java.lang.Integer"*/-->
+                    <th:block sec:authorize="!anonymous" th:if="${not chapters.isEmpty()}"
+                              th:with="index = ${chapters.indexOf(@historyService.getLastReadChapter(#authentication.principal, @comicRepository.findById(comic.id).orElse(null)))}">
+                        <a class="btn btn-accent gap-2"
+                           th:href="@{/comic/{id}/chapter/{index}(id=${comic.id}, index=${index})}"
+                           th:if="${index >= 0}">
+                            <i data-feather="navigation"></i>
+                            Continue reading
+                        </a>
+                        <div class="tooltip"
+                             data-tip="You have not read this comic yet"
+                             th:if="${index < 0}">
+                            <button class="btn btn-accent btn-disabled gap-2" disabled>
+                                <i data-feather="navigation"></i>
+                                Continue reading
+                            </button>
+                        </div>
+                    </th:block>
                     <div class="tooltip"
                          data-tip="You must be logged in to continue reading"
                          sec:authorize="anonymous">
@@ -223,11 +251,12 @@
                             Continue reading
                         </button>
                     </div>
-                    <a class="btn btn-error gap-2"
-                       sec:authorize="!anonymous">
+
+                    <button class="btn btn-error gap-2" sec:authorize="!anonymous"
+                            type="button">
                         <i data-feather="bookmark"></i>
                         Add to library
-                    </a>
+                    </button>
                     <div class="tooltip"
                          data-tip="You must be logged in to add this comic to your library"
                          sec:authorize="anonymous">
@@ -318,26 +347,8 @@
                 </span>
         </label>
     </div>
-    <script th:inline="javascript">
-        const API_URL = /*[[@{/history/toggle}]]*/ '/history/toggle';
-
-        async function toggleReadStatus(chapterId) {
-            let response = await fetch(API_URL + '/' + chapterId, {credentials: 'include'});
-            let status = response.status;
-            switch (status) {
-                case 200:
-                    console.log('Chapter marked as read');
-                    break;
-                case 204:
-                    console.log('Chapter marked as unread');
-                    break;
-                default:
-                    console.log('Unknown status code: ' + status);
-            }
-        }
-    </script>
 </div>
-<div class="bg-base-100 rounded-box shadow-2xl p-10 mt-8">
+<div class="bg-base-100 rounded-box shadow-2xl p-10 mt-8" sec:authorize="!anonymous">
     <script>
         async function postComment(form) {
             let formData = new FormData(form);
@@ -356,8 +367,24 @@
                     alert("Failed to post comment: " + status);
             }
         }
+
+        async function toggleLike(id) {
+            const API_URL = '/comment/' + id + '/like' /*[[@{/api/comic/{id}/like(id=${comic.id})}]]*/;
+            let response = await fetch(`/comic/${id}/like`, {
+                method: 'POST',
+                credentials: 'include'
+            });
+            let status = response.status;
+            switch (status) {
+                case 200:
+                    window.location.reload();
+                    break;
+                default:
+                    alert("Failed to toggle like: " + status);
+            }
+        }
     </script>
-    <form @submit.prevent="await postComment($el)" class="flex flex-col gap-2 p-4 mb-4"
+    <form @submit.prevent="await postComment($el)" class="flex flex-col gap-2 p-4 mb-4" x-data="{content:''}"
           th:action="@{/comic/{id}/comment/post(id=${comic.id})}">
         <input th:name="${_csrf.parameterName}" th:value="${_csrf.token}" type="hidden"/>
         <div class="form-control">
@@ -365,11 +392,12 @@
                 <span class="label-text text-xl font-bold">Comment</span>
             </label>
             <textarea class="textarea textarea-bordered" id="comment-box" name="content"
-                      placeholder="Write your comment here..." rows="3"></textarea>
+                      placeholder="Write your comment here..." rows="3"
+                      x-model="content"></textarea>
         </div>
         <div class="form-control">
             <div class="self-end">
-                <button class="btn btn-accent gap-2" type="submit">
+                <button :disabled="content.length === 0" class="btn btn-accent gap-2" type="submit">
                     <i data-feather="send"></i>
                     <span>Post</span>
                 </button>
@@ -379,8 +407,7 @@
     <!--/*@thymesVar id="comment" type="org.yomikaze.persistence.entity.Comment"*/-->
     <!--/*@thymesVar id="commenter" type="org.yomikaze.persistence.entity.Account"*/-->
     <div class="flex items-center justify-center"
-         th:each="comment : ${@commentService.getComments(comic.id)}"
-    >
+         th:each="comment : ${@commentService.getComments(comic.id)}">
         <div class="p-4 flex gap-4 w-full">
             <!--! user avatar -->
             <div class="avatar" th:if="${comment.account.profile.picture != null}">
@@ -442,7 +469,9 @@
                 </div>
                 <!--! like / dislike / reply -->
                 <div class="button-group">
-                    <button class="btn btn-ghost btn-sm gap-2">
+                    <button @click="await toggleLike($el.id)"
+                            class="btn btn-ghost btn-sm gap-2"
+                    >
                         <i data-feather="thumbs-up"></i>
                         <span class="font-semibold" th:text="${comment.likedBy.size()}">0</span>
                     </button>
