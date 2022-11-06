@@ -7,11 +7,13 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.access.prepost.PostAuthorize;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -29,6 +31,7 @@ import org.yomikaze.service.HistoryService;
 import org.yomikaze.snowflake.Snowflake;
 import org.yomikaze.web.dto.comic.ComicDetailModel;
 import org.yomikaze.web.dto.comic.CreateComicForm;
+import org.yomikaze.web.dto.comic.EditComicForm;
 import org.yomikaze.web.dto.comic.chapter.ChapterForm;
 
 import javax.persistence.EntityNotFoundException;
@@ -180,41 +183,35 @@ public class ComicController {
 
     @PostMapping(path = "/{id}/edit", consumes = {"multipart/form-data"})
     @PreAuthorize("authentication != null && !anonymous")
-    @PostAuthorize("hasAuthority('comic.edit')")
-    public String edit(@PathVariable Snowflake id, @RequestPart MultipartFile thumbnail, @Validated @ModelAttribute("comic") CreateComicForm comic, BindingResult bindingResult, Authentication authentication) {
+    @PostAuthorize("hasAnyAuthority('comic.edit', 'comic.edit.other')")
+    public String edit(@PathVariable Snowflake id, @RequestPart MultipartFile thumbnail, @Validated @ModelAttribute("comic") EditComicForm comic, BindingResult bindingResult, Authentication authentication) {
         if (bindingResult.hasErrors()) {
             return "views/comic/edit";
         }
         Account uploader = (Account) authentication.getPrincipal();
         Comic db = comicRepository.findById(id).orElseThrow(EntityNotFoundException::new);
-        if (!db.getUploader().equals(uploader)) {
+        boolean isOwner = db.getUploader().getId().equals(uploader.getId());
+        boolean hasEditOther = authentication.getAuthorities().stream().map(GrantedAuthority::getAuthority).anyMatch("comic.edit.other"::equals);
+        if (!(isOwner || hasEditOther)) {
             throw new AccessDeniedException("comic.edit.access-denied");
         }
         Comic saved = comicService.updateComic(id, comic, thumbnail);
         return MessageFormat.format("redirect:/comic/{0}/detail", saved.getId());
     }
 
-    @GetMapping("/{id}/delete")
+    @RequestMapping(path = "/{id}/delete", method = {RequestMethod.POST, RequestMethod.DELETE})
     @PreAuthorize("authentication != null && !anonymous")
-    @PostAuthorize("hasAuthority('comic.delete')")
-    public String delete(@PathVariable Snowflake id, Model model) {
-        Comic comic = comicRepository.findById(id)
-            .orElseThrow(() -> new EntityNotFoundException("comic.not-found"));
-        model.addAttribute("comic", comic);
-        return "views/comic/delete";
-    }
-
-    @PostMapping("/{id}/delete")
-    @PreAuthorize("authentication != null && !anonymous")
-    @PostAuthorize("hasAuthority('comic.delete')")
+    @PostAuthorize("hasAnyAuthority('comic.delete', 'comic.delete.other')")
     public String delete(@PathVariable Snowflake id, Authentication authentication) {
         Account uploader = (Account) authentication.getPrincipal();
-        Comic db = comicRepository.findById(id).orElseThrow(EntityNotFoundException::new);
-        if (!db.getUploader().equals(uploader)) {
+        Comic comic = comicRepository.findById(id).orElseThrow(EntityNotFoundException::new);
+        boolean isOwner = comic.getUploader().getId().equals(uploader.getId());
+        boolean hasDeleteOther = authentication.getAuthorities().stream().map(GrantedAuthority::getAuthority).anyMatch("comic.delete.other"::equals);
+        if (!(isOwner || hasDeleteOther)) {
             throw new AccessDeniedException("comic.delete.access-denied");
         }
-        comicRepository.deleteById(id);
-        return "redirect:/comic";
+        comicRepository.delete(comic);
+        return "redirect:/comic/manage";
     }
 
     @GetMapping("/manage")
@@ -229,10 +226,19 @@ public class ComicController {
     }
 
     @ExceptionHandler(EntityNotFoundException.class)
+    @ResponseStatus(HttpStatus.NOT_FOUND)
     public String handleEntityNotFoundException(EntityNotFoundException e, Model model) {
         model.addAttribute("exception", e);
-        model.addAttribute("message", "comic.not-found");
-        return "forward:/error/404";
+        model.addAttribute("message", e.getMessage());
+        return "views/error/404";
+    }
+
+    @ExceptionHandler(AccessDeniedException.class)
+    @ResponseStatus(HttpStatus.FORBIDDEN)
+    public String handleAccessDeniedException(AccessDeniedException e, Model model) {
+        model.addAttribute("exception", e);
+        model.addAttribute("message", e.getMessage());
+        return "views/error/403";
     }
 
 }

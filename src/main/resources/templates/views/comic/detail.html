@@ -72,13 +72,11 @@
                                 <li class="dropdown-item gap-2"
                                     sec:authorize="hasAuthority('comic.delete')"
                                     th:if="${comic.uploader.id == #authentication.principal.id}">
-                                    <a
-                                        href="/comic/delete/"
-                                        th:href="@{/comic/{id}/delete(id=${comic.id})}"
-                                    >
+                                    <!-- The button to open modal -->
+                                    <label for="delete-comic-modal">
                                         <i data-feather="trash"></i>
                                         Delete
-                                    </a>
+                                    </label>
                                 </li>
                             </ul>
                         </div>
@@ -498,4 +496,20 @@
         </div>
     </div>
 </div>
+<form class="hidden" id="delete-comic-form" method="post"
+      th:action="@{/comic/{id}/delete(id=${comic.id})}"
+      th:method="delete">
+</form>
+<!-- Put this part before </body> tag -->
+<input class="modal-toggle" id="delete-comic-modal" type="checkbox"/>
+<label class="modal cursor-pointer" for="delete-comic-modal">
+    <label class="modal-box relative">
+        <h3 class="modal-title">Delete comic</h3>
+        <p class="modal-description">Are you sure you want to delete this comic?</p>
+        <div class="modal-actions">
+            <button class="btn btn-ghost">Cancel</button>
+            <button class="btn btn-error" form="delete-comic-form" type="submit">Delete</button>
+        </div>
+    </label>
+</label>
 </body>
