@@ -2,6 +2,7 @@ package org.yomikaze.web.controller;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.access.prepost.PostAuthorize;
 import org.springframework.security.authentication.AccountExpiredException;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -17,13 +18,11 @@ import org.yomikaze.service.AccountService;
 import org.yomikaze.validation.UsernameExistsConstraint;
 import org.yomikaze.web.dto.form.account.EmailForm;
 import org.yomikaze.web.dto.form.account.ResetPasswordForm;
-import org.yomikaze.web.dto.form.account.ChangePasswordForm;
 import org.yomikaze.web.dto.form.account.VerifyForm;
 
 import javax.persistence.EntityNotFoundException;
 import javax.validation.constraints.Email;
 import java.util.Optional;
-import java.util.List;
 
 @Controller
 @RequiredArgsConstructor
@@ -136,6 +135,7 @@ public class AccountController {
         }
         return "views/account/reset-password";
     }
+    @PostAuthorize("hasAuthority('account.manage')")
     @GetMapping("/manage")
     public String manageAccount(Model model) {
 

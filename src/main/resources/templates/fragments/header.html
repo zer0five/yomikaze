@@ -55,7 +55,7 @@
                             sec:authorize="hasAnyAuthority('comic.manage', 'genre.manage','request.create.uploader')">
                             <span>Manage</span>
                         </li>
-                        <li sec:authorize="hasAuthority('request.manage')">
+                        <li sec:authorize="hasAuthority('account.manage')">
                             <a href="/account/manage"
                                th:href="@{/account/manage}">
                                 <i aria-hidden="true" class="text-base-content" data-feather="users"></i>
