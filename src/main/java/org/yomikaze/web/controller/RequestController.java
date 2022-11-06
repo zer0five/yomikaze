@@ -35,9 +35,7 @@ public class RequestController {
     private final RequestRepository requestRepository;
 
     //for user
-    @PostAuthorize("hasAuthority('request.create.uploader' ) && !hasAuthority('comic.manange') " )
-
-
+    @PostAuthorize("hasAuthority('request.create.uploader') && !hasAuthority('comic.manange')")
     @GetMapping
     public String request(@PageableDefault(size = Integer.MAX_VALUE) Pageable pageable, Model model, Authentication authentication, @ModelAttribute RequestForm requestForm) {
         Account account = (Account) authentication.getPrincipal();
@@ -48,7 +46,7 @@ public class RequestController {
 
     }
 
-    @PostAuthorize("hasAuthority('request.create.uploader')")
+    @PostAuthorize("hasAuthority('request.create.uploader')  && !hasAuthority('comic.manange')")
     @PostMapping
     public String request(
         @Validated @ModelAttribute RequestForm requestForm,
@@ -72,10 +70,7 @@ public class RequestController {
         return "redirect:/request";
     }
 
-
-
-    //for admin
-    @PostAuthorize("hasAuthority('request.cancel')")
+    @PostAuthorize("hasAuthority('request.cancel')  && !hasAuthority('comic.manange')")
     @GetMapping("/{id}/cancel")
     public String delete(@PathVariable("id") Snowflake id, Authentication authentication) {
         Account account = (Account) authentication.getPrincipal();
@@ -110,7 +105,7 @@ public class RequestController {
         requestRepository.save(request);
         Account requester = request.getRequester();
         Role uploader = roleRepository.findByName("Uploader").orElseThrow(() -> new EntityNotFoundException("Role not found!"));
-        Set<Role>roles = new HashSet<>(requester.getRoles());
+        Set<Role> roles = new HashSet<>(requester.getRoles());
         roles.add(uploader);
         requester.setRoles(roles);
         accountRepository.save(requester);
