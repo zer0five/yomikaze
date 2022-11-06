@@ -14,7 +14,7 @@
                 Get signed-in to access member only features
             </p>
         </div>
-        <!--/*@thymesVar id="signInForm" type="org.yomikaze.web.dto.form.SignInForm"*/-->
+        <!--/*@thymesVar id="signInForm" type="org.yomikaze.web.dto.form.account.SignInForm"*/-->
         <form
             @submit="submit = true"
             class="card flex-shrink-0 w-full max-w-sm shadow-2xl bg-base-300" method="POST"
@@ -84,18 +84,18 @@
                         <span x-text="submit ? 'Signing In...' : 'Sign In'">Sign In</span>
                     </button>
                 </div>
-                <div class="w-full text-sm py-2 gap-2 float-right">
-                    <p>
+                <div class="w-full text-sm py-2 gap-2">
+                    <p class="float-right">
                         Don't have an account?
                         <a class="link link-accent" href="/sign-up" th:href="@{/sign-up}">
                             Sign Up
                         </a>
                     </p>
-                    <p>
+                    <p class="float-right">
                         Don't remember your password?
                         <a class="link link-accent" href="/forgot-password"
-                           th:href="@{/account/password/reset}">
-                            Reset Password
+                           th:href="@{/account/password/forgot}">
+                            Forgot Password
                         </a>
                     </p>
                 </div>
