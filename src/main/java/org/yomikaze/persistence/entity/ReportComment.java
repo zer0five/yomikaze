@@ -26,6 +26,7 @@ public class ReportComment {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "reporter_id")
+    @ToString.Exclude
     private Account reporter;
 
     @ManyToOne(fetch = FetchType.LAZY)
@@ -41,7 +42,11 @@ public class ReportComment {
     @Column(name = "approved")
     private Boolean approved;
 
-    // TODO: Comment id
+    @JoinColumn(name = "comment")
+    @OneToOne(fetch = FetchType.LAZY)
+    @ToString.Exclude
+    @OnDelete(action = OnDeleteAction.CASCADE)
+    private Comment comment;
 
     @Override
     public boolean equals(Object o) {

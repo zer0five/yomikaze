@@ -24,18 +24,7 @@
     <div class="w-10/12 mx-auto py-10" th:insert="this :: content">
         <!-- Main content here -->
     </div>
-    <button id="btn-back-to-top"
-            type="button"
-            class="fixed bottom-10 right-10 btn btn-circle bg-neutral shadow-md hover:bg-accent hover:shadow-lg focus:bg-accent focus:shadow-lg active:bg-accent active:shadow-lg"
-            x-cloak
-            x-data="{scroll : document.documentElement.scrollTop > 20}"
-            x-show="scroll"
-            x-transition.opacity
-            @click="window.scrollTo({top: 0, behavior: 'smooth'})"
-            @scroll.window="document.documentElement.scrollTop > 20 ? scroll = true : scroll = false"
-    >
-        <i data-feather="arrow-up"></i>
-    </button>
+    <button th:replace="fragments/back-to-top"></button>
 </div>
 
 <th:block th:replace="fragments/footer"></th:block>

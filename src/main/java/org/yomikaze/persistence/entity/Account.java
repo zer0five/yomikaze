@@ -63,11 +63,11 @@ public class Account implements UserDetails {
     @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(name = "account_has_role",
         joinColumns = @JoinColumn(
-            name = "role_id",
+            name = "account",
             referencedColumnName = "id"
         ),
         inverseJoinColumns = @JoinColumn(
-            name = "account_id",
+            name = "role",
             referencedColumnName = "id"
         )
     )
