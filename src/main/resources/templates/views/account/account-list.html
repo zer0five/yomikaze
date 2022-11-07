@@ -38,7 +38,8 @@
             </td>
             <td>
                 <a class="btn btn-sm btn-primary" th:href="@{/profile/{id}(id=${account.id})}" >View Profile</a>
-                <a class="btn btn-sm btn-error" >Ban</a>
+                <a th:unless="${account.isLocked()}" class="btn btn-sm btn-error" th:href="@{/account/manage/{id}/ban(id=${account.id})}" >Ban</a>
+                <a th:if="${account.isLocked()}" class="btn btn-sm btn-success" th:href="@{/account/manage/{id}/pardon(id=${account.id})}" >Pardon</a>
 
             </td>
         </tr>
