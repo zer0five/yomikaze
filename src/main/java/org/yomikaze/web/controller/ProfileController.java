@@ -33,7 +33,7 @@ public class ProfileController {
         Account account = (Account) authentication.getPrincipal();
         Profile profile = account.getProfile();
         model.addAttribute("profile", profile);
-        return "/views/profile/profile-page";
+        return "views/profile/profile-page";
     }
 
     @GetMapping("/{id}")
@@ -41,7 +41,7 @@ public class ProfileController {
         Account account = accountRepository.findById(id).orElseThrow(EntityNotFoundException::new);
         Profile profile = account.getProfile();
         model.addAttribute("profile", profile);
-        return "/views/profile/profile-page";
+        return "views/profile/profile-page";
     }
 
     @PreAuthorize("authentication != null && !anonymous")
@@ -64,7 +64,7 @@ public class ProfileController {
         editProfileForm.setShowBirthday(profile.isShowBirthday());
 
 
-        return "/views/profile/profile-edit";
+        return "views/profile/profile-edit";
     }
 
     @PostMapping("/{id}/edit")
