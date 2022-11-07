@@ -15,7 +15,7 @@ body:
         id: script
         attributes:
             label: Script
-            placeholder: enter script with format code,ex: ```java [ your code ] ```
+            placeholder: ex: ```java [ your code ] ```
         validations:
             required: true
     -   type: textarea
