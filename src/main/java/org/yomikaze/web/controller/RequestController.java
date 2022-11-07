@@ -42,7 +42,7 @@ public class RequestController {
         Pageable actualPageable = pageable.getPageSize() == Integer.MAX_VALUE ? Pageable.unpaged() : pageable;
         Page<Request> requests = requestRepository.findAllByRequester(account, actualPageable);
         model.addAttribute("requests", requests);
-        return "/views/request/request-uploader";
+        return "views/request/request-uploader";
     }
 
     @PostAuthorize("hasAuthority('request.create.uploader')  && !hasAuthority('comic.manage')")
@@ -60,7 +60,7 @@ public class RequestController {
             Pageable actualPageable = pageable.getPageSize() == Integer.MAX_VALUE ? Pageable.unpaged() : pageable;
             Page<Request> requests = requestRepository.findAllByRequester(account, actualPageable);
             model.addAttribute("requests", requests);
-            return "/views/request/request-uploader";
+            return "views/request/request-uploader";
         }
         Request request = new Request();
         request.setRequester(account);
