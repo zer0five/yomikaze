@@ -51,7 +51,12 @@
                     </div>
                 </div>
             </div>
-            <button class="btn btn-primary" type="submit">Search</button>
+            <div class="flex py-4">
+                <button class="self-align-right grow-0 btn btn-primary gap-2" type="submit">
+                    <i data-feather="search"></i>
+                    <span>Search</span>
+                </button>
+            </div>
         </form>
     </div>
     <div th:case="true">
@@ -65,7 +70,7 @@
     </div>
     <th:block th:case="false">
         <div class="w-full mx-auto rounded-box p-8 shadow-xl" th:if="${genre != null}">
-            <h2 class="text-2xl font-bold">[[${genre.name}]]</h2>
+            <h2 class="text-2xl font-bold">Genre: [[${genre.name}]]</h2>
             <p class="text-xl" th:if="${genre.description}">[[${genre.description}]]</p>
         </div>
         <div class="w-full mx-auto rounded-box p-8 shadow-xl" th:if="${search != null}">
