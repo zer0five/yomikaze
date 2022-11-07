@@ -188,4 +188,15 @@ public class AccountController {
         return "views/account/account-list";
     }
 
+    @PostAuthorize("hasAuthority('account.manage')")
+    @GetMapping("/manage/{id}/ban")
+    public String banAccount(@PathVariable("id") Snowflake id ) {
+        Account findAccount = accountRepository.findById(id).orElseThrow(EntityNotFoundException::new);
+        accountService.banAccount(findAccount);
+
+
+
+        return "redirect:/manage";
+    }
+
 }
