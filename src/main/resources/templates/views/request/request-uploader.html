@@ -9,9 +9,9 @@
     <!-- header page -->
     <div class="flex">
         <!-- main content page -->
-        <div class="max-w-2xl mx-auto">
-            <div class="relative shadow-md sm:rounded-lg">
-                <div class="p-4 text-white flex justify-end">
+        <div class="max-w-10/12 mx-auto">
+            <div class="relative">
+                <div class="p-4 flex justify-end">
                     <label
                         class="btn btn-success rounded-full modal-button"
                         for="send-request-modal"
@@ -71,21 +71,20 @@
 
                 <table class="table table-zebra">
                     <thead class="uppercase">
-                    <tr>
-
-                        <th class="px-6 py-3" scope="col">
-                            Date
+                    <tr class="py-3">
+                        <th class="px-6" scope="col">
+                            Time
                         </th>
-                        <th class="px-6 py-3" scope="col">
+                        <th class="px-6" scope="col">
                             Message
                         </th>
-                        <th class="px-6 py-3" scope="col">
+                        <th class="px-6" scope="col">
                             Status
                         </th>
-                        <th class="px-6 py-3" scope="col">
-                            Approved by
+                        <th class="px-6" scope="col">
+                            Approval
                         </th>
-                        <th class="px-6 py-3" scope="col">
+                        <th class="px-6" scope="col">
                             Action
                         </th>
                     </tr>
@@ -106,9 +105,12 @@
                     <tr
                         th:each="request : ${requests}"
                         th:object="${request}">
-                        <th scope="row"
-                            th:text="*{#dates.format(id.timestamp, 'hh:mm:ss dd/MM/yyyy')}">
-                        </th>
+                        <td class="px-6 py-4">
+                            <div class="tooltip z-50"
+                                 th:data-tip="*{id.timestamp.toInstant()}">
+                                <span th:x-text="|moment('*{id.timestamp.toInstant()}').fromNow()|">[[*{id.timestamp.toInstant()}]]</span>
+                            </div>
+                        </td>
                         <td class="px-6 py-4 " th:text="*{message}">
                         </td>
                         <td class="px-6 py-4">
@@ -116,22 +118,25 @@
                                 Pending
                             </span>
                             <span class="badge badge-error gap-2"
-                                  th:if="*{approved != null && not approved && approvedBy != requester}">
+                                  th:if="*{approved == false}"
+                                  th:unless="*{approvedBy == requester}">
                                 Rejected
                             </span>
                             <span class="badge badge-error gap-2"
-                                  th:if="*{approved != null && not approved && approvedBy == requester }">
+                                  th:if="*{approved == false}"
+                                  th:unless="*{approvedBy != requester}">
                                 Cancelled
                             </span>
-                            <span class="badge badge-success gap-2" th:if="*{approved != null && approved}">
+                            <span class="badge badge-success gap-2" th:if="*{approved == true}">
                                 Accepted
                             </span>
                         </td>
-                        <td class="px-6 py-4 " th:if="*{approved != null}">
-                            <span th:text="*{approvedBy.profile.displayName}"></span>
-                        </td>
-                        <td class="px-6 py-4 " th:unless="*{approved != null}">
-                            <span>Not yet</span>
+                        <td class="px-6 py-4" th:switch="*{approvedBy == null}">
+                            <a class="link link-accent" th:case="false"
+                               th:href="@{/profile/{id}(id=*{approvedBy.id})}">
+                                <span th:text="*{approvedBy.profile.displayName}"></span>
+                            </a>
+                            <span th:case="true">N/A</span>
                         </td>
                         <td class="pr-8 py-4 text-right">
                             <a class="btn btn-sm btn-info" th:href="@{/request/{id}/cancel(id=${request.id})}"
@@ -141,18 +146,11 @@
                             </div>
                         </td>
                     </tr>
-
                     </tbody>
                 </table>
             </div>
         </div>
     </div>
 </main>
-
-
-<!-- footer -->
-
-
 </body>
-
 </html>
