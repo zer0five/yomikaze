@@ -89,7 +89,7 @@ public class AccountService {
         ctx.setVariable("token", token);
         ctx.setVariable("account", account);
         UriComponentsBuilder builder = UriComponentsBuilder.fromUriString(baseUrl);
-        builder.path("/account/reset");
+        builder.path("/account/password/reset");
         builder.queryParam("token", token);
         final URI verifyUrl = builder.build().toUri();
         ctx.setVariable("url", verifyUrl);

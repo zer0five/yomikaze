@@ -202,8 +202,12 @@ public class ComicController {
     @GetMapping("/{id}/chapter/add")
     @PreAuthorize("authentication != null && !anonymous")
     @PostAuthorize("hasAuthority('chapter.add')")
-    public String createChapter(@ModelAttribute("chapter") ChapterForm chapter, @PathVariable Snowflake id, Model model) {
+    public String createChapter(@ModelAttribute("chapter") ChapterForm chapter, @PathVariable Snowflake id, Model model, Authentication authentication) {
+        Account account = (Account) authentication.getPrincipal();
         Comic comic = comicRepository.findById(id).orElseThrow(EntityNotFoundException::new);
+        if (!comic.getUploader().getId().equals(account.getId())) {
+            throw new AccessDeniedException("You are not the uploader of this comic");
+        }
         chapter.setIndex(comic.getChapters().size());
         chapter.setTitle("Chapter " + (comic.getChapters().size() + 1));
         model.addAttribute("comic", comic);
@@ -282,6 +286,21 @@ public class ComicController {
         boolean isOwner = comic.getUploader().getId().equals(uploader.getId());
         boolean hasDeleteOther = authentication.getAuthorities().stream().map(GrantedAuthority::getAuthority).anyMatch("comic.delete.other"::equals);
         if (!(isOwner || hasDeleteOther)) {
+            throw new AccessDeniedException("comic.delete.access-denied");
+        }
+        comicRepository.delete(comic);
+        return "redirect:/comic/manage";
+    }
+
+    @RequestMapping(path = "/{id}/chapter/{index}/delete", method = {RequestMethod.POST, RequestMethod.DELETE})
+    @PreAuthorize("authentication != null && !anonymous")
+    @PostAuthorize("hasAnyAuthority('chapter.delete', 'chapter.delete.other')")
+    public String deleteChapter(@PathVariable Snowflake id, @PathVariable int index, Authentication authentication) {
+        Account uploader = (Account) authentication.getPrincipal();
+        Comic comic = comicRepository.findById(id).orElseThrow(EntityNotFoundException::new);
+        boolean isOwner = comic.getUploader().getId().equals(uploader.getId());
+        boolean hasPermission = isOwner || authentication.getAuthorities().stream().map(GrantedAuthority::getAuthority).anyMatch("comic.delete.other"::equals);
+        if (!hasPermission) {
             throw new AccessDeniedException("comic.delete.access-denied");
         }
         comicRepository.delete(comic);
