@@ -57,7 +57,7 @@ public class DatabaseImageStorageService implements IFileStorageService<Snowflak
                 })
                 .orElse(MessageFormat.format("untitled.{0}", "webp"));
             contentType = "image/webp";
-        } catch (IOException e) {
+        } catch (Exception e) {
             log.error("Failed to convert image to webp", e);
             data = file.getBytes();
             name = Optional.ofNullable(file.getOriginalFilename())
