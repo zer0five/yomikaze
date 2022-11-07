@@ -1,7 +1,7 @@
 name: Auto test Management
 description: manage the auto test
 title: "[Test Case]: "
-labels: [ "test", "bug" ]
+labels: [ "test" ]
 assignees:
     - octocat
 body:
