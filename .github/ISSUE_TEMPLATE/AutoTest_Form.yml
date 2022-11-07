@@ -1,0 +1,30 @@
+name: Auto test Management
+description: manage the auto test
+title: "[Test Case]: "
+labels: [ "Test","Tested","Selenium" ]
+assignees:
+    - octocat
+body:
+    -   type: textarea
+        id: test-description
+        attributes:
+            label: Description of the test case
+        validations:
+            required: true
+    -   type: textarea
+        id: script
+        attributes:
+            label: Script
+            placeholder: Enter your auto test script
+        validations:
+            required: true
+    -   type: dropdown
+        id: browsers
+        attributes:
+            label: What browsers are you seeing the problem on?
+            multiple: true
+            options:
+                - Firefox
+                - Chrome
+                - Safari
+                - Microsoft Edge

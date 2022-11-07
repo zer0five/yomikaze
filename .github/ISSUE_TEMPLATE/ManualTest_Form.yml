@@ -1,0 +1,50 @@
+name: Manual Test Management
+description: Reporrt an manual test cases
+title: "[Test Case]: "
+labels: [ "Manual","Test","Tested" ]
+assignees:
+    - octocat
+body:
+    -   type: markdown
+        attributes:
+            value: |
+                Thanks for taking the time to fill out this bug report!
+    -   type: textarea
+        id: test-description
+        attributes:
+            label: Description of the test case
+            description: Tell about your manual test case
+        validations:
+            required: true
+    -   type: textarea
+        id: steps-to-reproduce
+        attributes:
+            label: Steps To Reproduce
+            description: Steps to reproduce the behavior.
+            placeholder: Please write the steps in a list form
+        validations:
+            required: true
+    -   type: textarea
+        id: expect-output
+        attributes:
+            label: Expect output         
+            placeholder: Please write expect output
+        validations:
+            required: true           
+    -   type: textarea
+        id: actual-output
+        attributes:
+            label: Actual output         
+            placeholder: Please write Actual output
+        validations:
+            required: true                       
+    -   type: dropdown
+        id: browsers
+        attributes:
+            label: What browsers are you seeing the problem on?
+            multiple: true
+            options:
+                - Firefox
+                - Chrome
+                - Safari
+                - Microsoft Edge

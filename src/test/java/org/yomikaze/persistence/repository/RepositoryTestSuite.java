@@ -7,7 +7,8 @@ import org.junit.platform.suite.api.Suite;
 @SelectClasses({
     AccountRepositoryTest.class,
     GenreRepositoryTest.class,
-    ComicRepositoryTest.class
+    ComicRepositoryTest.class,
+    ComicTest.class,
 })
 public class RepositoryTestSuite {
 }
