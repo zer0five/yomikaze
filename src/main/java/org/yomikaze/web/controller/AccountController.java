@@ -177,11 +177,6 @@ public class AccountController {
             bindingResult.rejectValue("oldPassword", "registration.password.invalid", "Invalid password");
             log.info("Invalid password{}", changePasswordForm.getOldPassword());
         }
-
-
-
-
-
         return "redirect:/profile";
     }
 
