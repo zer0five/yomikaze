@@ -1,7 +1,7 @@
 name: Manual Test Management
 description: Reporrt an manual test cases
 title: "[Test Case]: "
-labels: [ "test", "bug" ]
+labels: [ "test","Tested" ]
 assignees:
     - octocat
 body:
