@@ -2,13 +2,18 @@
     @click="window.scrollTo({top: 0, behavior: 'smooth'})"
     @scroll.window="scroll = document.documentElement.scrollTop > 20"
     aria-label="Back to top"
-    class="fixed bottom-15 right-5 btn btn-circle bg-neutral shadow-md hover:bg-accent hover:shadow-lg focus:bg-accent focus:shadow-lg active:bg-accent active:shadow-lg"
+    class="fixed bottom-7 right-5 btn btn-circle bg-neutral shadow-md hover:bg-accent hover:shadow-lg focus:bg-accent focus:shadow-lg active:bg-accent active:shadow-lg"
     id="btn-back-to-top"
     type="button"
     x-cloak
     x-data="{scroll : document.documentElement.scrollTop > 20}"
     x-show="scroll"
-    x-transition.opacity
+    x-transition:enter="transition ease-out duration-300"
+    x-transition:enter-end="opacity-100 transform scale-100"
+    x-transition:enter-start="opacity-0 transform scale-90"
+    x-transition:leave="transition ease-in duration-300"
+    x-transition:leave-end="opacity-0 transform scale-90"
+    x-transition:leave-start="opacity-100 transform scale-100"
 >
     <i aria-hidden="true" data-feather="arrow-up"></i>
 </button>

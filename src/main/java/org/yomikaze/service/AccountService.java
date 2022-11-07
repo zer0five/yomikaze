@@ -173,4 +173,18 @@ public class AccountService {
         account.setPassword(newPassword);
         accountRepository.save(account);
     }
+
+    public void banAccount(Account account) {
+        account.setLocked(true);
+        accountRepository.save(account);
+    }
+
+    public void pardonAccount(Account account) {
+        account.setLocked(false);
+        accountRepository.save(account);
+    }
+
+    public void deleteAccount(Account account) {
+        accountRepository.delete(account);
+    }
 }

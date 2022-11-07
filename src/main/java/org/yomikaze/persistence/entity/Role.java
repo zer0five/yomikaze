@@ -52,11 +52,11 @@ public class Role implements Serializable {
     @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(name = "role_permissions",
         joinColumns = @JoinColumn(
-            name = "role_id",
+            name = "role",
             referencedColumnName = "id"
         ),
         inverseJoinColumns = @JoinColumn(
-            name = "permission_id",
+            name = "permission",
             referencedColumnName = "id"
         )
     )

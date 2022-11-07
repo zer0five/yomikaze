@@ -5,6 +5,8 @@ import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 import org.hibernate.Hibernate;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
 import org.yomikaze.snowflake.Snowflake;
 
 import javax.persistence.*;
@@ -35,6 +37,7 @@ public class Request {
 
     )
     @ToString.Exclude
+    @OnDelete(action = OnDeleteAction.CASCADE)
     private Account requester;
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(
@@ -43,6 +46,7 @@ public class Request {
 
     )
     @ToString.Exclude
+    @OnDelete(action = OnDeleteAction.CASCADE)
     private Account approvedBy = null;
 
     @Override

@@ -125,8 +125,8 @@ public class RolePermissionConfig implements ApplicationListener<ContextRefreshe
             createPermissionIfNotFound("chapter.update.other"),
             createPermissionIfNotFound("chapter.delete.other"),
             createPermissionIfNotFound("page.delete.other"),
-            createPermissionIfNotFound("user.ban"),
-            createPermissionIfNotFound("user.pardon"),
+            createPermissionIfNotFound("account.ban"),
+            createPermissionIfNotFound("account.pardon"),
             createPermissionIfNotFound("account.manage")
 
         );

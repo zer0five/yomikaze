@@ -177,11 +177,6 @@ public class AccountController {
 
             log.info("Invalid password{}", changePasswordForm.getOldPassword());
         }
-
-
-
-
-
         return "redirect:/profile";
     }
 

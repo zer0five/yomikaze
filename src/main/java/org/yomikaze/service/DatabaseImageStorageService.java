@@ -15,7 +15,9 @@ import org.yomikaze.persistence.repository.ImageRepository;
 import org.yomikaze.snowflake.Snowflake;
 
 import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.text.MessageFormat;
 import java.util.Optional;
 
@@ -25,6 +27,7 @@ import java.util.Optional;
 public class DatabaseImageStorageService implements IFileStorageService<Snowflake, Resource, Account> {
 
     private final ImageRepository imageRepository;
+    private final WebpImageProcessingService webpImageProcessingService;
 
     @Override
     public Snowflake store(MultipartFile file, Account owner) throws IOException {
@@ -36,9 +39,30 @@ public class DatabaseImageStorageService implements IFileStorageService<Snowflak
         if (!mediaType.getType().equalsIgnoreCase("image")) {
             throw new IllegalArgumentException("File is not an image");
         }
-        byte[] data = file.getBytes();
-        String name = Optional.ofNullable(file.getOriginalFilename())
-            .orElse(MessageFormat.format("untitled.{0}", mediaType.getSubtype()));
+        byte[] data;
+        String name;
+        try (InputStream inputStream = webpImageProcessingService.convertToWebp(file.getInputStream())) {
+            ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+            while (inputStream.available() > 0) {
+                outputStream.write(inputStream.read());
+            }
+            data = outputStream.toByteArray();
+            name = Optional.ofNullable(file.getOriginalFilename())
+                .map(n -> {
+                    int dotIndex = n.lastIndexOf('.');
+                    if (dotIndex == -1) {
+                        return n;
+                    }
+                    return n.substring(0, n.lastIndexOf('.')) + ".webp";
+                })
+                .orElse(MessageFormat.format("untitled.{0}", "webp"));
+            contentType = "image/webp";
+        } catch (Exception e) {
+            log.error("Failed to convert image to webp", e);
+            data = file.getBytes();
+            name = Optional.ofNullable(file.getOriginalFilename())
+                .orElse(MessageFormat.format("untitled.{0}", mediaType.getSubtype()));
+        }
         Image image = new Image();
         image.setName(name);
         image.setType(contentType);
