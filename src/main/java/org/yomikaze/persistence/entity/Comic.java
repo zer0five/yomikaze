@@ -8,8 +8,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 import org.hibernate.Hibernate;
-import org.hibernate.annotations.OnDelete;
-import org.hibernate.annotations.OnDeleteAction;
 import org.hibernate.annotations.UpdateTimestamp;
 import org.springframework.data.domain.Sort;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -69,11 +67,10 @@ public class Comic {
 
     @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(name = "comic_genres",
-        joinColumns = @JoinColumn(name = "comic_id"),
-        inverseJoinColumns = @JoinColumn(name = "genre_id")
+        joinColumns = @JoinColumn(name = "comic_id", referencedColumnName = "id"),
+        inverseJoinColumns = @JoinColumn(name = "genre_id", referencedColumnName = "id")
     )
     @ToString.Exclude
-    @OnDelete(action = OnDeleteAction.CASCADE)
     private Collection<Genre> genres = new ArrayList<>();
 
     @ManyToOne(fetch = FetchType.LAZY)

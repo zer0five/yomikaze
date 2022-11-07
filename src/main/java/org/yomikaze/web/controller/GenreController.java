@@ -12,6 +12,7 @@ import org.springframework.validation.BindingResult;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.yomikaze.persistence.entity.Genre;
+import org.yomikaze.persistence.repository.ComicRepository;
 import org.yomikaze.persistence.repository.GenreRepository;
 import org.yomikaze.snowflake.Snowflake;
 import org.yomikaze.web.dto.form.GenreForm;
@@ -24,6 +25,7 @@ import javax.persistence.EntityNotFoundException;
 public class GenreController {
 
     private final GenreRepository genreRepository;
+    private final ComicRepository comicRepository;
 
     @GetMapping("/manage")
     @PreAuthorize("authentication != null && !anonymous")
@@ -87,7 +89,12 @@ public class GenreController {
     @PreAuthorize("authentication != null && !anonymous")
     @PostAuthorize("hasAuthority('genre.delete')")
     public String delete(@PathVariable Snowflake id) {
-        genreRepository.deleteById(id);
+        Genre genre = genreRepository.findById(id).orElseThrow(EntityNotFoundException::new);
+        genre.getComics().forEach(comic -> {
+            comic.getGenres().remove(genre);
+            comicRepository.save(comic);
+        });
+        genreRepository.delete(genre);
         return "redirect:/genre/manage";
     }
 

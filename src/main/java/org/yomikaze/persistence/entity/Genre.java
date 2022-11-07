@@ -11,6 +11,8 @@ import org.yomikaze.snowflake.Snowflake;
 import org.yomikaze.snowflake.json.SnowflakeJsonSerializer;
 
 import javax.persistence.*;
+import java.util.Collection;
+import java.util.HashSet;
 import java.util.Objects;
 
 @Getter
@@ -37,6 +39,11 @@ public class Genre {
     @ToString.Exclude
     @JsonIgnore
     private Account creator;
+
+    @ManyToMany(mappedBy = "genres")
+    @ToString.Exclude
+    @JsonIgnore
+    private Collection<Comic> comics = new HashSet<>();
 
     public Genre(String name) {
         this.name = name;
