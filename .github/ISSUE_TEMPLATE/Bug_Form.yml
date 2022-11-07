@@ -24,6 +24,19 @@ body:
             description: Tell us what bug you encountered and what should have happened
         validations:
             required: true
+    -   type: dropdown
+        id: priority
+        attributes:
+            label: How priority this issue ?
+            multiple: false
+            options:
+                - Low
+                - Normal
+                - High
+                - Urgent
+                - Immediate
+        validations:
+            required: true
     -   type: textarea
         id: steps-to-reproduce
         attributes:
