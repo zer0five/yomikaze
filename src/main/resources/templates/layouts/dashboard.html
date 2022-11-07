@@ -73,7 +73,7 @@
                     </a>
                 </li>
                 <li>
-                    <a sec:authorize="hasAuthority('request.create.uploader')"
+                    <a sec:authorize="hasAuthority('request.create.uploader') && !hasAuthority('comic.manage')"
                        th:classappend="${#request.requestURI == '/request' ? 'active' : ''}"
                        th:href="@{/request}">
                         <i aria-hidden="true" data-feather="message-circle"></i>
