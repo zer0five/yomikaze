@@ -1,0 +1,44 @@
+name: Auto test Management
+description: manage the auto test
+title: "[Test Case]: "
+labels: [ "test", "bug" ]
+assignees:
+    - octocat
+body:
+    -   type: textarea
+        id: test-description
+        attributes:
+            label: Description of the test case
+        validations:
+            required: true
+    -   type: textarea
+        id: script
+        attributes:
+            label: Script
+            placeholder: enter script with format code,ex: ```java [ your code ] ```
+        validations:
+            required: true
+    -   type: textarea
+        id: expect-output
+        attributes:
+            label: Expect output         
+            placeholder: Please write expect output
+        validations:
+            required: true           
+    -   type: textarea
+        id: actual-output
+        attributes:
+            label: Actual output         
+            placeholder: Please write Actual output
+        validations:
+            required: true                       
+    -   type: dropdown
+        id: browsers
+        attributes:
+            label: What browsers are you seeing the problem on?
+            multiple: true
+            options:
+                - Firefox
+                - Chrome
+                - Safari
+                - Microsoft Edge
