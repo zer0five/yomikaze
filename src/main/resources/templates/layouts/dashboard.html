@@ -80,7 +80,7 @@
                         Requests
                     </a>
                 </li>
-                <li></li>
+                <li sec:authorize="hasAnyAuthority('genre.manage', 'account.manage', 'request.manage', 'report.manage')"></li>
                 <li class="menu-title"
                     sec:authorize="hasAnyAuthority('genre.manage', 'account.manage', 'request.manage', 'report.manage')">
                     <span>Admin zone</span></li>
@@ -108,7 +108,7 @@
                         Manage Genre
                     </a>
                 </li>
-                <li></li>
+                <li sec:authorize="hasAuthority('comic.manage')"></li>
                 <li class="menu-title" sec:authorize="hasAuthority('comic.manage')"><span>Uploader zone</span></li>
                 <li sec:authorize="hasAuthority('comic.manage')">
                     <a
