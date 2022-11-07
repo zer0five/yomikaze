@@ -2,20 +2,21 @@ package org.yomikaze.web.controller;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.access.prepost.PostAuthorize;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.authentication.AccountExpiredException;
+import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.*;
 import org.yomikaze.persistence.entity.Account;
 import org.yomikaze.persistence.repository.AccountRepository;
 import org.yomikaze.service.AccountService;
+import org.yomikaze.snowflake.Snowflake;
+import org.yomikaze.web.dto.form.account.ChangePasswordForm;
 import org.yomikaze.web.dto.form.account.EmailForm;
 import org.yomikaze.web.dto.form.account.ResetPasswordForm;
 import org.yomikaze.web.dto.form.account.VerifyForm;
@@ -140,7 +141,20 @@ public class AccountController {
         }
         return "views/account/reset-password";
     }
-    
+
+    @GetMapping("/password/{id}/change")
+    @PreAuthorize("authentication != null && !anonymous")
+    public String changePassword(@PathVariable("id") Snowflake id, Authentication authentication, Model model, @ModelAttribute ChangePasswordForm changePasswordForm) {
+        Account findAccount = accountRepository.findById(id).orElseThrow(EntityNotFoundException::new);
+        Account account = (Account) authentication.getPrincipal();
+        if (!account.getId().equals(findAccount.getId())) {
+            throw new AccessDeniedException("");
+        }
+        model.addAttribute("account", account);
+
+
+        return "views/account/change-password";
+    }
 
     @PostAuthorize("hasAuthority('account.manage')")
     @GetMapping("/manage")

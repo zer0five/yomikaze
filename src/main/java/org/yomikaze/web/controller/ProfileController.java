@@ -45,7 +45,6 @@ public class ProfileController {
     }
 
     @PreAuthorize("authentication != null && !anonymous")
-
     @GetMapping("/{id}/edit")
 
     public String editProfile(@PathVariable("id") Snowflake id, @ModelAttribute EditProfileForm editProfileForm, Authentication authentication, Model model) {
