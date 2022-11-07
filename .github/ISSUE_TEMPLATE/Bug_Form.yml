@@ -29,6 +29,7 @@ body:
         attributes:
             label: How priority this issue ?
             multiple: false
+            required: true
             options:
                 - Low
                 - Normal
