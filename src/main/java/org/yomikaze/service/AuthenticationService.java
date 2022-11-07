@@ -13,6 +13,8 @@ import org.yomikaze.persistence.repository.AccountRepository;
 import org.yomikaze.web.dto.form.account.SignInForm;
 import org.yomikaze.web.dto.form.account.SignUpForm;
 
+import javax.persistence.EntityNotFoundException;
+
 @Service
 @RequiredArgsConstructor
 public class AuthenticationService {
@@ -38,5 +40,11 @@ public class AuthenticationService {
         UsernamePasswordAuthenticationToken token = new UsernamePasswordAuthenticationToken(signInForm.getUsername(), signInForm.getPassword());
         Authentication authentication = authenticationManager.authenticate(token);
         SecurityContextHolder.getContext().setAuthentication(authentication);
+    }
+
+    public void refreshAuthentication(Account account) {
+        Account refreshedAccount = accountRepository.findById(account.getId()).orElseThrow(EntityNotFoundException::new);
+        UsernamePasswordAuthenticationToken token = new UsernamePasswordAuthenticationToken(refreshedAccount, refreshedAccount.getPassword(), refreshedAccount.getAuthorities());
+        SecurityContextHolder.getContext().setAuthentication(token);
     }
 }

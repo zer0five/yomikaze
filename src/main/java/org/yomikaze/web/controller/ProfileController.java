@@ -13,6 +13,7 @@ import org.yomikaze.persistence.entity.Account;
 import org.yomikaze.persistence.entity.Profile;
 import org.yomikaze.persistence.repository.AccountRepository;
 import org.yomikaze.persistence.repository.ProfileRepository;
+import org.yomikaze.service.AuthenticationService;
 import org.yomikaze.snowflake.Snowflake;
 import org.yomikaze.web.dto.form.EditProfileForm;
 
@@ -26,12 +27,13 @@ public class ProfileController {
 
     private final AccountRepository accountRepository;
     private final ProfileRepository profileRepository;
+    private final AuthenticationService authenticationService;
 
-    @GetMapping({"", "/"})
+    @GetMapping
     @PreAuthorize("authentication != null && !anonymous")
     public String profile(Authentication authentication, Model model) {
         Account account = (Account) authentication.getPrincipal();
-        Profile profile = account.getProfile();
+        Profile profile = profileRepository.findById(account.getId()).orElseThrow(EntityNotFoundException::new);
         model.addAttribute("profile", profile);
         return "views/profile/profile-page";
     }
@@ -88,8 +90,8 @@ public class ProfileController {
         profile.setShowBirthday(editProfileForm.isShowBirthday());
 
         account.setProfile(profile);
-        accountRepository.save(account);
-
+        account = accountRepository.save(account);
+        authenticationService.refreshAuthentication(account);
         return "redirect:/profile";
 
     }

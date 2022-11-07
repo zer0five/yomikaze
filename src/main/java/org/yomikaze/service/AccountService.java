@@ -8,6 +8,7 @@ import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMailMessage;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.security.authentication.AccountExpiredException;
+import org.springframework.security.core.userdetails.UserDetailsPasswordService;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.oauth2.jwt.*;
 import org.springframework.stereotype.Service;
@@ -36,6 +37,8 @@ public class AccountService {
     private final AccountRepository accountRepository;
     private final JavaMailSender mailSender;
     private final TemplateEngine emailTemplateEngine;
+
+    private final UserDetailsPasswordService userDetailsPasswordService;
     @Value("${yomikaze.base-url}")
     private String baseUrl;
 
@@ -168,10 +171,7 @@ public class AccountService {
         if (!passwordEncoder.matches(form.getOldPassword(), account.getPassword())) {
             throw new IllegalArgumentException("Invalid password");
         }
-        String newPassword = form.getNewPassword();
-        newPassword = passwordEncoder.encode(newPassword);
-        account.setPassword(newPassword);
-        accountRepository.save(account);
+        userDetailsPasswordService.updatePassword(account, form.getNewPassword());
     }
 
     public void banAccount(Account account) {

@@ -1,5 +1,6 @@
 package org.yomikaze.persistence.repository;
 
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.stereotype.Repository;
 import org.yomikaze.persistence.entity.Account;
@@ -18,10 +19,10 @@ public interface AccountRepository extends CrudRepository<Account, Snowflake> {
 
     boolean existsByEmail(String email);
 
-    Optional<Account> findByUsernameOrEmail(String username, String email);
+    @Query("select a from account a where a.username = ?1 or a.email = ?1")
+    Optional<Account> findByUsernameOrEmail(String usernameOrEmail);
 
     boolean existsByUsernameOrEmail(String username, String email);
-
 
 
 }
