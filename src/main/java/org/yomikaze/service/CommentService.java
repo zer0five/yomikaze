@@ -107,13 +107,6 @@ public class CommentService {
     }
 
     public void deleteComment(Account account, Comment comment) {
-        if (!account.equals(comment.getAccount())) {
-            throw new AccessDeniedException("");
-        }
-        Permission deleteOther = permissionRepository.findByAuthority("comment.delete.other").orElseThrow(EntityNotFoundException::new);
-        if (!account.getAuthorities().contains(deleteOther)) {
-            throw new AccessDeniedException("");
-        }
         commentRepository.delete(comment);
     }
 

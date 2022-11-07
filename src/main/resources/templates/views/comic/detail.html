@@ -338,14 +338,6 @@
                                 </span>
                                 <span th:x-text="| moment('${chapter.id.timestamp.toInstant()}').fromNow() |">[[${chapter.id.timestamp}]]</span>
                             </a>
-                            <span class="gap-2">
-                                <button class="btn btn-ghost btn-circle btn-sm">
-                                    <i data-feather="edit"></i>
-                                </button>
-                                <button class="btn btn-ghost btn-circle btn-sm">
-                                    <i data-feather="delete"></i>
-                                </button>
-                            </span>
                         </span>
                     </span>
                 </span>
@@ -411,19 +403,27 @@
                                   th:text="${comment.chapter.title}">Chapter </span>
                         </div>
                         <!--! actions edit / delete / report -->
-                        <div class="my-2">
-                            <button
-                                class="btn btn-xs btn-ghost btn-circle">
-                                <i data-feather="flag"></i>
-                            </button>
-                            <button
-                                class="btn btn-xs btn-ghost btn-circle">
-                                <i data-feather="edit"></i>
-                            </button>
-                            <button
-                                class="btn btn-xs btn-ghost btn-circle">
+                        <div class="my-2" th:if="${comment.account == #authentication.principal}">
+                            <label class="btn btn-xs btn-ghost btn-circle"
+                                   th:for="|delete-comment-${comment.id}-modal|">
                                 <i data-feather="trash"></i>
-                            </button>
+                            </label>
+                            <input class="modal-toggle" th:id="|delete-comment-${comment.id}-modal|" type="checkbox"/>
+                            <label class="modal cursor-pointer" th:for="|delete-comment-${comment.id}-modal|">
+                                <label class="modal-box relative">
+                                    <h3 class="text-xl font-bold">Delete comment</h3>
+                                    <p class="text-sm">Are you sure you want to delete this comment?</p>
+                                    <div class="modal-action">
+                                        <label class="btn btn-ghost" th:for="|delete-comment-${comment.id}-modal|">Cancel</label>
+                                        <form method="post"
+                                              th:action="@{/comic/{comicId}/comment/{commentId}/delete(comicId=${comic.id}, commentId=${comment.id})}">
+                                            <input th:name="${_csrf.parameterName}" th:value="${_csrf.token}"
+                                                   type="hidden"/>
+                                            <button class="btn btn-error" type="submit">Delete</button>
+                                        </form>
+                                    </div>
+                                </label>
+                            </label>
                         </div>
                     </div>
 
@@ -484,20 +484,27 @@
                                               th:text="${reply.chapter.title}">Chapter</span>
                                     </div>
                                     <!--! actions edit / delete / report -->
-                                    <!--TODO-->
-                                    <div class="my-2">
-                                        <button
-                                            class="btn btn-xs btn-ghost btn-circle">
-                                            <i data-feather="flag"></i>
-                                        </button>
-                                        <button
-                                            class="btn btn-xs btn-ghost btn-circle">
-                                            <i data-feather="edit"></i>
-                                        </button>
-                                        <button
-                                            class="btn btn-xs btn-ghost btn-circle">
+                                    <div class="my-2" th:if="${reply.account == #authentication.principal}">
+                                        <label class="btn btn-xs btn-ghost btn-circle"
+                                               th:for="|delete-comment-${reply.id}-modal|">
                                             <i data-feather="trash"></i>
-                                        </button>
+                                        </label>
+                                        <input class="modal-toggle" th:id="|delete-comment-${reply.id}-modal|"
+                                               type="checkbox"/>
+                                        <label class="modal cursor-pointer" th:for="|delete-comment-${reply.id}-modal|">
+                                            <label class="modal-box relative">
+                                                <h3 class="text-xl font-bold">Delete comment</h3>
+                                                <p class="text-sm">Are you sure you want to delete this comment?</p>
+                                                <div class="modal-action">
+                                                    <label class="btn btn-ghost"
+                                                           th:for="|delete-comment-${reply.id}-modal|">Cancel</label>
+                                                    <form method="post"
+                                                          th:action="@{/comic/{comicId}/comment/{commentId}/delete(comicId=${comic.id}, commentId=${reply.id})}">
+                                                        <button class="btn btn-error" type="submit">Delete</button>
+                                                    </form>
+                                                </div>
+                                            </label>
+                                        </label>
                                     </div>
                                 </div>
 
@@ -508,7 +515,6 @@
                             </div>
                             <!--! like / dislike / reply -->
                             <div class="button-group">
-                                <!--TODO-->
                                 <a class="btn btn-sm gap-2"
                                    th:classappend="${reply.likedBy.contains(account) ? 'btn-accent' : 'btn-ghost'}"
                                    th:href="@{/comic/{id}/comment/{commentId}/like(id=${comic.id}, commentId=${reply.id})}"

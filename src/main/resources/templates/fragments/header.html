@@ -51,6 +51,13 @@
                     </div>
                     <ul class="dropdown-content menu menu-compact p-2 shadow-lg bg-base-300 rounded-box w-52 focus:z-50"
                         tabindex="0">
+                        <li sec:authorize="hasAuthority('comic.search.advanced')">
+                            <a href="/comic/search/advanced"
+                               th:href="@{/comic/search/advanced}">
+                                <i aria-hidden="true" data-feather="search"></i>
+                                <span>Advanced search</span>
+                            </a>
+                        </li>
                         <li class="menu-title"
                             sec:authorize="hasAnyAuthority('comic.manage', 'genre.manage','request.create.uploader')">
                             <span>Manage</span>
