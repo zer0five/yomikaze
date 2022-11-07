@@ -29,13 +29,14 @@ body:
         attributes:
             label: How priority this issue ?
             multiple: false
-            required: true
             options:
                 - Low
                 - Normal
                 - High
                 - Urgent
                 - Immediate
+        validations:
+            required: true
     -   type: textarea
         id: steps-to-reproduce
         attributes:
