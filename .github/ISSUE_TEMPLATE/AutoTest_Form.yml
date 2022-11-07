@@ -15,7 +15,7 @@ body:
         id: script
         attributes:
             label: Script
-            placeholder: ex: ```java [ your code ] ```
+            placeholder: Enter your auto test script
         validations:
             required: true
     -   type: textarea
