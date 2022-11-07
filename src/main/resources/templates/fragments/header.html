@@ -62,11 +62,11 @@
                                 <span class="text-base-content">Manage Account</span>
                             </a>
                         </li>
-                        <li sec:authorize="hasAuthority('comic.manage')">
-                            <a href="/comic/manage"
-                               th:href="@{/comic/manage}">
-                                <i aria-hidden="true" class=" text-base-content" data-feather="book-open"></i>
-                                <span class="text-base-content">Manage comics</span>
+                        <li sec:authorize="hasAuthority('report.manage')">
+                            <a href="/report/manage"
+                               th:href="@{/report/manage}">
+                                <i aria-hidden="true" class="text-base-content" data-feather="alert-triangle"></i>
+                                <span class="text-base-content">Manage Report</span>
                             </a>
                         </li>
                         <li sec:authorize="hasAuthority('request.manage')">
@@ -74,6 +74,13 @@
                                th:href="@{/request/manage}">
                                 <i aria-hidden="true" class=" text-base-content" data-feather="check-circle"></i>
                                 <span class="text-base-content">Manage requests</span>
+                            </a>
+                        </li>
+                        <li sec:authorize="hasAuthority('comic.manage')">
+                            <a href="/comic/manage"
+                               th:href="@{/comic/manage}">
+                                <i aria-hidden="true" class=" text-base-content" data-feather="book-open"></i>
+                                <span class="text-base-content">Manage comics</span>
                             </a>
                         </li>
                         <li sec:authorize="hasAuthority('genre.manage')">

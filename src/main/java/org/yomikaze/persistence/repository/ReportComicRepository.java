@@ -7,4 +7,5 @@ import org.yomikaze.snowflake.Snowflake;
 
 @Repository
 public interface ReportComicRepository extends CrudRepository<ReportComic, Snowflake> {
+    Iterable<ReportComic> findAllByApprovedIsNull();
 }

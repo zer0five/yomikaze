@@ -92,6 +92,14 @@
                         Manage Account
                     </a>
                 </li>
+                <li sec:authorize="hasAuthority('report.manage')">
+                    <a
+                        th:classappend="${#request.requestURI == '/report/manage' ? 'active' : ''}"
+                        th:href="@{/report/manage}">
+                        <i aria-hidden="true" data-feather="alert-triangle"></i>
+                        Manage Report
+                    </a>
+                </li>
                 <li sec:authorize="hasAuthority('request.manage')">
                     <a
                         th:classappend="${#request.requestURI == '/request/manage' ? 'active' : ''}"

@@ -54,7 +54,6 @@ public class ReportComic {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(
         name = "approved_by",
-        nullable = false,
         updatable = false
     )
     @OnDelete(action = OnDeleteAction.CASCADE)

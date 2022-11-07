@@ -14,12 +14,11 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.yomikaze.persistence.entity.Account;
 import org.yomikaze.persistence.entity.Comic;
-import org.yomikaze.persistence.entity.History;
 import org.yomikaze.persistence.repository.HistoryRepository;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Controller
 @RequiredArgsConstructor
@@ -36,8 +35,8 @@ public class HistoryController {
     ) {
         Account account = (Account) authentication.getPrincipal();
         Pageable withSort = PageRequest.of(pageable.getPageNumber(), pageable.getPageSize(), Comic.DEFAULT_SORT);
-        Page<History> histories = historyRepository.findAllByAccount(account, pageable);
-        List<Comic> comicList = new ArrayList<>(histories.stream().map(history -> history.getChapter().getComic()).collect(Collectors.toSet()));
+        Collection<Comic> histories = historyRepository.findDistinctChapterComicByAccount(account);
+        List<Comic> comicList = new ArrayList<>(histories);
         Page<Comic> comics = new PageImpl<>(comicList);
         model.addAttribute("comics", comics);
         return "views/history/history-list";
