@@ -156,6 +156,36 @@ public class AccountController {
         return "views/account/change-password";
     }
 
+    @PostMapping("/password/{id}/change")
+    @PreAuthorize("authentication != null && !anonymous")
+    public String changePassword(@PathVariable("id") Snowflake id, @Validated @ModelAttribute ChangePasswordForm changePasswordForm,
+                                 BindingResult bindingResult
+                                ) {
+        Account findAccount = accountRepository.findById(id).orElseThrow(EntityNotFoundException::new);
+
+        if (bindingResult.hasErrors()) {
+            return "redirect:/password/{id}/change";
+        }
+        if (findAccount ==null) {
+           throw new EntityNotFoundException("Invalid account");
+        }
+        try {
+            accountService.changePassword(findAccount,changePasswordForm);
+
+        }catch(IllegalArgumentException e ) {
+
+            bindingResult.rejectValue("oldPassword", "registration.password.invalid", "Invalid password");
+            log.info("Invalid password{}", changePasswordForm.getOldPassword());
+        }
+
+
+
+
+
+        return "redirect:/profile";
+    }
+
+
     @PostAuthorize("hasAuthority('account.manage')")
     @GetMapping("/manage")
     public String manageAccount(Model model) {
