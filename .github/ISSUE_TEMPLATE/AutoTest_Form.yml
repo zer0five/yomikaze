@@ -18,20 +18,6 @@ body:
             placeholder: Enter your auto test script
         validations:
             required: true
-    -   type: textarea
-        id: expect-output
-        attributes:
-            label: Expect output         
-            placeholder: Please write expect output
-        validations:
-            required: true           
-    -   type: textarea
-        id: actual-output
-        attributes:
-            label: Actual output         
-            placeholder: Please write Actual output
-        validations:
-            required: true                       
     -   type: dropdown
         id: browsers
         attributes:
