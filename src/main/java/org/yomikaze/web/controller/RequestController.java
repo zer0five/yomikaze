@@ -35,7 +35,7 @@ public class RequestController {
     private final RequestRepository requestRepository;
 
     //for user
-    @PostAuthorize("hasAuthority('request.create.uploader') && !hasAuthority('comic.manange')")
+    @PostAuthorize("hasAuthority('request.create.uploader')")
     @GetMapping
     public String request(@PageableDefault(size = Integer.MAX_VALUE) Pageable pageable, Model model, Authentication authentication, @ModelAttribute RequestForm requestForm) {
         Account account = (Account) authentication.getPrincipal();
@@ -45,7 +45,7 @@ public class RequestController {
         return "/views/request/request-uploader";
     }
 
-    @PostAuthorize("hasAuthority('request.create.uploader')  && !hasAuthority('comic.manange')")
+    @PostAuthorize("hasAuthority('request.create.uploader')  && !hasAuthority('comic.manage')")
     @PostMapping
     public String request(
         @Validated @ModelAttribute RequestForm requestForm,
@@ -69,7 +69,7 @@ public class RequestController {
         return "redirect:/request";
     }
 
-    @PostAuthorize("hasAuthority('request.cancel')  && !hasAuthority('comic.manange')")
+    @PostAuthorize("hasAuthority('request.cancel')  && !hasAuthority('comic.manage')")
     @GetMapping("/{id}/cancel")
     public String delete(@PathVariable("id") Snowflake id, Authentication authentication) {
         Account account = (Account) authentication.getPrincipal();
