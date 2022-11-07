@@ -47,11 +47,11 @@
                     <div th:replace="fragments/header :: logo"></div>
                 </div>
             </div>
-            <ul class="menu px-4">
+            <ul class="menu p-4">
                 <!-- Sidebar content here -->
                 <li class="menu-title"><span>My account</span></li>
                 <li>
-                    <a th:classappend="${#request.requestURI == '/profile' ? 'active' : ''}"
+                    <a th:classappend="${#request.requestURI.startsWith('/profile') ? 'active' : ''}"
                        th:href="@{/profile}">
                         <i aria-hidden="true" data-feather="user"></i>
                         Profile
@@ -59,7 +59,7 @@
                 </li>
 
                 <li>
-                    <a th:classappend="${#request.requestURI == '/library' ? 'active' : ''}"
+                    <a th:classappend="${#request.requestURI.startsWith('/library') ? 'active' : ''}"
                        th:href="@{/library}">
                         <i aria-hidden="true" data-feather="bookmark"></i>
                         Library
@@ -72,49 +72,67 @@
                         History
                     </a>
                 </li>
-                <li>
-                    <a sec:authorize="hasAuthority('request.create.uploader')"
-                       th:classappend="${#request.requestURI == '/request' ? 'active' : ''}"
-                       th:href="@{/request}">
+                <li sec:authorize="hasAuthority('request.create.uploader')">
+                    <a
+                        th:classappend="${#request.requestURI == '/request' ? 'active' : ''}"
+                        th:href="@{/request}">
                         <i aria-hidden="true" data-feather="message-circle"></i>
-                        Request to become uploader
+                        Requests
                     </a>
                 </li>
-
-            </ul>
-            <ul class="menu px-4">
                 <li></li>
-                <li class="menu-title"><span>Uploader zone</span></li>
-                <li>
-                    <a sec:authorize="hasAuthority('account.manage')"
-                       th:classappend="${#request.requestURI == '/account/manage' ? 'active' : ''}"
-                       th:href="@{/account/manage}">
+                <li class="menu-title"
+                    sec:authorize="hasAnyAuthority('genre.manage', 'account.manage', 'request.manage', 'report.manage')">
+                    <span>Admin zone</span></li>
+                <li sec:authorize="hasAuthority('account.manage')">
+                    <a
+                        th:classappend="${#request.requestURI == '/account/manage' ? 'active' : ''}"
+                        th:href="@{/account/manage}">
                         <i aria-hidden="true" data-feather="users"></i>
                         Manage Account
                     </a>
                 </li>
-                <li>
-                    <a sec:authorize="hasAuthority('comic.create')"
-                       th:classappend="${#request.requestURI == '/comic/create' ? 'active' : ''}"
-                       th:href="@{/comic/create}">
-                        <i aria-hidden="true" data-feather="book"></i>
-                        Create comic
+                <li sec:authorize="hasAuthority('request.manage')">
+                    <a
+                        th:classappend="${#request.requestURI == '/request/manage' ? 'active' : ''}"
+                        th:href="@{/request/manage}">
+                        <i aria-hidden="true" data-feather="check-circle"></i>
+                        Manage Request
                     </a>
                 </li>
-                <li>
-                    <a sec:authorize="hasAuthority('comic.manage')"
-                       th:classappend="${#request.requestURI == '/comic/manage' ? 'active' : ''}"
-                       th:href="@{/comic/manage}">
+                <li sec:authorize="hasAuthority('genre.manage')">
+                    <a
+                        th:classappend="${#request.requestURI.startsWith('/genre') ? 'active' : ''}"
+                        th:href="@{/genre/manage}">
+                        <i aria-hidden="true" data-feather="tag"></i>
+                        Manage Genre
+                    </a>
+                </li>
+                <li></li>
+                <li class="menu-title" sec:authorize="hasAuthority('comic.manage')"><span>Uploader zone</span></li>
+                <li sec:authorize="hasAuthority('comic.manage')">
+                    <a
+                        th:classappend="${#request.requestURI == '/comic/manage' ? 'active' : ''}"
+                        th:href="@{/comic/manage}">
                         <i aria-hidden="true" data-feather="book-open"></i>
                         Manage comic
                     </a>
                 </li>
-                <li>
-                    <a sec:authorize="hasAuthority('request.manage')"
-                       th:classappend="${#request.requestURI == '/request/manage' ? 'active' : ''}"
-                       th:href="@{/request/manage}">
-                        <i aria-hidden="true" data-feather="check-circle"></i>
-                        Manage Request
+                <li sec:authorize="hasAuthority('comic.create')">
+                    <a
+                        th:classappend="${#request.requestURI == '/comic/create' ? 'active' : ''}"
+                        th:href="@{/comic/create}">
+                        <i aria-hidden="true" data-feather="book"></i>
+                        Create comic
+                    </a>
+                </li>
+                <li sec:authorize="hasAuthority('comic.edit')"
+                    th:if="${#request.requestURI.startsWith('/comic') && #request.requestURI.endsWith('/edit')}">
+                    <a
+                        class="active"
+                        th:href="@{''}">
+                        <i aria-hidden="true" data-feather="edit"></i>
+                        Edit comic
                     </a>
                 </li>
             </ul>

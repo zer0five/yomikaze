@@ -1,40 +1,41 @@
 <!DOCTYPE html>
-<html lang="en" th:insert="layouts/dashboard">
-
+<html lang="en" th:insert="layouts/dashboard" xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity5">
 <head>
     <title th:fragment="page-title">request uploader</title>
-
-
 </head>
-
 <body>
-
-
 <!-- page -->
 <main class="min-h-screen w-full" th:fragment="content">
     <!-- header page -->
-
-
     <div class="flex">
-
-
         <!-- main content page -->
         <div class="max-w-2xl mx-auto">
             <div class="relative shadow-md sm:rounded-lg">
                 <div class="p-4 text-white flex justify-end">
                     <label
-                        class="bg-red-400 rounded-full px-2 py-1 hover:scale-95 hover:bg-red-500 transition duration-150 ease-in-out btn modal-button"
-                        for="my-modal-3">Send
-                        Request</label>
+                        class="btn btn-success rounded-full modal-button"
+                        for="send-request-modal"
+                        sec:authorize="!hasAuthority('comic.manage')">
+                        Send Request
+                    </label>
+                    <div class="tooltip"
+                         data-tip="You already are uploader!"
+                         sec:authorize="hasAuthority('comic.manage')">
+                        <button class="btn btn-success rounded-full btn-disabled" disabled type="button">
+                            Send Request
+                        </button>
+                    </div>
                 </div>
 
-                <input class="modal-toggle" id="my-modal-3" th:checked="${#objects.nullSafe(showForm, false)}"
+                <input class="modal-toggle" id="send-request-modal" sec:authorize="!hasAuthority('comic.manage')"
+                       th:checked="${#objects.nullSafe(showForm, false)}"
                        type="checkbox"/>
-                <div class="modal">
+                <div class="modal" sec:authorize="!hasAuthority('comic.manage')">
                     <div class="modal-box relative">
-                        <label class="btn btn-sm btn-circle absolute right-2 top-2" for="my-modal-3">✕</label>
-                        <h3 class="text-lg font-bold"> Request to become uploader</h3>
-
+                        <label class="btn btn-sm btn-circle absolute right-2 top-2" for="send-request-modal">
+                            <i data-feather="x"></i>
+                        </label>
+                        <h3 class="text-lg font-bold">Request to become uploader</h3>
                         <p class="py-4 text-lg"></p>
                         <!--Form start -->
                         <!--/*@thymesVar id="requestForm" type="org.yomikaze.web.dto.form.RequestForm"*/-->
@@ -65,12 +66,10 @@
                             </div>
                         </form>
                         <!--Form end -->
-
-
                     </div>
                 </div>
 
-                <table class="w-full text-sm text-left text-gray-500 dark:text-gray-400">
+                <table class="table table-zebra">
                     <thead class="uppercase">
                     <tr>
 
@@ -84,27 +83,33 @@
                             Status
                         </th>
                         <th class="px-6 py-3" scope="col">
-                            Action
+                            Approved by
                         </th>
                         <th class="px-6 py-3" scope="col">
-                            Action by
+                            Action
                         </th>
-
-
                     </tr>
                     </thead>
                     <!--/*@thymesVar id="requests" type="org.springframework.data.domain.Page"*/-->
                     <!--/*@thymesVar id="request" type="org.yomikaze.persistence.entity.Request"*/-->
                     <tbody>
                     <tr
-                        class="bg-white border-b dark:bg-gray-800 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600"
+                        class="bg-error-100"
+                        th:if="${#lists.isEmpty(requests.content)}">
+                        <td class="px-6 py-4" colspan="5">
+                            <div class="flex justify-center">
+                                <p class="text-error-content">No request found.</p>
+                            </div>
+                        </td>
+
+                    </tr>
+                    <tr
                         th:each="request : ${requests}"
                         th:object="${request}">
-                        <th class="px-6 py-4 font-medium text-gray-900 dark:text-white whitespace-nowrap" scope="row"
+                        <th scope="row"
                             th:text="*{#dates.format(id.timestamp, 'hh:mm:ss dd/MM/yyyy')}">
                         </th>
                         <td class="px-6 py-4 " th:text="*{message}">
-
                         </td>
                         <td class="px-6 py-4">
                             <span class="badge badge-warning gap-2" th:if="*{approved == null}">
@@ -122,18 +127,18 @@
                                 Accepted
                             </span>
                         </td>
+                        <td class="px-6 py-4 " th:if="*{approved != null}">
+                            <span th:text="*{approvedBy.profile.displayName}"></span>
+                        </td>
+                        <td class="px-6 py-4 " th:unless="*{approved != null}">
+                            <span>Not yet</span>
+                        </td>
                         <td class="pr-8 py-4 text-right">
                             <a class="btn btn-sm btn-info" th:href="@{/request/{id}/cancel(id=${request.id})}"
                                th:if="*{approved == null}">Cancel</a>
                             <div class="tooltip" data-tip="Request has been approved" th:unless="*{approved == null}">
                                 <button class="btn btn-sm btn-info btn-disabled" disabled>Cancel</button>
                             </div>
-                        </td>
-                        <td class="px-6 py-4 " th:if="*{approved != null}">
-                            <span th:text="*{approvedBy.username}"></span>
-                        </td>
-                        <td class="px-6 py-4 " th:unless="*{approved != null}">
-                            <span>Not yet</span>
                         </td>
                     </tr>
 
