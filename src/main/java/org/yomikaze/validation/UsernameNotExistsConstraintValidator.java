@@ -13,6 +13,6 @@ public class UsernameNotExistsConstraintValidator implements ConstraintValidator
 
     @Override
     public boolean isValid(String value, ConstraintValidatorContext context) {
-        return !accountRepository.findByUsernameOrEmail(value, value).isPresent();
+        return !accountRepository.findByUsernameOrEmail(value).isPresent();
     }
 }
