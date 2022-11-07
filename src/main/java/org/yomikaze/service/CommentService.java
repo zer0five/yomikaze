@@ -23,49 +23,51 @@ public class CommentService {
     private final PermissionRepository permissionRepository;
     private final ComicRepository comicRepository;
 
-    public void postComment(Account account, Comic comic, String content) {
+    public Comment postComment(Account account, Comic comic, String content) {
         Comment comment = new Comment();
         comment.setAccount(account);
         comment.setComic(comic);
         comment.setContent(content);
-        commentRepository.save(comment);
+        return commentRepository.save(comment);
     }
 
-    public void postComment(Account account, Snowflake comicId, String content) {
+    public Comment postComment(Account account, Snowflake comicId, String content) {
         Comic comic = comicRepository.findById(comicId).orElseThrow(EntityNotFoundException::new);
-        postComment(account, comic, content);
+        return postComment(account, comic, content);
     }
 
-    public void postComment(Account account, Chapter chapter, String content) {
+    public Comment postComment(Account account, Chapter chapter, String content) {
         Comment comment = new Comment();
         comment.setAccount(account);
         comment.setComic(chapter.getComic());
         comment.setChapter(chapter);
         comment.setContent(content);
-        commentRepository.save(comment);
+        return commentRepository.save(comment);
     }
 
-    public void postComment(Account account, Snowflake comicId, int index, String content) {
+    public Comment postComment(Account account, Snowflake comicId, int index, String content) {
         Comic comic = comicRepository.findById(comicId).orElseThrow(EntityNotFoundException::new);
         Chapter chapter = comic.getChapters().get(index);
-        postComment(account, chapter, content);
+        return postComment(account, chapter, content);
     }
 
-    public void replyComment(Account account, Comment parent, String content) {
+    public Comment replyComment(Account account, Comment parent, String content) {
         Comment comment = new Comment();
         comment.setAccount(account);
         while (parent.getParent() != null) {
             parent = parent.getParent();
         }
         comment.setParent(parent);
+        comment.setComic(parent.getComic());
+        comment.setChapter(parent.getChapter());
         comment.setContent(content);
         parent.getReplies().add(comment);
-        commentRepository.save(parent);
+        return commentRepository.save(comment);
     }
 
-    public void replyComment(Account account, Snowflake id, String content) {
+    public Comment replyComment(Account account, Snowflake id, String content) {
         Comment parent = commentRepository.findById(id).orElseThrow(EntityNotFoundException::new);
-        replyComment(account, parent, content);
+        return replyComment(account, parent, content);
     }
 
     public void likeComment(Account account, Comment comment) {
@@ -79,19 +81,19 @@ public class CommentService {
     }
 
     public Page<Comment> getComments(Comic comic, Pageable pageable) {
-        return commentRepository.findAllByComicId(comic.getId(), pageable);
+        return commentRepository.findAllByComicIdAndParentIsNull(comic.getId(), pageable);
     }
 
     public List<Comment> getComments(Comic comic) {
         Pageable pageable = PageRequest.of(0, Integer.MAX_VALUE, Sort.sort(Comment.class).by(Comment::getId).descending());
-        return commentRepository.findAllByComicId(comic.getId(), pageable).getContent();
+        return commentRepository.findAllByComicIdAndParentIsNull(comic.getId(), pageable).getContent();
     }
 
     public Page<Comment> getComments(Chapter chapter, Pageable pageable) {
         return commentRepository.findAllByChapterId(chapter.getId(), pageable);
     }
 
-    public void editComment(Account account, Snowflake id, String content) {
+    public Comment editComment(Account account, Snowflake id, String content) {
         Comment comment = commentRepository.findById(id).orElseThrow(EntityNotFoundException::new);
         if (!account.equals(comment.getAccount())) {
             throw new AccessDeniedException("");
@@ -101,7 +103,7 @@ public class CommentService {
             throw new AccessDeniedException("");
         }
         comment.setContent(content);
-        commentRepository.save(comment);
+        return commentRepository.save(comment);
     }
 
     public void deleteComment(Account account, Comment comment) {

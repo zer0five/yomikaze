@@ -3,7 +3,8 @@
 <head>
     <title th:fragment="page-title">comic::detail</title>
 </head>
-<body class="flex flex-col gap-8" th:fragment="content">
+<!--@thymesVar id="account" type="org.yomikaze.persistence.entity.Account"-->
+<body class="flex flex-col gap-8" th:fragment="content" th:with="account = ${#authentication.principal}">
 <div class="bg-base-100 rounded-box shadow-2xl p-10">
     <div class="flex flex-col gap-8 flex-wrap justify-items-center">
         <div class="flex flex-row flex-wrap md:flex-nowrap gap-8">
@@ -53,29 +54,25 @@
                             <ul class="dropdown-content menu menu-compact p-2 shadow bg-base-300 rounded-box w-52"
                                 tabindex="0">
                                 <li class="dropdown-item gap-2">
-                                    <a href="#report">
+                                    <label for="report-comic-modal">
                                         <i data-feather="alert-triangle"></i>
-                                        Report
-                                    </a>
+                                        <span>Report</span>
+                                    </label>
                                 </li>
                                 <li class="dropdown-item gap-2"
                                     sec:authorize="hasAuthority('comic.edit')"
-                                    th:if="${comic.uploader.id == #authentication.principal.id}">
-                                    <a
-                                        href="/comic/edit/"
-                                        th:href="@{/comic/{id}/edit(id=${comic.id})}"
-                                    >
+                                    th:if="${comic.uploader.id == #authentication.principal.id || #authorization.expression('hasAuthority(''comic.edit.other'')')}">
+                                    <a href="/comic/edit/" th:href="@{/comic/{id}/edit(id=${comic.id})}">
                                         <i data-feather="edit"></i>
-                                        Edit
+                                        <span>Edit</span>
                                     </a>
                                 </li>
                                 <li class="dropdown-item gap-2"
-                                    sec:authorize="hasAuthority('comic.delete')"
-                                    th:if="${comic.uploader.id == #authentication.principal.id}">
-                                    <!-- The button to open modal -->
+                                    sec:authorize="hasAnyAuthority('comic.delete', 'comic.delete.other')"
+                                    th:if="${comic.uploader.id == #authentication.principal.id || #authorization.expression('hasAuthority(''comic.delete.other'')')}">
                                     <label for="delete-comic-modal">
                                         <i data-feather="trash"></i>
-                                        Delete
+                                        <span>Delete</span>
                                     </label>
                                 </li>
                             </ul>
@@ -123,8 +120,7 @@
                         </dt>
                         <dd class="col-span-3">
                             <span th:text="${comic.updatedAt}"
-                                  th:x-text="| moment('${comic.updatedAt}').fromNow() |">
-                                [[${comic.updatedAt}]]
+                                  th:x-text="|moment('${comic.updatedAt}').fromNow()|">
                             </span>
                         </dd>
                     </dl>
@@ -356,43 +352,9 @@
         </label>
     </div>
 </div>
+<!-- Comments -->
 <div class="bg-base-100 rounded-box shadow-2xl p-10 mt-8" sec:authorize="!anonymous">
-    <script>
-        async function postComment(form) {
-            let formData = new FormData(form);
-            let response = await fetch(form.action, {
-                method: 'POST',
-                body: formData,
-                credentials: 'include'
-            });
-            let status = response.status;
-            switch (status) {
-                case 200:
-                    alert('Comment posted');
-                    window.location.reload();
-                    break;
-                default:
-                    alert("Failed to post comment: " + status);
-            }
-        }
-
-        async function toggleLike(id) {
-            const API_URL = '/comment/' + id + '/like' /*[[@{/api/comic/{id}/like(id=${comic.id})}]]*/;
-            let response = await fetch(`/comic/${id}/like`, {
-                method: 'POST',
-                credentials: 'include'
-            });
-            let status = response.status;
-            switch (status) {
-                case 200:
-                    window.location.reload();
-                    break;
-                default:
-                    alert("Failed to toggle like: " + status);
-            }
-        }
-    </script>
-    <form @submit.prevent="await postComment($el)" class="flex flex-col gap-2 p-4 mb-4" x-data="{content:''}"
+    <form class="flex flex-col gap-2 p-4 mb-4" method="post" x-data="{content:''}"
           th:action="@{/comic/{id}/comment/post(id=${comic.id})}">
         <input th:name="${_csrf.parameterName}" th:value="${_csrf.token}" type="hidden"/>
         <div class="form-control">
@@ -415,8 +377,9 @@
     <!--/*@thymesVar id="comment" type="org.yomikaze.persistence.entity.Comment"*/-->
     <!--/*@thymesVar id="commenter" type="org.yomikaze.persistence.entity.Account"*/-->
     <div class="flex items-center justify-center"
+         x-data="{reply: false}"
          th:each="comment : ${@commentService.getComments(comic.id)}">
-        <div class="p-4 flex gap-4 w-full" th:id="'comment-' + comment.id ">
+        <div class="p-4 flex gap-4 w-full" th:id="|comment-${comment.id}|">
             <!--! user avatar -->
             <div class="avatar" th:if="${comment.account.profile.picture != null}">
                 <div class="w-10 h-10 rounded-full">
@@ -424,12 +387,11 @@
                          th:src="${comment.account.profile.picture}"/>
                 </div>
             </div>
-            <div class="avatar placeholder" th:if="${comment.account.profile.picture == null}">
+            <div class="avatar placeholder" th:unless="${comment.account.profile.picture != null}">
                 <div class="bg-neutral-focus text-neutral-content rounded-full w-10 h-10">
                     <span class="text-xl" th:text="${comment.account.profile.displayName.substring(0, 1)}"></span>
                 </div>
             </div>
-
             <!--! display name / roles / chapter -->
             <div class="w-full">
                 <div class="border rounded-3xl px-4 pt-2 pb-2.5 divide-y gap-2">
@@ -467,48 +429,167 @@
 
                     <!--! comment content -->
                     <div class="leading-snug md:leading-normal">
-                        <p class="py-2" th:text="${comment.content}">
-                            Lorem ipsum dolor sit amet,
-                            consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore
-                            magna
-                            aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut
-                            aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate
-                            velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat
-                            non
-                            proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
-                        </p>
+                        <p class="py-2" th:text="${comment.content}"></p>
                     </div>
                 </div>
                 <!--! like / dislike / reply -->
                 <div class="button-group">
-                    <button @click="await toggleLike($el.id)"
-                            class="btn btn-ghost btn-sm gap-2"
+                    <a class="btn btn-sm gap-2"
+                       th:classappend="${comment.likedBy.contains(account) ? 'btn-accent' : 'btn-ghost'}"
+                       th:href="@{/comic/{id}/comment/{commentId}/like(id=${comic.id}, commentId=${comment.id})}"
                     >
                         <i data-feather="thumbs-up"></i>
                         <span class="font-semibold" th:text="${comment.likedBy.size()}">0</span>
-                    </button>
-                    <label class="btn btn-ghost btn-sm gap-2">
+                    </a>
+                    <label @click="reply = !reply" class="btn btn-ghost btn-sm gap-2">
                         <i data-feather="corner-down-right"></i>
                         <span class="font-semibold">Reply</span>
                     </label>
                 </div>
+                <!--! replies -->
+                <!--/*@thymesVar id="reply" type="org.yomikaze.persistence.entity.Comment"*/-->
+                <div class="flex items-center justify-center"
+                     th:each="reply : ${comment.replies}"
+                >
+                    <div class="p-4 flex gap-4 w-full" th:id="|comment-${reply.id}|">
+                        <!--! user avatar -->
+                        <div class="avatar" th:if="${reply.account.profile.picture != null}">
+                            <div class="w-10 h-10 rounded-full">
+                                <img alt="Profile picture"
+                                     th:src="${reply.account.profile.picture}"/>
+                            </div>
+                        </div>
+                        <div class="avatar placeholder" th:unless="${reply.account.profile.picture != null}">
+                            <div class="bg-neutral-focus text-neutral-content rounded-full w-10 h-10">
+                                <span class="text-xl"
+                                      th:text="${reply.account.profile.displayName.substring(0, 1)}"></span>
+                            </div>
+                        </div>
+                        <!--! display name / roles / chapter -->
+                        <div class="w-full">
+                            <div class="border rounded-3xl px-4 pt-2 pb-2.5 divide-y gap-2">
+                                <div class="flex justify-between">
+                                    <!-- roles / chapter -->
+                                    <div class="font-semibold text-sm leading-relaxed gap-x-10 my-2">
+                                        <span th:text="${reply.account.profile.displayName}">Display name</span>
+                                        <!-- roles -->
+                                        <!--/*@thymesVar id="role" type="org.yomikaze.persistence.entity.Role"*/-->
+                                        <span class="badge badge-primary badge-outline mx-1"
+                                              th:each="role : ${reply.account.roles}"
+                                              th:text="${role.name}">Role</span>
+
+                                        <!-- chapter -->
+                                        <span class="font-normal"
+                                              th:if="${reply.chapter != null}"
+                                              th:text="${reply.chapter.title}">Chapter</span>
+                                    </div>
+                                    <!--! actions edit / delete / report -->
+                                    <!--TODO-->
+                                    <div class="my-2">
+                                        <button
+                                            class="btn btn-xs btn-ghost btn-circle">
+                                            <i data-feather="flag"></i>
+                                        </button>
+                                        <button
+                                            class="btn btn-xs btn-ghost btn-circle">
+                                            <i data-feather="edit"></i>
+                                        </button>
+                                        <button
+                                            class="btn btn-xs btn-ghost btn-circle">
+                                            <i data-feather="trash"></i>
+                                        </button>
+                                    </div>
+                                </div>
+
+                                <!--! reply content -->
+                                <div class="leading-snug md:leading-normal">
+                                    <p class="py-2" th:text="${reply.content}"></p>
+                                </div>
+                            </div>
+                            <!--! like / dislike / reply -->
+                            <div class="button-group">
+                                <!--TODO-->
+                                <a class="btn btn-sm gap-2"
+                                   th:classappend="${reply.likedBy.contains(account) ? 'btn-accent' : 'btn-ghost'}"
+                                   th:href="@{/comic/{id}/comment/{commentId}/like(id=${comic.id}, commentId=${reply.id})}"
+                                >
+                                    <i data-feather="thumbs-up"></i>
+                                    <span class="font-semibold" th:text="${reply.likedBy.size()}">0</span>
+                                </a>
+                                <button @click="reply = !reply" class="btn btn-ghost btn-sm gap-2">
+                                    <i data-feather="corner-down-right"></i>
+                                    <span class="font-semibold">Reply</span>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!--! reply form -->
+                <form class="flex flex-col gap-2 p-4" method="post"
+                      th:action="@{/comic/{id}/comment/{commentId}/reply(id=${comic.id}, commentId=${comment.id})}"
+                      x-data="{content:''}"
+                      x-show="reply"
+                      x-transition:enter="transition ease-out duration-300"
+                      x-transition:enter-end="opacity-100 transform scale-100"
+                      x-transition:enter-start="opacity-0 transform scale-95"
+                      x-transition:leave="transition ease-in duration-300"
+                      x-transition:leave-end="opacity-0 transform scale-95"
+                      x-transition:leave-start="opacity-100 transform scale-100">
+                    <input th:name="${_csrf.parameterName}" th:value="${_csrf.token}" type="hidden"/>
+                    <div class="form-control">
+                        <label class="label" for="reply-box" th:for="| reply-box-${comment.id} |">
+                            <span class="label-text text-xl font-bold">Reply</span>
+                        </label>
+                        <textarea class="textarea textarea-bordered" id="reply-box" name="content"
+                                  placeholder="Write your comment here..."
+                                  rows="3" th:id="| reply-box-${comment.id} |"
+                                  x-model="content"></textarea>
+                    </div>
+                    <div class="form-control">
+                        <div class="self-end">
+                            <button :disabled="content.length === 0" class="btn btn-accent gap-2" type="submit">
+                                <i data-feather="send"></i>
+                                <span>Reply</span>
+                            </button>
+                        </div>
+                    </div>
+                </form>
             </div>
         </div>
     </div>
 </div>
+
 <form class="hidden" id="delete-comic-form" method="post"
       th:action="@{/comic/{id}/delete(id=${comic.id})}"
       th:method="delete">
 </form>
-<!-- Put this part before </body> tag -->
 <input class="modal-toggle" id="delete-comic-modal" type="checkbox"/>
 <label class="modal cursor-pointer" for="delete-comic-modal">
     <label class="modal-box relative">
-        <h3 class="modal-title">Delete comic</h3>
-        <p class="modal-description">Are you sure you want to delete this comic?</p>
-        <div class="modal-actions">
-            <button class="btn btn-ghost">Cancel</button>
+        <h3 class="text-xl font-bold">Delete comic</h3>
+        <p class="p-4">Are you sure you want to delete this comic?</p>
+        <div class="modal-action">
+            <label class="btn btn-ghost" for="delete-comic-modal">Cancel</label>
             <button class="btn btn-error" form="delete-comic-form" type="submit">Delete</button>
+        </div>
+    </label>
+</label>
+
+<form class="hidden" id="report-comic-form" method="post"
+      th:action="@{/comic/{id}/report(id=${comic.id})}">
+</form>
+
+<input class="modal-toggle" id="report-comic-modal" type="checkbox"/>
+<label class="modal cursor-pointer" for="report-comic-modal">
+    <label class="modal-box relative">
+        <h3 class="text-xl font-bold">Report comic</h3>
+        <label class="label" for="reason">
+            <span class="label-text">Reason</span>
+        </label>
+        <textarea class="w-full textarea textarea-bordered" id="reason" name="reason" placeholder="Reason"></textarea>
+        <div class="modal-action">
+            <label class="btn btn-ghost" for="report-comic-modal">Cancel</label>
+            <button class="btn btn-error" form="report-comic-form" type="submit">Report</button>
         </div>
     </label>
 </label>

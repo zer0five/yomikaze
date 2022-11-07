@@ -3,7 +3,7 @@
 <head>
     <title th:fragment="page-title">comic::manage</title>
 </head>
-<body th:fragment="content">
+<body th:fragment="content" x-data="{deleteAction: null}">
 <link rel="stylesheet" th:href="@{/asset/css/datatables.min.css}" type="text/css"/>
 <div class="text-base-content">
     <a class="btn btn-primary btn-sm my-6" th:href="@{/comic/create}">Create new comic</a>
@@ -35,7 +35,27 @@
             <td>
                 <a class="btn btn-sm btn-primary" th:href="@{/comic/{id}/detail(id=${comic.id})}">Detail</a>
                 <a class="btn btn-sm btn-warning" th:href="@{/comic/{id}/edit(id=${comic.id})}">Edit</a>
-                <a class="btn btn-sm btn-error" th:href="@{/comic/{id}/delete(id=${comic.id})}">delete</a>
+                <label class="btn btn-sm btn-error" th:for="|delete-comic-modal-${comic.id}|">Delete</label>
+                <form class="hidden"
+                      method="post" th:action="@{/comic/{id}/delete(id=${comic.id})}"
+                      th:id="|delete-comic-form-${comic.id}|"
+                      th:method="delete">
+                </form>
+                <input class="modal-toggle" id="delete-comic-modal" th:id="|delete-comic-modal-${comic.id}|"
+                       type="checkbox"/>
+                <label class="modal cursor-pointer" for="delete-comic-modal" th:for="|delete-comic-modal-${comic.id}|">
+                    <label class="modal-box relative">
+                        <h3 class="text-xl font-bold">Delete comic</h3>
+                        <p class="p-4">Are you sure you want to delete this comic?</p>
+                        <div class="modal-action">
+                            <label class="btn btn-ghost" for="delete-comic-modal"
+                                   th:for="|delete-comic-modal-${comic.id}|">Cancel</label>
+                            <button class="btn btn-error" th:form="|delete-comic-form-${comic.id}|" type="submit">
+                                Delete
+                            </button>
+                        </div>
+                    </label>
+                </label>
             </td>
         </tr>
         </tbody>

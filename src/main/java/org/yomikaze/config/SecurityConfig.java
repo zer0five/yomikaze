@@ -37,7 +37,7 @@ public class SecurityConfig {
             .httpBasic(basic -> basic.realmName("yomikaze"))
             .sessionManagement(session -> session
                 .sessionAuthenticationErrorUrl("/logout")
-                .sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED)
+                .sessionCreationPolicy(SessionCreationPolicy.ALWAYS)
                 .sessionFixation().migrateSession()
             )
             .rememberMe(rememberMe -> rememberMe

@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en" th:insert="layouts/default">
+<head>
+    <title th:fragment="page-title">comic::search::advanced</title>
+</head>
+<body th:fragment="content">
+<div class="flex flex-col align-middle gap-8"
+     th:switch="${comics == null || #lists.isEmpty(comics.getContent())}">
+    <div class="w-full mx-auto rounded-box p-8 shadow-xl">
+        <!--/*@thymesVar id="advancedSearchForm" type="org.yomikaze.web.dto.comic.AdvancedSearchForm"*/-->
+        <form action="/comic/search/advanced" method="get" th:action="@{/comic/search/advanced}"
+              th:object="${advancedSearchForm}">
+            <div class="grid grid-cols-2 gap-4">
+                <div class="form-control">
+                    <label class="label" for="name">
+                        <span class="label-text">Name</span>
+                    </label>
+                    <input class="input input-bordered" id="name" placeholder="Name" th:field="*{nameOrAlias}"
+                           type="text"/>
+                </div>
+                <div class="form-control">
+                    <label class="label" for="uploader">
+                        <span class="label-text">Uploader</span>
+                    </label>
+                    <input class="input input-bordered" id="uploader" placeholder="Uploader" th:field="*{uploader}"
+                           type="text"/>
+                </div>
+                <div class="grid grid-cols-4 col-span-2">
+                    <span class="col-span-4">Genres</span>
+                    <!--/*@thymesVar id="genre" type="org.yomikaze.persistence.entity.Genre"*/-->
+                    <div class="form-control" th:each="genre : ${@genreRepository.findAll()}">
+                        <button @click="state = (state + 1) % 3" type="button" x-data="{ state: 0 }">
+                            <svg :class="colors[state]" class="btn btn-xs btn-square" fill="none"
+                                 height="16" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"
+                                 stroke-width="2" viewBox="0 0 24 24" width="16"
+                                 x-data="{ colors: ['', 'btn-success', 'btn-error'] }"
+                                 xmlns="http://www.w3.org/2000/svg">
+                                <path :d="d[state]" x-data="{ d: ['', 'M20 6 9 17l-5-5', 'M18 6 6 18M6 6l12 12'] }"/>
+                            </svg>
+
+                            <input :checked="state === 1" class="hidden"
+                                   th:data-checked="${advancedSearchForm.includeGenre.contains(genre.id)}"
+                                   th:field="*{includeGenre}" th:value="${genre.id}" type="checkbox"
+                                   x-init="if ($el.dataset.checked === 'true') state = 1"/>
+                            <input :checked="state === 2" class="hidden"
+                                   th:data-checked="${advancedSearchForm.excludeGenre.contains(genre.id)}"
+                                   th:field="*{excludeGenre}" th:value="${genre.id}" type="checkbox"
+                                   x-init="if ($el.dataset.checked === 'true') state = 2"/>
+                            <label th:text="${genre.name}"></label>
+                        </button>
+                    </div>
+                </div>
+            </div>
+            <button class="btn btn-primary" type="submit">Search</button>
+        </form>
+    </div>
+    <div th:case="true">
+        <div class="flex flex-col items-center gap-4">
+            <div class="flex flex-col items-center gap-2">
+                <i class="text-5xl text-neutral-content" data-feather="search"></i>
+                <h1 class="text-3xl font-bold text-neutral-content">No results found</h1>
+            </div>
+            <p class="text-xl text-neutral-content">Try searching for something else</p>
+        </div>
+    </div>
+    <th:block th:case="false">
+        <div class="w-full mx-auto rounded-box p-8 shadow-xl" th:if="${genre != null}">
+            <h2 class="text-2xl font-bold">[[${genre.name}]]</h2>
+            <p class="text-xl" th:if="${genre.description}">[[${genre.description}]]</p>
+        </div>
+        <div class="w-full mx-auto rounded-box p-8 shadow-xl" th:if="${search != null}">
+            <h2 class="text-2xl font-bold">Showing results for: "[[${search}]]"</h2>
+            <p class="text-xl">Found [[${comics.totalElements}]] results</p>
+        </div>
+        <th:block th:replace="views/comic/listing :: listing(${comics})"></th:block>
+    </th:block>
+    <div class="self-center">
+        <th:block th:insert="fragments/pagination::pagination(${comics})"></th:block>
+    </div>
+</div>
+</body>
+</html>

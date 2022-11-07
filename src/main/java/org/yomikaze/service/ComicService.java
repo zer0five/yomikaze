@@ -23,9 +23,11 @@ import java.text.Normalizer;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.Collection;
+import java.util.List;
 import java.util.Locale;
 import java.util.TreeSet;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -139,6 +141,9 @@ public class ComicService {
         comicEntity.setPublished(comic.getPublished());
         comicEntity.setFinished(comic.getFinished());
         comicEntity.setGenres(genreRepository.findAllByIdIn(comic.getGenres()));
+        List<Chapter> chapterList = comic.getChapterList().stream()
+            .map(chapter -> chapterRepository.findById(chapter.getId()).orElse(null)).collect(Collectors.toList());
+        comicEntity.setChapters(chapterList);
         if (!thumbnail.isEmpty()) {
             try {
                 Snowflake imageId = imageStorageService.store(thumbnail);
