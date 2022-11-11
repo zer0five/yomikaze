@@ -21,10 +21,10 @@
         <!--/*@thymesVar id="report" type="org.yomikaze.persistence.entity.ReportComic"*/-->
         <tr th:each="report : ${reports}">
             <td>
-                <span class="text-lg" th:text="${report.id.timestamp}"></span>
+                <span th:text="${report.id.timestamp}"></span>
             </td>
             <td>
-                <span class="text-lg" th:text="${report.reporter}"></span>
+                <span th:text="${report.reporter.profile.displayName}"></span>
             </td>
             <td>
                 <span th:text="${report.message}"></span>
